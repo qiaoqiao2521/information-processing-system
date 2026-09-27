@@ -1,0 +1,251 @@
+[
+  {
+    "id": "asset-20260926-01",
+    "index": "01",
+    "category": "深度工程复盘",
+    "rawTitle": "深度工程复盘：Anthropic 的“模型变笨”事故真相",
+    "format": "8~10 分钟深度视频解说 / 公众号硬核头条长文",
+    "viralTitle": "“Claude 为什么突然变笨了？”官方事故复盘：这 3 个不起眼的改动害惨了程序员",
+    "techTitle": "Anthropic 工程复盘剖析：推理档位降级、思考缓存丢失与系统提示词剪枝的级联退化",
+    "prompt": "cinematic shot of a humanoid AI brain undergoing microscopic inspection, glowing neural circuits glitching with floating code diff lines and drop-down switches, dark cybernetic laboratory background, dramatic volumetric lighting, 8k resolution, octane render style --ar 16:9",
+    "source": "https://anthropic.com/engineering/april-23-postmortem",
+    "facts": [],
+    "rawBody": "- **素材 ID：** `asset-20260926-01`\n- **内容形态：** 8~10 分钟深度视频解说 / 公众号硬核头条长文\n- **双轨标题：**\n  - *自媒体抓手标题*：《“Claude 为什么突然变笨了？”官方事故复盘：这 3 个不起眼的改动害惨了程序员》\n  - *专业技术标题*：《Anthropic 工程复盘剖析：推理档位降级、思考缓存丢失与系统提示词剪枝的级联退化》\n- **核心事实增量：**\n  - **原因一**：默认推理档位从 `high` 悄悄降到了 `medium`，以优化服务器延迟，导致复杂跨文件上下文分析直接翻车；\n  - **原因二**：KV-Cache 缓存 Bug 导致每轮多轮会话都丢弃了历史 `thinking` 过程，模型上一秒推导出的架构下一秒就遗忘；\n  - **原因三**：一条仅为了“限制单次输出长度”的 System Prompt 改动，使模型基准性能瞬间被砍掉 3% 智力；\n  - **神级反转细节**：回放有问题的代码 PR 时，下一代 Opus 4.7 准确找出了该隐蔽 Bug，而旧版 Opus 4.6 完全视而不见。\n- **媒体工作站视觉 Prompt（封面/概念插画）：**\n  > `cinematic shot of a humanoid AI brain undergoing microscopic inspection, glowing neural circuits glitching with floating code diff lines and drop-down switches, dark cybernetic laboratory background, dramatic volumetric lighting, 8k resolution, octane render style --ar 16:9`\n- **3分钟视频分镜框架：**\n  - **[0:00-0:30] Hook**：“上周全世界开发者都在抱怨 Claude 变蠢了，官方终于发布了复盘报告。真相让人哭笑不得：不是权重退化，而是三个互不相干的‘微小优化’把模型逼成了人工智障。”\n  - **[0:30-1:45] 拆解**：展示思考缓存丢弃（每轮重头再来）、推理档位中继、以及那句剪掉 3% 智商的提示词。\n  - **[1:45-2:45] 亮点**：播放“新一代模型给自己查出老一代找不出的 Bug”的戏剧情节。\n  - **[2:45-3:00] 结尾**：复杂系统的脆弱性：在 Agentic 时代，软件工程不是单体函数，而是由 Prompt、Cache、推理档位交织而成的生态网。\n- **溯源链接：** `https://anthropic.com/engineering/april-23-postmortem`\n\n---"
+  },
+  {
+    "id": "asset-20260926-02",
+    "index": "02",
+    "category": "大模型代际重塑",
+    "rawTitle": "大模型代际重塑：GPT-6 的 6 档“推理努力度”开关",
+    "format": "3 分钟前沿快报 / 小红书图文轮播",
+    "viralTitle": "OpenAI GPT-6 突袭发布！6 档“思考开关”彻底颠覆 API 计费",
+    "techTitle": "解密 GPT-6 算力预算革命：Astra/Sol/Luna 矩阵与细粒度 Reasoning Effort 控制",
+    "prompt": "futuristic dashboard with a sleek glowing metallic dial control showing 6 levels from 'none' to 'max', holographic interface floating in dark tech background, neon cyan and deep amber indicators, minimalist UI, ultra-detailed --ar 16:9",
+    "source": "https://openai.com/index/introducing-gpt-6/",
+    "facts": [
+      "GPT-6 正式将模型划分为超旗舰 Astra、主力 Sol、极速 Luna；",
+      "核心突破是主力模型 Sol 的 **6 档推理开关**（`none`、`low`、`medium`、`high`、`xhigh`、`max`），开发者可以按毫秒与分钱自由调节思考深度；",
+      "相比上一代 GPT-5.6，调用底价直接暴跌 50%，把高质量推理成本打穿到生产级别。"
+    ],
+    "rawBody": "- **素材 ID：** `asset-20260926-02`\n- **内容形态：** 3 分钟前沿快报 / 小红书图文轮播\n- **双轨标题：**\n  - *自媒体抓手标题*：《OpenAI GPT-6 突袭发布！6 档“思考开关”彻底颠覆 API 计费》\n  - *专业技术标题*：《解密 GPT-6 算力预算革命：Astra/Sol/Luna 矩阵与细粒度 Reasoning Effort 控制》\n- **核心事实增量：**\n  - GPT-6 正式将模型划分为超旗舰 Astra、主力 Sol、极速 Luna；\n  - 核心突破是主力模型 Sol 的 **6 档推理开关**（`none`、`low`、`medium`、`high`、`xhigh`、`max`），开发者可以按毫秒与分钱自由调节思考深度；\n  - 相比上一代 GPT-5.6，调用底价直接暴跌 50%，把高质量推理成本打穿到生产级别。\n- **媒体工作站视觉 Prompt：**\n  > `futuristic dashboard with a sleek glowing metallic dial control showing 6 levels from 'none' to 'max', holographic interface floating in dark tech background, neon cyan and deep amber indicators, minimalist UI, ultra-detailed --ar 16:9`\n- **分镜要点：**\n  - 界面特写：传统模型是一锤子买卖，现在像跑车换挡；\n  - 算力经济账：为什么简单清洗用 `none`，架构重构用 `max`？\n- **溯源链接：** `https://openai.com/index/introducing-gpt-6/`\n\n---"
+  },
+  {
+    "id": "asset-20260926-03",
+    "index": "03",
+    "category": "架构设计分水岭",
+    "rawTitle": "架构设计分水岭：托管 Agent 的“脑、手、会话”彻底解耦",
+    "format": "极客硬核公众号专栏 / 架构师技术漫谈",
+    "viralTitle": "别再把 Agent 塞进单个 Docker 容器了！大厂架构师都在抄这套新作业",
+    "techTitle": "从宠物机到云原生：Managed Agents 脑（LLM）、手（Tools）与状态会话（Session）彻底解耦实践",
+    "prompt": "abstract isometric 3D architectural diagram of three separated floating crystalline pillars labeled Brain, Hands, Session, connected by glowing laser data streams, clean matte porcelain materials, soft studio lighting --ar 16:9",
+    "source": "https://www.anthropic.com/engineering/managed-agents",
+    "facts": [
+      "传统 Agent 部署就是单容器运行 Python 脚本，一旦崩溃所有状态与正在执行的工具全部暴毙；",
+      "Anthropic 与业界正在推行把“推理层（Brain）”、“工具沙箱与鉴权（Hands）”、“持久化检查点（Session/Checkpointing）”彻底拆分；",
+      "接口生命周期超越容器生命周期，Agent 能够跨桌面、移动端和后台计划无缝接力。"
+    ],
+    "rawBody": "- **素材 ID：** `asset-20260926-03`\n- **内容形态：** 极客硬核公众号专栏 / 架构师技术漫谈\n- **双轨标题：**\n  - *自媒体抓手标题*：《别再把 Agent 塞进单个 Docker 容器了！大厂架构师都在抄这套新作业》\n  - *专业技术标题*：《从宠物机到云原生：Managed Agents 脑（LLM）、手（Tools）与状态会话（Session）彻底解耦实践》\n- **核心事实增量：**\n  - 传统 Agent 部署就是单容器运行 Python 脚本，一旦崩溃所有状态与正在执行的工具全部暴毙；\n  - Anthropic 与业界正在推行把“推理层（Brain）”、“工具沙箱与鉴权（Hands）”、“持久化检查点（Session/Checkpointing）”彻底拆分；\n  - 接口生命周期超越容器生命周期，Agent 能够跨桌面、移动端和后台计划无缝接力。\n- **媒体工作站视觉 Prompt：**\n  > `abstract isometric 3D architectural diagram of three separated floating crystalline pillars labeled Brain, Hands, Session, connected by glowing laser data streams, clean matte porcelain materials, soft studio lighting --ar 16:9`\n- **分镜要点：**\n  - 痛点直击：你是不是经常遇到长任务跑了一夜断网后直接死掉？\n  - 解法图解：三层架构如何让任务随时可暂停、可审查、可跨设备续跑。\n- **溯源链接：** `https://www.anthropic.com/engineering/managed-agents`\n\n---"
+  },
+  {
+    "id": "asset-20260926-04",
+    "index": "04",
+    "category": "极客狂潮反思",
+    "rawTitle": "极客狂潮反思：《选无聊技术》为何在 2026 年重回第一？",
+    "format": "深度播客单集 / 晚间思考长图文",
+    "viralTitle": "天天追最新 AI 框架的程序员，被一篇 11 年前的老文章狠狠抽了耳光",
+    "techTitle": "重读经典Choose Boring Technology：当 Agent 基础设施不断踩坑，为什么稳定才是最大壁垒？",
+    "prompt": "a simple weathered stone brick resting peacefully amidst a chaotic storm of swirling neon holographic code fragments and flying robotic gears, zen atmosphere, high contrast, minimalist oil painting aesthetic --ar 16:9",
+    "source": "https://mcfunley.com/choose-boring-technology",
+    "facts": [
+      "经典神作《Choose Boring Technology》重返 Hacker News 首页并登顶；",
+      "现实背景：过去一年开发者被各种炫酷但极度脆弱的 Agent 库、向量库、自动化运行时折腾得精疲力竭，生产事故频发；",
+      "真正赚到钱并稳定交付的 Solo Founder 和团队，清一色使用 Postgres、SQLite、纯 Markdown 和简单 Cron 任务。"
+    ],
+    "rawBody": "- **素材 ID：** `asset-20260926-04`\n- **内容形态：** 深度播客单集 / 晚间思考长图文\n- **双轨标题：**\n  - *自媒体抓手标题*：《天天追最新 AI 框架的程序员，被一篇 11 年前的老文章狠狠抽了耳光》\n  - *专业技术标题*：《重读经典《Choose Boring Technology》：当 Agent 基础设施不断踩坑，为什么稳定才是最大壁垒？》\n- **核心事实增量：**\n  - 经典神作《Choose Boring Technology》重返 Hacker News 首页并登顶；\n  - 现实背景：过去一年开发者被各种炫酷但极度脆弱的 Agent 库、向量库、自动化运行时折腾得精疲力竭，生产事故频发；\n  - 真正赚到钱并稳定交付的 Solo Founder 和团队，清一色使用 Postgres、SQLite、纯 Markdown 和简单 Cron 任务。\n- **媒体工作站视觉 Prompt：**\n  > `a simple weathered stone brick resting peacefully amidst a chaotic storm of swirling neon holographic code fragments and flying robotic gears, zen atmosphere, high contrast, minimalist oil painting aesthetic --ar 16:9`\n- **分镜要点：**\n  - 盘点：这几年你追过、但已经死掉的 10 个 AI 框架；\n  - 核心金句：“每个团队手里的‘创新代币’只有 3 枚，别把它们浪费在连怎么存状态都没想明白的新潮轮子上。”\n- **溯源链接：** `https://mcfunley.com/choose-boring-technology`\n\n---"
+  },
+  {
+    "id": "asset-20260926-05",
+    "index": "05",
+    "category": "GitHub 今日大黑马",
+    "rawTitle": "GitHub 今日大黑马：Hindsight——会自己进化记忆的 Agent",
+    "format": "开源项目测评 / B站代码实录",
+    "viralTitle": "单日狂揽 1600+ 星！这个开源项目给 AI 装上了“会后悔和复盘的后脑勺”",
+    "techTitle": "深入解析 vectorize-io/hindsight：基于反思回放与自我纠偏的自适应 Agent Memory 框架",
+    "prompt": "a transparent robotic head with glowing neural pathways looking into a vintage mirror reflecting an older wiser version of itself, warm cinematic lighting, deep blue and copper palette, photorealistic --ar 16:9",
+    "source": "https://github.com/vectorize-io/hindsight",
+    "facts": [
+      "解决传统 RAG 仅仅机械检索历史文本的硬伤；",
+      "Hindsight 引入“执行后复盘（Post-Execution Hindsight）”机制，记录每次任务成功与失败的关键决策点；",
+      "当下一次遇到同类场景时，优先检索出“上次我踩过什么坑”，真正实现 Agent 的跨会话越用越聪明。"
+    ],
+    "rawBody": "- **素材 ID：** `asset-20260926-05`\n- **内容形态：** 开源项目测评 / B站代码实录\n- **双轨标题：**\n  - *自媒体抓手标题*：《单日狂揽 1600+ 星！这个开源项目给 AI 装上了“会后悔和复盘的后脑勺”》\n  - *专业技术标题*：《深入解析 vectorize-io/hindsight：基于反思回放与自我纠偏的自适应 Agent Memory 框架》\n- **核心事实增量：**\n  - 解决传统 RAG 仅仅机械检索历史文本的硬伤；\n  - Hindsight 引入“执行后复盘（Post-Execution Hindsight）”机制，记录每次任务成功与失败的关键决策点；\n  - 当下一次遇到同类场景时，优先检索出“上次我踩过什么坑”，真正实现 Agent 的跨会话越用越聪明。\n- **媒体工作站视觉 Prompt：**\n  > `a transparent robotic head with glowing neural pathways looking into a vintage mirror reflecting an older wiser version of itself, warm cinematic lighting, deep blue and copper palette, photorealistic --ar 16:9`\n- **分镜要点：**\n  - 演示：给它一段错误的代码任务，第一天它写出 Bug，第二天它主动规避；\n  - 架构图解：三层记忆存储结构与反思触发器。\n- **溯源链接：** `https://github.com/vectorize-io/hindsight`\n\n---"
+  },
+  {
+    "id": "asset-20260926-06",
+    "index": "06",
+    "category": "开源企业杀手",
+    "rawTitle": "开源企业杀手：Paperclip——把数字员工当普通员工管理",
+    "format": "现代职场与管理创新专题 / 短视频实测",
+    "viralTitle": "单日星标破 2000！这个开源工具让你可以像招实习生一样管理几十个 AI Agent",
+    "techTitle": "数字劳动力操作系统演化：开源项目 Paperclip 的企业级 Agent 入职、权限与工作量分配实现",
+    "prompt": "an office desk with an open corporate directory chart where half of the employee badges are glowing AI avatar icons, modern glass office background, sunny daylight, photorealistic corporate style --ar 16:9",
+    "source": "https://github.com/paperclipai/paperclip",
+    "facts": [
+      "抛弃简单的命令行运行单个 Bot，把 Agent 抽象成组织架构图上的“员工角色”；",
+      "提供工位分配、部门预算、API Token 限额、产出审批和组织汇报链条；",
+      "真正让非技术部门（行政、财务、营销）能够像管理外包团队一样调度多 Agent。"
+    ],
+    "rawBody": "- **素材 ID：** `asset-20260926-06`\n- **内容形态：** 现代职场与管理创新专题 / 短视频实测\n- **双轨标题：**\n  - *自媒体抓手标题*：《单日星标破 2000！这个开源工具让你可以像招实习生一样管理几十个 AI Agent》\n  - *专业技术标题*：《数字劳动力操作系统演化：开源项目 Paperclip 的企业级 Agent 入职、权限与工作量分配实现》\n- **核心事实增量：**\n  - 抛弃简单的命令行运行单个 Bot，把 Agent 抽象成组织架构图上的“员工角色”；\n  - 提供工位分配、部门预算、API Token 限额、产出审批和组织汇报链条；\n  - 真正让非技术部门（行政、财务、营销）能够像管理外包团队一样调度多 Agent。\n- **媒体工作站视觉 Prompt：**\n  > `an office desk with an open corporate directory chart where half of the employee badges are glowing AI avatar icons, modern glass office background, sunny daylight, photorealistic corporate style --ar 16:9`\n- **分镜要点：**\n  - 演示一个虚拟市场部门：1个人类 Leader + 3个 Agent 分工写文案、查竞品、做图；\n  - 权限控制与责任归属的讨论：出问题找谁？\n- **溯源链接：** `https://github.com/paperclipai/paperclip`\n\n---"
+  },
+  {
+    "id": "asset-20260926-07",
+    "index": "07",
+    "category": "Google 官方出品",
+    "rawTitle": "Google 官方出品：ax——轻量级 Agentic 编排运行时",
+    "format": "极客工具链评测 / 开发者推特卡片",
+    "viralTitle": "Google 终于出手了！开源极简 Agent 运行时 ax，告别臃肿的旧框架",
+    "techTitle": "Google/ax 架构深度剖析：跨模型路由、原生沙箱与零依赖编排",
+    "prompt": "a minimalist glowing mathematical symbol ax made of polished chrome hovering over a structured digital grid board, geometric shadows, hyper-modern aesthetic, octane render --ar 16:9",
+    "source": "https://github.com/google/ax",
+    "facts": [
+      "Google 开源的全新 Agent 运行时，今日在 GitHub Trending 激增 1379 星；",
+      "主打轻量、模块化，摆脱现有编排库多层封装的黑盒问题；",
+      "针对 Gemini 与多模型混用做了极致性能优化，支持本地微沙箱秒级热启。"
+    ],
+    "rawBody": "- **素材 ID：** `asset-20260926-07`\n- **内容形态：** 极客工具链评测 / 开发者推特卡片\n- **双轨标题：**\n  - *自媒体抓手标题*：《Google 终于出手了！开源极简 Agent 运行时 ax，告别臃肿的旧框架》\n  - *专业技术标题*：《Google/ax 架构深度剖析：跨模型路由、原生沙箱与零依赖编排》\n- **核心事实增量：**\n  - Google 开源的全新 Agent 运行时，今日在 GitHub Trending 激增 1379 星；\n  - 主打轻量、模块化，摆脱现有编排库多层封装的黑盒问题；\n  - 针对 Gemini 与多模型混用做了极致性能优化，支持本地微沙箱秒级热启。\n- **媒体工作站视觉 Prompt：**\n  > `a minimalist glowing mathematical symbol ax made of polished chrome hovering over a structured digital grid board, geometric shadows, hyper-modern aesthetic, octane render --ar 16:9`\n- **溯源链接：** `https://github.com/google/ax`\n\n---"
+  },
+  {
+    "id": "asset-20260926-08",
+    "index": "08",
+    "category": "界面级革命",
+    "rawTitle": "界面级革命：Univer——AI 不该只吐字，它要直接操纵 Office",
+    "format": "生产力工具革新 / 视频实机操作",
+    "viralTitle": "告别文字聊天框！今日霸榜的开源 Office，直接把画布和表格交给 AI",
+    "techTitle": "下一代人机协作界面：开源套件 Univer 如何通过结构化 API 让 Agent 直接驱动复杂文档与表格",
+    "prompt": "hands of a human and a robotic arm simultaneously editing a glowing transparent spreadsheet floating in mid-air, dynamic graphs rising in 3D, clean corporate modern lighting --ar 16:9",
+    "source": "https://github.com/dream-num/univer",
+    "facts": [
+      "GitHub 今日增星 +1050；",
+      "核心主张：人和 Agent 协作的最优界面不是聊天窗口，而是“共用的动态表格、文档与画板”；",
+      "Univer 提供无缝的 Web 级协作 API，Agent 可以在后台填表算数据，人类在前台即时查看与审阅。"
+    ],
+    "rawBody": "- **素材 ID：** `asset-20260926-08`\n- **内容形态：** 生产力工具革新 / 视频实机操作\n- **双轨标题：**\n  - *自媒体抓手标题*：《告别文字聊天框！今日霸榜的开源 Office，直接把画布和表格交给 AI》\n  - *专业技术标题*：《下一代人机协作界面：开源套件 Univer 如何通过结构化 API 让 Agent 直接驱动复杂文档与表格》\n- **核心事实增量：**\n  - GitHub 今日增星 +1050；\n  - 核心主张：人和 Agent 协作的最优界面不是聊天窗口，而是“共用的动态表格、文档与画板”；\n  - Univer 提供无缝的 Web 级协作 API，Agent 可以在后台填表算数据，人类在前台即时查看与审阅。\n- **媒体工作站视觉 Prompt：**\n  > `hands of a human and a robotic arm simultaneously editing a glowing transparent spreadsheet floating in mid-air, dynamic graphs rising in 3D, clean corporate modern lighting --ar 16:9`\n- **溯源链接：** `https://github.com/dream-num/univer`\n\n---"
+  },
+  {
+    "id": "asset-20260926-09",
+    "index": "09",
+    "category": "商业风向标",
+    "rawTitle": "商业风向标：自托管 SaaS 的报复性反弹",
+    "format": "商业观察 / 创业趋势深度拆解",
+    "viralTitle": "企业开始逃离云端 SaaS！开源自托管一周暴涨 300% 背后的算盘",
+    "techTitle": "BuilderPulse 雷达情报：从数据主权到本地 Agent 接入，自托管工具链的轮动逻辑",
+    "prompt": "a sleek, quiet private server box glowing softly in a minimalist home office, a digital lock symbol on top, representing data sovereignty and privacy, warm morning sunlight, architectural digest photography --ar 16:9",
+    "source": "BuilderPulse 2026-08-14 机会雷达",
+    "facts": [
+      "BuilderPulse 机会雷达显示：Baserow（Airtable 开源替代品）关注度暴增 +300%，Asana 开源替代品暴增 +200%；",
+      "驱动力不再只是“省钱”，而是“企业要把内部数据与本地私有部署的 Agent 打通”，公共云 SaaS 的 API 调用成本与数据合规限制促使企业加速内迁。"
+    ],
+    "rawBody": "- **素材 ID：** `asset-20260926-09`\n- **内容形态：** 商业观察 / 创业趋势深度拆解\n- **双轨标题：**\n  - *自媒体抓手标题*：《企业开始逃离云端 SaaS！开源自托管一周暴涨 300% 背后的算盘》\n  - *专业技术标题*：《BuilderPulse 雷达情报：从数据主权到本地 Agent 接入，自托管工具链的轮动逻辑》\n- **核心事实增量：**\n  - BuilderPulse 机会雷达显示：Baserow（Airtable 开源替代品）关注度暴增 +300%，Asana 开源替代品暴增 +200%；\n  - 驱动力不再只是“省钱”，而是“企业要把内部数据与本地私有部署的 Agent 打通”，公共云 SaaS 的 API 调用成本与数据合规限制促使企业加速内迁。\n- **媒体工作站视觉 Prompt：**\n  > `a sleek, quiet private server box glowing softly in a minimalist home office, a digital lock symbol on top, representing data sovereignty and privacy, warm morning sunlight, architectural digest photography --ar 16:9`\n- **溯源链接：** `BuilderPulse 2026-08-14 机会雷达`\n\n---"
+  },
+  {
+    "id": "asset-20260926-10",
+    "index": "10",
+    "category": "多模态音频爆发",
+    "rawTitle": "多模态音频爆发：Google Flow Music 与 MiniMax-Music3 正面对决",
+    "format": "创意工具体验 / 音频试听对比短视频",
+    "viralTitle": "音乐人失眠的一周：Google 与 MiniMax 同天亮剑，AI 作曲已经跨越恐怖谷？",
+    "techTitle": "多模态音频模型架构演进：从单轨生成到多音轨分轨可控与重混编排（Remixing）",
+    "prompt": "soundwaves transforming into liquid neon gold and violet ribbons across an antique wooden sound mixing console, macro lens, dramatic stage lighting, high fidelity audio concept --ar 16:9",
+    "source": "https://x.com/GoogleLabs/status/2045250788864495874",
+    "facts": [
+      "Google Labs 将 ProducerAI 独立为 Flow Music，全面支持单句提示词生成完整多乐器分轨；",
+      "MiniMax 推出 Music3，凭借超高性价比与长曲目结构一致性在海外独立制作人社区引发轰动；",
+      "创作形态正在从“生成不可修改的音频文件”进化为“可单独调节人声、贝斯、鼓点的数字音频工程（DAW）友好格式”。"
+    ],
+    "rawBody": "- **素材 ID：** `asset-20260926-10`\n- **内容形态：** 创意工具体验 / 音频试听对比短视频\n- **双轨标题：**\n  - *自媒体抓手标题*：《音乐人失眠的一周：Google 与 MiniMax 同天亮剑，AI 作曲已经跨越恐怖谷？》\n  - *专业技术标题*：《多模态音频模型架构演进：从单轨生成到多音轨分轨可控与重混编排（Remixing）》\n- **核心事实增量：**\n  - Google Labs 将 ProducerAI 独立为 Flow Music，全面支持单句提示词生成完整多乐器分轨；\n  - MiniMax 推出 Music3，凭借超高性价比与长曲目结构一致性在海外独立制作人社区引发轰动；\n  - 创作形态正在从“生成不可修改的音频文件”进化为“可单独调节人声、贝斯、鼓点的数字音频工程（DAW）友好格式”。\n- **媒体工作站视觉 Prompt：**\n  > `soundwaves transforming into liquid neon gold and violet ribbons across an antique wooden sound mixing console, macro lens, dramatic stage lighting, high fidelity audio concept --ar 16:9`\n- **溯源链接：** `https://x.com/GoogleLabs/status/2045250788864495874`\n\n---"
+  },
+  {
+    "id": "asset-20260926-11",
+    "index": "11",
+    "category": "性价比之王",
+    "rawTitle": "性价比之王：端侧 Liquid LFM2.5 与 Mistral OCR 4.1",
+    "format": "硬件与极客测评 / 小白科普",
+    "viralTitle": "不用联网、不用充会员！把顶尖 AI 装进手机的时代真的到了",
+    "techTitle": "非 Transformer 架构的逆袭：Liquid 动力学模型 LFM2.5 与高精度端侧视觉解析实践",
+    "prompt": "a modern smartphone resting on an open vintage technical encyclopedia, glowing cyan wireframe bounding boxes accurately parsing every printed letter and diagram, macro shot, depth of field --ar 16:9",
+    "source": "BuilderPulse 机会雷达 & 开源发布清单",
+    "facts": [
+      "Liquid AI 推出基于连续动力学系统（Liquid Neural Networks）的 LFM2.5，功耗降低 60%，在端侧长上下文理解上反超轻量级 Transformer；",
+      "Mistral 发布 OCR 4.1，将复杂论文、表格与图文版式提取打碎为每百万 token 几美分的极端平价方案。"
+    ],
+    "rawBody": "- **素材 ID：** `asset-20260926-11`\n- **内容形态：** 硬件与极客测评 / 小白科普\n- **双轨标题：**\n  - *自媒体抓手标题*：《不用联网、不用充会员！把顶尖 AI 装进手机的时代真的到了》\n  - *专业技术标题*：《非 Transformer 架构的逆袭：Liquid 动力学模型 LFM2.5 与高精度端侧视觉解析实践》\n- **核心事实增量：**\n  - Liquid AI 推出基于连续动力学系统（Liquid Neural Networks）的 LFM2.5，功耗降低 60%，在端侧长上下文理解上反超轻量级 Transformer；\n  - Mistral 发布 OCR 4.1，将复杂论文、表格与图文版式提取打碎为每百万 token 几美分的极端平价方案。\n- **媒体工作站视觉 Prompt：**\n  > `a modern smartphone resting on an open vintage technical encyclopedia, glowing cyan wireframe bounding boxes accurately parsing every printed letter and diagram, macro shot, depth of field --ar 16:9`\n- **溯源链接：** `BuilderPulse 机会雷达 & 开源发布清单`\n\n---"
+  },
+  {
+    "id": "asset-20260926-12",
+    "index": "12",
+    "category": "创投资本风向变了",
+    "rawTitle": "创投资本风向变了：VC 为什么不投新模型，改投“Agent 监督层”？",
+    "format": "商业深度评论 / 投资人对谈速览",
+    "viralTitle": "硅谷风投不再买单“又一个大模型”：新百亿赛道竟然是“给 AI 装行车记录仪”？",
+    "techTitle": "企业级 Agent 落地深水区：审计追踪（Auditability）、意图对齐与度量基础设施成为投资焦点",
+    "prompt": "a high-tech glowing holographic seal of compliance and safety locking onto a robotic cybernetic hand over a ledger, corporate boardroom background at night with city skyline --ar 16:9",
+    "source": "No Priors Podcast & BuilderPulse VC 报告",
+    "facts": [
+      "过去半年顶级风投对包装开源模型的 Wrapper 初创企业全面收紧支票；",
+      "资金全面涌入“Agent 行为黑匣子记录仪”、“权限边界硬拦截（Hard Guardrails）”与“自动化任务度量评估（Evals）”领域；",
+      "核心逻辑：模型越来越便宜甚至开源，但“企业敢不敢让 Agent 动生产数据库和真金白银”才是商业化唯一瓶颈。"
+    ],
+    "rawBody": "- **素材 ID：** `asset-20260926-12`\n- **内容形态：** 商业深度评论 / 投资人对谈速览\n- **双轨标题：**\n  - *自媒体抓手标题*：《硅谷风投不再买单“又一个大模型”：新百亿赛道竟然是“给 AI 装行车记录仪”？》\n  - *专业技术标题*：《企业级 Agent 落地深水区：审计追踪（Auditability）、意图对齐与度量基础设施成为投资焦点》\n- **核心事实增量：**\n  - 过去半年顶级风投对包装开源模型的 Wrapper 初创企业全面收紧支票；\n  - 资金全面涌入“Agent 行为黑匣子记录仪”、“权限边界硬拦截（Hard Guardrails）”与“自动化任务度量评估（Evals）”领域；\n  - 核心逻辑：模型越来越便宜甚至开源，但“企业敢不敢让 Agent 动生产数据库和真金白银”才是商业化唯一瓶颈。\n- **媒体工作站视觉 Prompt：**\n  > `a high-tech glowing holographic seal of compliance and safety locking onto a robotic cybernetic hand over a ledger, corporate boardroom background at night with city skyline --ar 16:9`\n- **溯源链接：** `No Priors Podcast & BuilderPulse VC 报告`\n\n---"
+  },
+  {
+    "id": "asset-20260926-13",
+    "index": "13",
+    "category": "工程师思维重塑",
+    "rawTitle": "工程师思维重塑：Dan Shipper 说“Agent 本质上就是一个文件夹”",
+    "format": "极客哲学与设计理念 / 爆款思维卡片",
+    "viralTitle": "把 Agent 当“人”来聊是最大的误区！把它当成一个“文件夹”瞬间豁然开朗",
+    "techTitle": "解构 Agentic 系统心智模型：为什么基于文件系统（Filesystem）的状态管理胜过复杂的黑盒数据库？",
+    "prompt": "a glowing golden minimalist folder icon open on a dark desktop, radiating organized holographic files labeled 'Memory', 'Skills', 'Prompts', clean scifi interface, high aesthetics --ar 16:9",
+    "source": "https://x.com/danshipper/status/2043739805276619223",
+    "facts": [
+      "Every 创始人 Dan Shipper 提出的极简心智模型被顶尖 Builder 疯转；",
+      "一个好的 Agent 不是一堆神秘提示词，而是一个包含 `instructions.md`、`skills/`、`memory/`、`logs/` 的普通文件夹；",
+      "人类的修改只要靠“向文件夹拖入文件、用文本编辑器改几行 Markdown”，彻底回归可追溯、可版本控制的 Git 工作流。"
+    ],
+    "rawBody": "- **素材 ID：** `asset-20260926-13`\n- **内容形态：** 极客哲学与设计理念 / 爆款思维卡片\n- **双轨标题：**\n  - *自媒体抓手标题*：《把 Agent 当“人”来聊是最大的误区！把它当成一个“文件夹”瞬间豁然开朗》\n  - *专业技术标题*：《解构 Agentic 系统心智模型：为什么基于文件系统（Filesystem）的状态管理胜过复杂的黑盒数据库？》\n- **核心事实增量：**\n  - Every 创始人 Dan Shipper 提出的极简心智模型被顶尖 Builder 疯转；\n  - 一个好的 Agent 不是一堆神秘提示词，而是一个包含 `instructions.md`、`skills/`、`memory/`、`logs/` 的普通文件夹；\n  - 人类的修改只要靠“向文件夹拖入文件、用文本编辑器改几行 Markdown”，彻底回归可追溯、可版本控制的 Git 工作流。\n- **媒体工作站视觉 Prompt：**\n  > `a glowing golden minimalist folder icon open on a dark desktop, radiating organized holographic files labeled 'Memory', 'Skills', 'Prompts', clean scifi interface, high aesthetics --ar 16:9`\n- **金句收尾：** “未来最强的 Agent 工程师，其实就是最懂怎么整理文件归档的人。”\n- **溯源链接：** `https://x.com/danshipper/status/2043739805276619223`\n\n---"
+  },
+  {
+    "id": "asset-20260926-14",
+    "index": "14",
+    "category": "个人知识资产化",
+    "rawTitle": "个人知识资产化：Garry Tan 开源 GBrain 与万级 Markdown 大脑",
+    "format": "知识管理 (PKM) / 个人成长专题",
+    "viralTitle": "YC 总裁开源了他私人积累的 17000 页知识库：未来你的身价就在这个文本库里",
+    "techTitle": "个人数字化第二大脑：GBrain v0.31 的 MCP 接入、万级 Markdown 召回与开源私有资产沉淀",
+    "prompt": "an infinite library with towering shelves made of glowing glass books, a single open book on a reading desk radiating clean light, cinematic lighting, cozy yet futuristic atmosphere --ar 16:9",
+    "source": "https://x.com/garrytan/status/2053306243704410460",
+    "facts": [
+      "Y Combinator 总裁 Garry Tan 将个人积累的一万七千多页 Markdown 知识库与检索系统开源；",
+      "正式打通 MCP（Model Context Protocol）协议，支持各大前沿模型无缝挂载个人大脑；",
+      "明确信号：模型会频繁换代，厂商会起起落落，但用标准格式保存的个人文本记忆资产才是不可替代的护城河。"
+    ],
+    "rawBody": "- **素材 ID：** `asset-20260926-14`\n- **内容形态：** 知识管理 (PKM) / 个人成长专题\n- **双轨标题：**\n  - *自媒体抓手标题*：《YC 总裁开源了他私人积累的 17000 页知识库：未来你的身价就在这个文本库里》\n  - *专业技术标题*：《个人数字化第二大脑：GBrain v0.31 的 MCP 接入、万级 Markdown 召回与开源私有资产沉淀》\n- **核心事实增量：**\n  - Y Combinator 总裁 Garry Tan 将个人积累的一万七千多页 Markdown 知识库与检索系统开源；\n  - 正式打通 MCP（Model Context Protocol）协议，支持各大前沿模型无缝挂载个人大脑；\n  - 明确信号：模型会频繁换代，厂商会起起落落，但用标准格式保存的个人文本记忆资产才是不可替代的护城河。\n- **媒体工作站视觉 Prompt：**\n  > `an infinite library with towering shelves made of glowing glass books, a single open book on a reading desk radiating clean light, cinematic lighting, cozy yet futuristic atmosphere --ar 16:9`\n- **溯源链接：** `https://x.com/garrytan/status/2053306243704410460`\n\n---"
+  },
+  {
+    "id": "asset-20260926-15",
+    "index": "15",
+    "category": "极简主义造物",
+    "rawTitle": "极简主义造物：Zara Zhang 谈“80% 时间在砍功能”的产品哲学",
+    "format": "独立开发 / Vibe Coding 产品实战访谈",
+    "viralTitle": "用 AI 写代码最大的陷阱，是它太能写了！独立开发者必须学会“做减法”",
+    "techTitle": "从 Tab Out 实战谈 Agentic 辅助开发：警惕架构过度设计（Overkill），守住纯本地与极简路径",
+    "prompt": "a sculptor in a modern sunny studio chiseling away excess dark stone to reveal a glowing, pure, geometric white crystal inside, high-speed photography, artistic and serene --ar 16:9",
+    "source": "https://x.com/zarazhangrui/status/2044114136364397043",
+    "facts": [
+      "独立创作者在做 Chrome 标签页管理工具时，发现 AI 会自作主张堆叠庞大的后端、复杂的 Node 依赖和云端数据库；",
+      "最终她花费 80% 的时间在拒绝 AI 的臃肿建议，把系统裁剪为 0 依赖的纯本地扩展；",
+      "产品感悟：AI 让写代码变廉价了，但“不写无用代码”的取舍智慧变得前所未有的昂贵。"
+    ],
+    "rawBody": "- **素材 ID：** `asset-20260926-15`\n- **内容形态：** 独立开发 / Vibe Coding 产品实战访谈\n- **双轨标题：**\n  - *自媒体抓手标题*：《用 AI 写代码最大的陷阱，是它太能写了！独立开发者必须学会“做减法”》\n  - *专业技术标题*：《从 Tab Out 实战谈 Agentic 辅助开发：警惕架构过度设计（Overkill），守住纯本地与极简路径》\n- **核心事实增量：**\n  - 独立创作者在做 Chrome 标签页管理工具时，发现 AI 会自作主张堆叠庞大的后端、复杂的 Node 依赖和云端数据库；\n  - 最终她花费 80% 的时间在拒绝 AI 的臃肿建议，把系统裁剪为 0 依赖的纯本地扩展；\n  - 产品感悟：AI 让写代码变廉价了，但“不写无用代码”的取舍智慧变得前所未有的昂贵。\n- **媒体工作站视觉 Prompt：**\n  > `a sculptor in a modern sunny studio chiseling away excess dark stone to reveal a glowing, pure, geometric white crystal inside, high-speed photography, artistic and serene --ar 16:9`\n- **溯源链接：** `https://x.com/zarazhangrui/status/2044114136364397043`"
+  }
+]

@@ -1,0 +1,314 @@
+{
+  "repos": [
+    {
+      "full_name": "paperclipai/paperclip",
+      "name": "paperclip",
+      "owner": "paperclipai",
+      "description": "The open-source app everyone uses to manage agents at work",
+      "language": "TypeScript",
+      "stars": 85061,
+      "stars_today": 2109,
+      "url": "https://github.com/paperclipai/paperclip",
+      "problem_solved": "过去 Agent 处于黑盒或单脚本运行状态，缺乏组织层面的工位、预算、Token 配额与审批汇报链条，难以规模化落地企业。",
+      "key_features": [
+        "提供类企业架构图的 Agent 组织与角色定义 (Organization Chart)",
+        "内置数字员工工位分配、部门预算与 API Token 硬限额治理",
+        "人类主管审批流 (Human-in-the-loop approval) 与工作流日志归档"
+      ],
+      "target_audience": "需要调度多 Agent 的技术 Leader、运营负责人、探索数字员工的企业",
+      "editorial_insight": "今日黑马榜首（+2109星），反映企业级 Agent 从‘单个玩模型’向‘组织治理与权限管理’的关键跃迁。",
+      "local_snapshot": "# paperclipai/paperclip\n> 来源：GitHub Trending 今日榜单 | 语言：TypeScript | 关注度：今日 +2109 星 (总计 85,061 星)\n> 仓库地址：https://github.com/paperclipai/paperclip\n\n## 一、一句话定位\nThe open-source app everyone uses to manage agents at work\n\n## 二、解决的核心痛点\n过去 Agent 处于黑盒或单脚本运行状态，缺乏组织层面的工位、预算、Token 配额与审批汇报链条，难以规模化落地企业。\n\n## 三、关键技术架构与特性\n- 提供类企业架构图的 Agent 组织与角色定义 (Organization Chart)\n- 内置数字员工工位分配、部门预算与 API Token 硬限额治理\n- 人类主管审批流 (Human-in-the-loop approval) 与工作流日志归档\n\n## 四、适用人群与业务场景\n需要调度多 Agent 的技术 Leader、运营负责人、探索数字员工的企业\n\n## 五、选题价值与产业观察\n今日黑马榜首（+2109星），反映企业级 Agent 从‘单个玩模型’向‘组织治理与权限管理’的关键跃迁。",
+      "has_local_text": true
+    },
+    {
+      "full_name": "anthropics/claude-plugins-official",
+      "name": "claude-plugins-official",
+      "owner": "anthropics",
+      "description": "Official, Anthropic-managed directory of high quality Claude Code Plugins.",
+      "language": "Python",
+      "stars": 36950,
+      "stars_today": 83,
+      "url": "https://github.com/anthropics/claude-plugins-official",
+      "problem_solved": "针对 Python 生态中相关场景的基础设施与效率优化方案。",
+      "key_features": [
+        "核心能力：Official, Anthropic-managed directory of high quality Claude Code Plugins.",
+        "符合现代开源工程规范，提供标准的安装与接入方式"
+      ],
+      "target_audience": "相关技术领域开发者、开源生态关注者",
+      "editorial_insight": "今日 GitHub Trending 热门项目，展现特定技术领域的活跃动向。",
+      "local_snapshot": "# anthropics/claude-plugins-official\n> 来源：GitHub Trending 今日榜单 | 语言：Python | 关注度：今日 +83 星 (总计 36,950 星)\n> 仓库地址：https://github.com/anthropics/claude-plugins-official\n\n## 一、一句话定位\nOfficial, Anthropic-managed directory of high quality Claude Code Plugins.\n\n## 二、解决的核心痛点\n针对 Python 生态中相关场景的基础设施与效率优化方案。\n\n## 三、关键技术架构与特性\n- 核心能力：Official, Anthropic-managed directory of high quality Claude Code Plugins.\n- 符合现代开源工程规范，提供标准的安装与接入方式\n\n## 四、适用人群与业务场景\n相关技术领域开发者、开源生态关注者\n\n## 五、选题价值与产业观察\n今日 GitHub Trending 热门项目，展现特定技术领域的活跃动向。",
+      "has_local_text": true
+    },
+    {
+      "full_name": "vectorize-io/hindsight",
+      "name": "hindsight",
+      "owner": "vectorize-io",
+      "description": "Hindsight: Agent Memory That Learns",
+      "language": "Python",
+      "stars": 29861,
+      "stars_today": 1653,
+      "url": "https://github.com/vectorize-io/hindsight",
+      "problem_solved": "传统 RAG 仅做静态文本检索，无法从 Agent 执行失败中复盘，导致同一类 Bug 跨会话反复重犯。",
+      "key_features": [
+        "引入‘事后复盘（Post-Execution Hindsight）’自适应学习机制",
+        "在长期记忆库中记录决策路径与踩坑教训，形成反思图谱",
+        "下一次遭遇类似上下文时，优先召回避坑策略而非盲目执行"
+      ],
+      "target_audience": "Agentic 框架开发者、长流程自动化工程师、个人数字化助理构建者",
+      "editorial_insight": "今日暴涨 +1653 星，印证了‘Agent 记忆从向量检索进化为自省闭环’的行业主线。",
+      "local_snapshot": "# vectorize-io/hindsight\n> 来源：GitHub Trending 今日榜单 | 语言：Python | 关注度：今日 +1653 星 (总计 29,861 星)\n> 仓库地址：https://github.com/vectorize-io/hindsight\n\n## 一、一句话定位\nHindsight: Agent Memory That Learns\n\n## 二、解决的核心痛点\n传统 RAG 仅做静态文本检索，无法从 Agent 执行失败中复盘，导致同一类 Bug 跨会话反复重犯。\n\n## 三、关键技术架构与特性\n- 引入‘事后复盘（Post-Execution Hindsight）’自适应学习机制\n- 在长期记忆库中记录决策路径与踩坑教训，形成反思图谱\n- 下一次遭遇类似上下文时，优先召回避坑策略而非盲目执行\n\n## 四、适用人群与业务场景\nAgentic 框架开发者、长流程自动化工程师、个人数字化助理构建者\n\n## 五、选题价值与产业观察\n今日暴涨 +1653 星，印证了‘Agent 记忆从向量检索进化为自省闭环’的行业主线。",
+      "has_local_text": true
+    },
+    {
+      "full_name": "obra/superpowers",
+      "name": "superpowers",
+      "owner": "obra",
+      "description": "Sponsor Star obra / superpowers An agentic skills framework & software development methodology that works.",
+      "language": "Shell",
+      "stars": 291687,
+      "stars_today": 468,
+      "url": "https://github.com/obra/superpowers",
+      "problem_solved": "简单将任务交给 Agent 往往导致幻觉或半途而废，缺乏严格的软件工程方法论与执行约束。",
+      "key_features": [
+        "结合严格软件工程规约的 Agent 技能框架",
+        "通过步骤分解、前置条件校验与严密 Harness 保障交付质量"
+      ],
+      "target_audience": "复杂项目维护者、企业自动化架构师",
+      "editorial_insight": "强调让 Agent 遵守软件工程规则，而不是让其自由放飞。",
+      "local_snapshot": "# obra/superpowers\n> 来源：GitHub Trending 今日榜单 | 语言：Shell | 关注度：今日 +468 星 (总计 291,687 星)\n> 仓库地址：https://github.com/obra/superpowers\n\n## 一、一句话定位\nSponsor Star obra / superpowers An agentic skills framework & software development methodology that works.\n\n## 二、解决的核心痛点\n简单将任务交给 Agent 往往导致幻觉或半途而废，缺乏严格的软件工程方法论与执行约束。\n\n## 三、关键技术架构与特性\n- 结合严格软件工程规约的 Agent 技能框架\n- 通过步骤分解、前置条件校验与严密 Harness 保障交付质量\n\n## 四、适用人群与业务场景\n复杂项目维护者、企业自动化架构师\n\n## 五、选题价值与产业观察\n强调让 Agent 遵守软件工程规则，而不是让其自由放飞。",
+      "has_local_text": true
+    },
+    {
+      "full_name": "mattpocock/skills",
+      "name": "skills",
+      "owner": "mattpocock",
+      "description": "Sponsor Star mattpocock / skills Skills for Real Engineers. Straight from my .agents directory.",
+      "language": "Shell",
+      "stars": 269756,
+      "stars_today": 583,
+      "url": "https://github.com/mattpocock/skills",
+      "problem_solved": "开发者虽然使用 Agentic 工具，但缺少经过实战验证的真实工程 Skill 模板沉淀。",
+      "key_features": [
+        "资深 TS 工程师 Matt Pocock 私房 .agents 技能库全量开源",
+        "涵盖高阶重构、类型体操、测试生成与严谨 Code Review 规约"
+      ],
+      "target_audience": "TypeScript 工程师、前沿 AI Coding 高频使用者",
+      "editorial_insight": "知名大牛个人 Skill 资产的公开，印证了‘Skill 本身正在成为新的可交易/复用数字资产’。",
+      "local_snapshot": "# mattpocock/skills\n> 来源：GitHub Trending 今日榜单 | 语言：Shell | 关注度：今日 +583 星 (总计 269,756 星)\n> 仓库地址：https://github.com/mattpocock/skills\n\n## 一、一句话定位\nSponsor Star mattpocock / skills Skills for Real Engineers. Straight from my .agents directory.\n\n## 二、解决的核心痛点\n开发者虽然使用 Agentic 工具，但缺少经过实战验证的真实工程 Skill 模板沉淀。\n\n## 三、关键技术架构与特性\n- 资深 TS 工程师 Matt Pocock 私房 .agents 技能库全量开源\n- 涵盖高阶重构、类型体操、测试生成与严谨 Code Review 规约\n\n## 四、适用人群与业务场景\nTypeScript 工程师、前沿 AI Coding 高频使用者\n\n## 五、选题价值与产业观察\n知名大牛个人 Skill 资产的公开，印证了‘Skill 本身正在成为新的可交易/复用数字资产’。",
+      "has_local_text": true
+    },
+    {
+      "full_name": "dream-num/univer",
+      "name": "univer",
+      "owner": "dream-num",
+      "description": "The Office Harness for AI Agents — Spreadsheets, Docs, Slides, Canvas, Relational Tables, and PDF in one runtime.",
+      "language": "TypeScript",
+      "stars": 18467,
+      "stars_today": 1050,
+      "url": "https://github.com/dream-num/univer",
+      "problem_solved": "人和 Agent 协作长期被困在‘纯文字聊天框’中，无法对表格、画板、文档进行结构化实时编辑与双向互动。",
+      "key_features": [
+        "专为 AI Agent 打造的协作 Office 套件（包含电子表格、文档、幻灯片、关系表与画布）",
+        "全套暴露面向 Agent 的微指令 API，Agent 可直接在后台改单元格、绘图与重构排版",
+        "人类在前端实时协同审阅，彻底告别单向输出 Markdown 文本"
+      ],
+      "target_audience": "文档协同产品团队、企业自动化开发者、探索生成式界面的产品经理",
+      "editorial_insight": "今日破千星（+1050星），标志着人机交互界面从‘Chat 聊天框’向‘共享可执行画布’的转移。",
+      "local_snapshot": "# dream-num/univer\n> 来源：GitHub Trending 今日榜单 | 语言：TypeScript | 关注度：今日 +1050 星 (总计 18,467 星)\n> 仓库地址：https://github.com/dream-num/univer\n\n## 一、一句话定位\nThe Office Harness for AI Agents — Spreadsheets, Docs, Slides, Canvas, Relational Tables, and PDF in one runtime.\n\n## 二、解决的核心痛点\n人和 Agent 协作长期被困在‘纯文字聊天框’中，无法对表格、画板、文档进行结构化实时编辑与双向互动。\n\n## 三、关键技术架构与特性\n- 专为 AI Agent 打造的协作 Office 套件（包含电子表格、文档、幻灯片、关系表与画布）\n- 全套暴露面向 Agent 的微指令 API，Agent 可直接在后台改单元格、绘图与重构排版\n- 人类在前端实时协同审阅，彻底告别单向输出 Markdown 文本\n\n## 四、适用人群与业务场景\n文档协同产品团队、企业自动化开发者、探索生成式界面的产品经理\n\n## 五、选题价值与产业观察\n今日破千星（+1050星），标志着人机交互界面从‘Chat 聊天框’向‘共享可执行画布’的转移。",
+      "has_local_text": true
+    },
+    {
+      "full_name": "anthropics/skills",
+      "name": "skills",
+      "owner": "anthropics",
+      "description": "Public repository for Agent Skills",
+      "language": "Python",
+      "stars": 178339,
+      "stars_today": 189,
+      "url": "https://github.com/anthropics/skills",
+      "problem_solved": "针对 Python 生态中相关场景的基础设施与效率优化方案。",
+      "key_features": [
+        "核心能力：Public repository for Agent Skills",
+        "符合现代开源工程规范，提供标准的安装与接入方式"
+      ],
+      "target_audience": "相关技术领域开发者、开源生态关注者",
+      "editorial_insight": "今日 GitHub Trending 热门项目，展现特定技术领域的活跃动向。",
+      "local_snapshot": "# anthropics/skills\n> 来源：GitHub Trending 今日榜单 | 语言：Python | 关注度：今日 +189 星 (总计 178,339 星)\n> 仓库地址：https://github.com/anthropics/skills\n\n## 一、一句话定位\nPublic repository for Agent Skills\n\n## 二、解决的核心痛点\n针对 Python 生态中相关场景的基础设施与效率优化方案。\n\n## 三、关键技术架构与特性\n- 核心能力：Public repository for Agent Skills\n- 符合现代开源工程规范，提供标准的安装与接入方式\n\n## 四、适用人群与业务场景\n相关技术领域开发者、开源生态关注者\n\n## 五、选题价值与产业观察\n今日 GitHub Trending 热门项目，展现特定技术领域的活跃动向。",
+      "has_local_text": true
+    },
+    {
+      "full_name": "androoAGI/starnet",
+      "name": "starnet",
+      "owner": "androoAGI",
+      "description": "A living pixel-art station where real AI agents do real work. Local-first desktop agent harness - bring your own key, watch your crew actually run.",
+      "language": "JavaScript",
+      "stars": 497,
+      "stars_today": 93,
+      "url": "https://github.com/androoAGI/starnet",
+      "problem_solved": "终端跑 Agent 过程枯燥且缺乏可视化直观反馈，普通用户难以感知多 Agent 协同状态。",
+      "key_features": [
+        "复古像素风太空站界面的本地优先桌面 Agent 运行台",
+        "每个 Agent 化身为像素小人，在不同工作舱中协作完成真实代码与数据任务"
+      ],
+      "target_audience": "独立开发者、极客、对 Agent 可视化与趣味性有追求的用户",
+      "editorial_insight": "趣味性与生产力的绝佳融合，极佳的社交媒体传播传播点。",
+      "local_snapshot": "# androoAGI/starnet\n> 来源：GitHub Trending 今日榜单 | 语言：JavaScript | 关注度：今日 +93 星 (总计 497 星)\n> 仓库地址：https://github.com/androoAGI/starnet\n\n## 一、一句话定位\nA living pixel-art station where real AI agents do real work. Local-first desktop agent harness - bring your own key, watch your crew actually run.\n\n## 二、解决的核心痛点\n终端跑 Agent 过程枯燥且缺乏可视化直观反馈，普通用户难以感知多 Agent 协同状态。\n\n## 三、关键技术架构与特性\n- 复古像素风太空站界面的本地优先桌面 Agent 运行台\n- 每个 Agent 化身为像素小人，在不同工作舱中协作完成真实代码与数据任务\n\n## 四、适用人群与业务场景\n独立开发者、极客、对 Agent 可视化与趣味性有追求的用户\n\n## 五、选题价值与产业观察\n趣味性与生产力的绝佳融合，极佳的社交媒体传播传播点。",
+      "has_local_text": true
+    },
+    {
+      "full_name": "derv82/wifit3",
+      "name": "wifit3",
+      "owner": "derv82",
+      "description": "Wifite but USB-only & cross-platform.",
+      "language": "Python",
+      "stars": 949,
+      "stars_today": 183,
+      "url": "https://github.com/derv82/wifit3",
+      "problem_solved": "针对 Python 生态中相关场景的基础设施与效率优化方案。",
+      "key_features": [
+        "核心能力：Wifite but USB-only & cross-platform.",
+        "符合现代开源工程规范，提供标准的安装与接入方式"
+      ],
+      "target_audience": "相关技术领域开发者、开源生态关注者",
+      "editorial_insight": "今日 GitHub Trending 热门项目，展现特定技术领域的活跃动向。",
+      "local_snapshot": "# derv82/wifit3\n> 来源：GitHub Trending 今日榜单 | 语言：Python | 关注度：今日 +183 星 (总计 949 星)\n> 仓库地址：https://github.com/derv82/wifit3\n\n## 一、一句话定位\nWifite but USB-only & cross-platform.\n\n## 二、解决的核心痛点\n针对 Python 生态中相关场景的基础设施与效率优化方案。\n\n## 三、关键技术架构与特性\n- 核心能力：Wifite but USB-only & cross-platform.\n- 符合现代开源工程规范，提供标准的安装与接入方式\n\n## 四、适用人群与业务场景\n相关技术领域开发者、开源生态关注者\n\n## 五、选题价值与产业观察\n今日 GitHub Trending 热门项目，展现特定技术领域的活跃动向。",
+      "has_local_text": true
+    },
+    {
+      "full_name": "kelseyhightower/kubernetes-the-hard-way",
+      "name": "kubernetes-the-hard-way",
+      "owner": "kelseyhightower",
+      "description": "Bootstrap Kubernetes the hard way. No scripts.",
+      "language": "General",
+      "stars": 50130,
+      "stars_today": 119,
+      "url": "https://github.com/kelseyhightower/kubernetes-the-hard-way",
+      "problem_solved": "针对 多语言 生态中相关场景的基础设施与效率优化方案。",
+      "key_features": [
+        "核心能力：Bootstrap Kubernetes the hard way. No scripts.",
+        "符合现代开源工程规范，提供标准的安装与接入方式"
+      ],
+      "target_audience": "相关技术领域开发者、开源生态关注者",
+      "editorial_insight": "今日 GitHub Trending 热门项目，展现特定技术领域的活跃动向。",
+      "local_snapshot": "# kelseyhightower/kubernetes-the-hard-way\n> 来源：GitHub Trending 今日榜单 | 语言：Multi | 关注度：今日 +119 星 (总计 50,130 星)\n> 仓库地址：https://github.com/kelseyhightower/kubernetes-the-hard-way\n\n## 一、一句话定位\nBootstrap Kubernetes the hard way. No scripts.\n\n## 二、解决的核心痛点\n针对 多语言 生态中相关场景的基础设施与效率优化方案。\n\n## 三、关键技术架构与特性\n- 核心能力：Bootstrap Kubernetes the hard way. No scripts.\n- 符合现代开源工程规范，提供标准的安装与接入方式\n\n## 四、适用人群与业务场景\n相关技术领域开发者、开源生态关注者\n\n## 五、选题价值与产业观察\n今日 GitHub Trending 热门项目，展现特定技术领域的活跃动向。",
+      "has_local_text": true
+    },
+    {
+      "full_name": "rohitg00/ai-engineering-from-scratch",
+      "name": "ai-engineering-from-scratch",
+      "owner": "rohitg00",
+      "description": "Sponsor Star rohitg00 / ai-engineering-from-scratch Learn it. Build it. Ship it for others.",
+      "language": "Python",
+      "stars": 57555,
+      "stars_today": 1177,
+      "url": "https://github.com/rohitg00/ai-engineering-from-scratch",
+      "problem_solved": "市面大量 AI 课程浮于表面调用现成 SDK，开发者缺乏从零手写推理循环、Attention 机制与评估体系的硬核能力。",
+      "key_features": [
+        "纯手写从零实现现代 AI 工程：Transformer、KV Cache、量化与 RAG 运行时",
+        "配套工业级真实代码实现与测试用例，强调底层原理透视"
+      ],
+      "target_audience": "希望从应用开发转型底层架构的 AI 工程师、计算机科学学生",
+      "editorial_insight": "暴增 +1177 星，说明开发者在热潮之后开始渴望回归底层原理的硬核技术基建。",
+      "local_snapshot": "# rohitg00/ai-engineering-from-scratch\n> 来源：GitHub Trending 今日榜单 | 语言：Python | 关注度：今日 +1177 星 (总计 57,555 星)\n> 仓库地址：https://github.com/rohitg00/ai-engineering-from-scratch\n\n## 一、一句话定位\nSponsor Star rohitg00 / ai-engineering-from-scratch Learn it. Build it. Ship it for others.\n\n## 二、解决的核心痛点\n市面大量 AI 课程浮于表面调用现成 SDK，开发者缺乏从零手写推理循环、Attention 机制与评估体系的硬核能力。\n\n## 三、关键技术架构与特性\n- 纯手写从零实现现代 AI 工程：Transformer、KV Cache、量化与 RAG 运行时\n- 配套工业级真实代码实现与测试用例，强调底层原理透视\n\n## 四、适用人群与业务场景\n希望从应用开发转型底层架构的 AI 工程师、计算机科学学生\n\n## 五、选题价值与产业观察\n暴增 +1177 星，说明开发者在热潮之后开始渴望回归底层原理的硬核技术基建。",
+      "has_local_text": true
+    },
+    {
+      "full_name": "shy3130/tick-stock-panel",
+      "name": "tick-stock-panel",
+      "owner": "shy3130",
+      "description": "TSP自托管、零运维的 A 股「选股 + 监控 + 回测」量化工作台 | LLM能力驱使策略定制+个股分析+复盘 | 自由接入第三方数据源与个性化扩展数据 | 个人开源",
+      "language": "Python",
+      "stars": 5144,
+      "stars_today": 44,
+      "url": "https://github.com/shy3130/tick-stock-panel",
+      "problem_solved": "个人量化交易者搭建 A 股投研工作台门槛高、依赖笨重云端商业软件且隐私风险大。",
+      "key_features": [
+        "纯自托管、零运维的 A 股量化工作台",
+        "深度融合本地 LLM 能力，实现自动策略定制、个股研报分析与盘后复盘",
+        "自由接入多方免费数据源，数据完全留在本地"
+      ],
+      "target_audience": "A 股量化交易者、自托管爱好者、金融科技独立开发者",
+      "editorial_insight": "国内自托管与大模型垂直结合的标杆项目，解决真实场景的私人定制需求。",
+      "local_snapshot": "# shy3130/tick-stock-panel\n> 来源：GitHub Trending 今日榜单 | 语言：Python | 关注度：今日 +44 星 (总计 5,144 星)\n> 仓库地址：https://github.com/shy3130/tick-stock-panel\n\n## 一、一句话定位\nTSP自托管、零运维的 A 股「选股 + 监控 + 回测」量化工作台 | LLM能力驱使策略定制+个股分析+复盘 | 自由接入第三方数据源与个性化扩展数据 | 个人开源\n\n## 二、解决的核心痛点\n个人量化交易者搭建 A 股投研工作台门槛高、依赖笨重云端商业软件且隐私风险大。\n\n## 三、关键技术架构与特性\n- 纯自托管、零运维的 A 股量化工作台\n- 深度融合本地 LLM 能力，实现自动策略定制、个股研报分析与盘后复盘\n- 自由接入多方免费数据源，数据完全留在本地\n\n## 四、适用人群与业务场景\nA 股量化交易者、自托管爱好者、金融科技独立开发者\n\n## 五、选题价值与产业观察\n国内自托管与大模型垂直结合的标杆项目，解决真实场景的私人定制需求。",
+      "has_local_text": true
+    },
+    {
+      "full_name": "google/ax",
+      "name": "ax",
+      "owner": "google",
+      "description": "Google's open agentic orchestration runtime",
+      "language": "Go",
+      "stars": 11531,
+      "stars_today": 1379,
+      "url": "https://github.com/google/ax",
+      "problem_solved": "现有 Agent 编排框架封装层级过深、黑盒严重、启动开销大且与多模型生态强绑定。",
+      "key_features": [
+        "Google 官方出品的极简、轻量级 Agentic 编排运行时 (Go 语言实现)",
+        "跨模型协同路由设计，深度适配原生沙箱与高并发微任务",
+        "零繁冗依赖，提供透明、确定性的状态机执行语义"
+      ],
+      "target_audience": "追求高吞吐、高可观测性的后端与架构工程师、Go 语言云原生开发者",
+      "editorial_insight": "Google 官方首次下场开源轻量运行时（+1379星），向社区释放追求底层精简的明确信号。",
+      "local_snapshot": "# google/ax\n> 来源：GitHub Trending 今日榜单 | 语言：Go | 关注度：今日 +1379 星 (总计 11,531 星)\n> 仓库地址：https://github.com/google/ax\n\n## 一、一句话定位\nGoogle's open agentic orchestration runtime\n\n## 二、解决的核心痛点\n现有 Agent 编排框架封装层级过深、黑盒严重、启动开销大且与多模型生态强绑定。\n\n## 三、关键技术架构与特性\n- Google 官方出品的极简、轻量级 Agentic 编排运行时 (Go 语言实现)\n- 跨模型协同路由设计，深度适配原生沙箱与高并发微任务\n- 零繁冗依赖，提供透明、确定性的状态机执行语义\n\n## 四、适用人群与业务场景\n追求高吞吐、高可观测性的后端与架构工程师、Go 语言云原生开发者\n\n## 五、选题价值与产业观察\nGoogle 官方首次下场开源轻量运行时（+1379星），向社区释放追求底层精简的明确信号。",
+      "has_local_text": true
+    },
+    {
+      "full_name": "NVIDIA/Model-Optimizer",
+      "name": "Model-Optimizer",
+      "owner": "NVIDIA",
+      "description": "A unified library of SOTA model optimization techniques like quantization, distillation, pruning, neural architecture search, speculative decoding, etc. It compresses deep learning models for downstream deployment frameworks like TensorRT-LLM, TensorRT, vLLM, etc. to optimize inference speed.",
+      "language": "Python",
+      "stars": 4489,
+      "stars_today": 359,
+      "url": "https://github.com/NVIDIA/Model-Optimizer",
+      "problem_solved": "大模型在部署时面临显存爆炸与吞吐瓶颈，缺乏整合剪枝、蒸馏、投机采样与量化的统一工具库。",
+      "key_features": [
+        "NVIDIA 官方出品的 SOTA 模型优化综合库",
+        "涵盖 INT4/FP8 量化、神经架构搜索 (NAS) 与推测解码 (Speculative Decoding)",
+        "与 TensorRT-LLM、vLLM 等主流推理框架无缝对接"
+      ],
+      "target_audience": "算力优化专家、大模型部署与运维工程师、GPU 平台负责人",
+      "editorial_insight": "算力成本高企背景下，英伟达官方优化工具持续受工业界强关注。",
+      "local_snapshot": "# NVIDIA/Model-Optimizer\n> 来源：GitHub Trending 今日榜单 | 语言：Python | 关注度：今日 +359 星 (总计 4,489 星)\n> 仓库地址：https://github.com/NVIDIA/Model-Optimizer\n\n## 一、一句话定位\nA unified library of SOTA model optimization techniques like quantization, distillation, pruning, neural architecture search, speculative decoding, etc. It compresses deep learning models for downstream deployment frameworks like TensorRT-LLM, TensorRT, vLLM, etc. to optimize inference speed.\n\n## 二、解决的核心痛点\n大模型在部署时面临显存爆炸与吞吐瓶颈，缺乏整合剪枝、蒸馏、投机采样与量化的统一工具库。\n\n## 三、关键技术架构与特性\n- NVIDIA 官方出品的 SOTA 模型优化综合库\n- 涵盖 INT4/FP8 量化、神经架构搜索 (NAS) 与推测解码 (Speculative Decoding)\n- 与 TensorRT-LLM、vLLM 等主流推理框架无缝对接\n\n## 四、适用人群与业务场景\n算力优化专家、大模型部署与运维工程师、GPU 平台负责人\n\n## 五、选题价值与产业观察\n算力成本高企背景下，英伟达官方优化工具持续受工业界强关注。",
+      "has_local_text": true
+    },
+    {
+      "full_name": "pbakaus/impeccable",
+      "name": "impeccable",
+      "owner": "pbakaus",
+      "description": "The design language that makes your AI harness better at design.",
+      "language": "JavaScript",
+      "stars": 71221,
+      "stars_today": 306,
+      "url": "https://github.com/pbakaus/impeccable",
+      "problem_solved": "当前 AI Coding 工具擅长写后端逻辑，但生成的前端 UI 往往千篇一律、审美平庸甚至缺乏可用性。",
+      "key_features": [
+        "专为让 AI Harness 输出更好视觉设计而制定的设计语言与规则集",
+        "约束间距、色阶、字体比例与交互触感，让 Agent 输出设计师级界面"
+      ],
+      "target_audience": "全栈独立开发者、对视觉质感有极高要求的 Builder",
+      "editorial_insight": "解决‘AI 写代码很强但做出的页面很丑’的痛点，精准切中独立开发者心智。",
+      "local_snapshot": "# pbakaus/impeccable\n> 来源：GitHub Trending 今日榜单 | 语言：JavaScript | 关注度：今日 +306 星 (总计 71,221 星)\n> 仓库地址：https://github.com/pbakaus/impeccable\n\n## 一、一句话定位\nThe design language that makes your AI harness better at design.\n\n## 二、解决的核心痛点\n当前 AI Coding 工具擅长写后端逻辑，但生成的前端 UI 往往千篇一律、审美平庸甚至缺乏可用性。\n\n## 三、关键技术架构与特性\n- 专为让 AI Harness 输出更好视觉设计而制定的设计语言与规则集\n- 约束间距、色阶、字体比例与交互触感，让 Agent 输出设计师级界面\n\n## 四、适用人群与业务场景\n全栈独立开发者、对视觉质感有极高要求的 Builder\n\n## 五、选题价值与产业观察\n解决‘AI 写代码很强但做出的页面很丑’的痛点，精准切中独立开发者心智。",
+      "has_local_text": true
+    },
+    {
+      "full_name": "openbao/openbao",
+      "name": "openbao",
+      "owner": "openbao",
+      "description": "OpenBao is a software solution to manage, store, and distribute sensitive data including secrets, certificates, and keys.",
+      "language": "Go",
+      "stars": 7746,
+      "stars_today": 49,
+      "url": "https://github.com/openbao/openbao",
+      "problem_solved": "HashiCorp Vault 变更协议后，开源生态迫切需要一个完全中立、社区驱动的企业级机密管理替代品。",
+      "key_features": [
+        "Linux 基金会托管的开源机密与证书管理方案（Vault 纯正开源分支）",
+        "安全分发 API 密钥、数据库凭证与动态证书"
+      ],
+      "target_audience": "DevOps 运维工程师、安全合规团队、基础设施架构师",
+      "editorial_insight": "开源许可证治理大趋势下的关键基础设施避险选择。",
+      "local_snapshot": "# openbao/openbao\n> 来源：GitHub Trending 今日榜单 | 语言：Go | 关注度：今日 +49 星 (总计 7,746 星)\n> 仓库地址：https://github.com/openbao/openbao\n\n## 一、一句话定位\nOpenBao is a software solution to manage, store, and distribute sensitive data including secrets, certificates, and keys.\n\n## 二、解决的核心痛点\nHashiCorp Vault 变更协议后，开源生态迫切需要一个完全中立、社区驱动的企业级机密管理替代品。\n\n## 三、关键技术架构与特性\n- Linux 基金会托管的开源机密与证书管理方案（Vault 纯正开源分支）\n- 安全分发 API 密钥、数据库凭证与动态证书\n\n## 四、适用人群与业务场景\nDevOps 运维工程师、安全合规团队、基础设施架构师\n\n## 五、选题价值与产业观察\n开源许可证治理大趋势下的关键基础设施避险选择。",
+      "has_local_text": true
+    }
+  ]
+}
