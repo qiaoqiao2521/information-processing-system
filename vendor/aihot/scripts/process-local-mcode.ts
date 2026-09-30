@@ -11,6 +11,8 @@ import { closeMcode } from "../packages/backend/src/providers/mcode-stdio.ts";
 import { BudgetExceededError } from "@aihot/backend/providers/receipts";
 
 if (process.env.MCODE_STDIO_ENABLED !== "true") throw new Error("Use the local mcode runner");
+const localService = process.env.LOCAL_CLI_PROVIDER ?? "mcode";
+if (!["mcode", "opencode"].includes(localService)) throw new Error("Unknown local CLI provider");
 const args = process.argv.slice(2);
 const next = args[0] === "--next" ? Number(args[1]) : null;
 if (next !== null && (!Number.isInteger(next) || next < 1 || next > 10 || args.length !== 2)) throw new Error("--next accepts 1–10 recent official articles");
@@ -21,7 +23,7 @@ async function withMinuteBudget<T>(id: string, work: () => Promise<T>): Promise<
   for (let waits = 0; ; waits++) {
     try { return await work(); }
     catch (error) {
-      if (!(error instanceof BudgetExceededError) || error.service !== 'mcode' || error.retryAfterSeconds !== 60 || waits >= 3) throw error;
+      if (!(error instanceof BudgetExceededError) || error.service !== localService || error.retryAfterSeconds !== 60 || waits >= 3) throw error;
       console.log(JSON.stringify({ articleId: id, waitingForLocalBudgetSeconds: 60 }));
       await new Promise((resolve) => setTimeout(resolve, 60_000));
     }
@@ -30,12 +32,12 @@ async function withMinuteBudget<T>(id: string, work: () => Promise<T>): Promise<
 try {
   // Distinct account/transport, distinct attempts. Never change the existing llm/Jina budgets.
   await sql`INSERT INTO budgets (service, per_minute, per_hour, per_day, note)
-    VALUES ('mcode', 8, 60, 300, '本地mcode按需加工，独立回执；保守连续24小时上限300次') ON CONFLICT (service) DO NOTHING`;
+    VALUES (${localService}, 8, 60, 300, ${`本地${localService}按需加工，独立回执；保守连续24小时上限300次`}) ON CONFLICT (service) DO NOTHING`;
   const ids = next === null ? args : (await sql<{ id: string }[]>`SELECT a.id FROM articles a JOIN sources s ON s.id=a.source_id
     WHERE s.enabled AND s.first_party AND s.config->'_aihot'->>'publishPending'='true'
       AND a.published_at > now()-interval '7 days' AND a.processing_state NOT IN ('analyzed','blocked')
     ORDER BY a.published_at DESC, a.id LIMIT ${next}`).map((row) => row.id);
-  console.log(JSON.stringify({ localMcodeArticles: ids }));
+  console.log(JSON.stringify({ localCli: localService, localCliArticles: ids }));
   for (const id of ids) {
     if (!(await sql`SELECT id FROM articles WHERE id=${id}`).length) throw new Error(`Article missing: ${id}`);
     await extractArticleBody(id);

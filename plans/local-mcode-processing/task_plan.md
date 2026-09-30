@@ -1,5 +1,9 @@
 # 本地mcode加工
 
+## 用户入口更正（优先于下述历史记录）
+
+目标是OpenCode里的MiniMax Token Plan，而非MiniMax自家CLI。已完成`minimax-cn-coding-plan/MiniMax-M3.1-Flash-Preview`本地调用/回传436的适配、真实新文章验证及部署，后端198/198、Python6项、公网30项通过；原17次真实加工保留，不重算。推荐入口`tools/aihot/local_opencode.py`，交付回源当前分支Git记录。
+
 用户确认：本地加工新闻，回传436。仓库已有本地源码。436保留采集、数据库和公网站点；本地现有官方CLI无工具地回答原生加工Prompt，不复制账户、数据库或浏览器状态。
 
 1. 已完成：找到本机mcode0.5.9、真实调用和固定模型结构化输出验证。

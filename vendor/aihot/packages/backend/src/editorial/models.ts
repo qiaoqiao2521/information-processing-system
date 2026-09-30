@@ -48,7 +48,7 @@ export function invalidateModelCache() {
 /** The model a capability uses now: admin switch, else environment, else the code default. */
 export async function modelFor(capability: CapabilityKey): Promise<string> {
   // A bounded local processing session must never fall back to a server's paid API.
-  if (process.env.MCODE_STDIO_ENABLED === "true") return "local-mcode";
+  if (process.env.MCODE_STDIO_ENABLED === "true") return process.env.LOCAL_CLI_PROVIDER === "opencode" ? "local-opencode" : "local-mcode";
   const c: Capability = CAPABILITIES[capability];
   const chosen = (await overrides())[capability] ?? process.env[c.env] ?? c.default;
   return MODELS[chosen] ? chosen : c.default;

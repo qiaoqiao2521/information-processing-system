@@ -11,3 +11,7 @@
 ## 本地 mcode 按需加工
 
 模型注册新增 `local-mcode`；只有显式 `MCODE_STDIO_ENABLED=true` 的独立SSH会话可以调用。`modelFor`在该会话统一选择本地模型，保留原有预筛、双次评分、摘要、结构与归组Prompt；不改变普通worker的模型设置。模型响应仍经过回执与独立 `mcode` 预算；断线/超时不自动重发，也不回退服务器API。`scripts/process-local-mcode.ts`限量选择最近官方材料或明确ID，经既有发布层提交结果。本地Python入口在外层仓库 `tools/aihot/local_mcode.py`，只调用工具权限关闭的官方CLI，不传递账号或数据库凭据。
+
+## OpenCode入口更正
+
+用户更正目标为OpenCode内的MiniMax Token Plan。新增`local-opencode`，完整模型ID为`minimax-cn-coding-plan/MiniMax-M3.1-Flash-Preview`，服务回执/预算独立于原mcode与API。`LOCAL_CLI_PROVIDER=opencode`在同一有界SSH会话中固定选择此模型；原MCODE_STDIO_ENABLED与stdio协议名保留兼容。默认推荐外层入口`tools/aihot/local_opencode.py`。OpenCode以`--pure`、独立临时目录、禁用分享、全部工具deny、单步news agent运行；系统/用户Prompt分别传递，temperature应用，max_tokens尚不保证CLI等价。原有已完成mcode分析保留真实记录，不重算或伪造。

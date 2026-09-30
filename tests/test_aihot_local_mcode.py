@@ -11,6 +11,32 @@ spec.loader.exec_module(module)
 
 
 class LocalMcodeTests(unittest.TestCase):
+    def test_opencode_event_stream_preserves_answer_and_denies_tools(self):
+        events = [{"type": "text", "part": {"text": '{"attentionScore":88}'}},
+                  {"type": "step_finish", "part": {"reason": "stop", "tokens": {"total": 15, "input": 12, "output": 3}}}]
+        with patch.object(module.subprocess, "run", return_value=subprocess.CompletedProcess([], 0, "\n".join(json.dumps(e) for e in events), "")) as run:
+            response = module.answer_opencode({"model": module.OPENCODE_MODEL, "messages": [{"role": "system", "content": "score system"}, {"role": "user", "content": "material"}], "temperature": 0.1}, "/opencode")
+        self.assertEqual(response["choices"][0]["message"]["content"], events[0]["part"]["text"])
+        self.assertEqual(response["usage"]["total_tokens"], 15)
+        self.assertIn("--pure", run.call_args.args[0])
+        cfg = json.loads(run.call_args.kwargs["env"]["OPENCODE_CONFIG_CONTENT"])
+        self.assertEqual(cfg["agent"]["news"]["prompt"], "score system")
+        self.assertEqual(cfg["agent"]["news"]["temperature"], 0.1)
+        self.assertEqual(cfg["permission"], {"*": "deny"})
+        self.assertEqual(cfg["enabled_providers"], ["minimax-cn-coding-plan"])
+        self.assertEqual(cfg["small_model"], module.OPENCODE_MODEL)
+        self.assertIn("--title", run.call_args.args[0])
+        self.assertEqual(run.call_args.kwargs["input"], "material")
+
+    def test_opencode_errors_and_incomplete_streams_cannot_publish(self):
+        body = {"model": module.OPENCODE_MODEL, "messages": [{"role": "user", "content": "test"}]}
+        for event in ({"type": "error"}, {"type": "tool_use"}, {"type": "text", "part": {"text": "unfinished"}}):
+            with patch.object(module.subprocess, "run", return_value=subprocess.CompletedProcess([], 0, json.dumps(event), "")):
+                with self.assertRaises(RuntimeError):
+                    module.answer_opencode(body, "/opencode")
+        with self.assertRaisesRegex(ValueError, "Unexpected OpenCode"):
+            module.answer_opencode({**body, "model": "minimax/MiniMax-M3"}, "/opencode")
+
     def test_preserves_answer_and_usage_without_tools_or_credentials(self):
         result = {"status": "succeeded", "output": '{"attentionScore":88}', "runId": "r",
                   "model": {"providerId": "minimax", "modelId": module.MODEL.split("/", 1)[1]},

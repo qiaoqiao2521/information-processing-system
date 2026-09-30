@@ -66,7 +66,20 @@ RSS默认按发表时间降序再截断，显式`sortByPublishedAt=false`可保�
 
 增补部署先运行`node scripts/seed.ts`，再运行`node scripts/reconcile-official-sources.ts`：只为行业包明确启用的官方源补pending标记/最新排序、最长60分钟间隔，并为已入库但未公开的文章建立索引；保留已有URL、选择器等管理员修改。随后强制采集这六个来源检查增量。此流程不需要浏览器登录或Jina，适配器为官方RSS和HTML列表。不要为补齐新闻扩大模型预算。
 
-## 本地 mcode 加工，结果回传436
+## 本地 OpenCode MiniMax加工，结果回传436
+
+**当前入口更正为OpenCode**：`minimax-cn-coding-plan/MiniMax-M3.1-Flash-Preview`，本地已有MiniMax Token Plan认证。此前MiniMax自家CLI的登录与余额不是此Provider的证据。436的agent436 OpenCode没有凭据，保留本地调用与SSH回传，不复制密钥。
+
+```bash
+cd /home/muqiao/projects/information-processing-system
+python3 tools/aihot/local_opencode.py --next 3
+# 任意已有来源可按文章ID加工，最多10篇。
+python3 tools/aihot/local_opencode.py <article-id>
+```
+
+OpenCode关闭外部插件（`--pure`），临时news agent单步、全部工具deny、分享disabled，只启用minimax-cn-coding-plan。系统Prompt进入agent.prompt、用户材料经stdin；temperature应用，max_tokens未保证等价，回执如实标记。独立`opencode`预算8/分钟、60/小时、300/24小时，默认单次40调用；原API与Jina不变。原mcode通道和已完成记录留作兼容/回退，下述旧入口不再作为推荐。
+
+### 原MiniMax Code兼容入口
 
 仓库已有本地完整源码，无需复制数据库。436保持采集、数据库与公网发布；本地启动一次SSH处理会话，远端原生流程把模型Prompt通过stdio传来，本机官方mcode返回回答。评分/摘要/归组和回执仍由同一后端提交。两个阶段并发时以请求ID匹配，不按响应先后顺序关联。
 

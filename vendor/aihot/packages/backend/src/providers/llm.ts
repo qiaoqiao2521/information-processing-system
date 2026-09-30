@@ -30,6 +30,10 @@ function extraFromEnv(value: string | undefined): Record<string, unknown> | unde
 }
 
 export const MODELS: Record<string, ModelSpec> = {
+  "local-opencode": {
+    key: "local-opencode", service: "opencode", model: "minimax-cn-coding-plan/MiniMax-M3.1-Flash-Preview",
+    baseUrlEnv: "OPENCODE_UNUSED_BASE_URL", apiKeyEnv: "OPENCODE_UNUSED_API_KEY", jsonMode: true,
+  },
   "local-mcode": {
     key: "local-mcode", service: "mcode", model: "minimax/MiniMax-M3.1-Flash-Preview",
     baseUrlEnv: "MCODE_UNUSED_BASE_URL", apiKeyEnv: "MCODE_UNUSED_API_KEY", jsonMode: true,
@@ -168,8 +172,9 @@ export async function chatJson<S extends z.ZodType>(opts: ChatJsonOptions<S>): P
   if (!config.modelCallsEnabled) throw new Error("Model calls are disabled (MODEL_CALLS_ENABLED=false)");
   const baseUrl = credential("models", spec.baseUrlEnv);
   const apiKey = credential("models", spec.apiKeyEnv);
-  const localMcode = spec.key === "local-mcode" && process.env.MCODE_STDIO_ENABLED === "true";
-  if (spec.key === "local-mcode" && !localMcode) throw new Error("Local mcode requires an operator-started stdio session");
+  const localModel = spec.key === "local-mcode" || spec.key === "local-opencode";
+  const localMcode = localModel && process.env.MCODE_STDIO_ENABLED === "true";
+  if (localModel && !localMcode) throw new Error("Local CLI requires an operator-started stdio session");
   if (!localMcode && (!baseUrl || !apiKey || !spec.model)) throw new Error(`Model ${opts.model} is not configured (${spec.baseUrlEnv}, ${spec.apiKeyEnv}${spec.key === "default" ? ", LLM_MODEL" : ""})`);
 
   const temperature = opts.temperature ?? 0.2;
@@ -197,7 +202,7 @@ export async function chatJson<S extends z.ZodType>(opts: ChatJsonOptions<S>): P
       subject: opts.subject,
       identity: { model: spec.model, promptVersion: opts.promptVersion, system: sha256(opts.system), user: sha256(userText), temperature, maxTokens, extra: spec.extra ?? null },
       requestSummary: { promptVersion: opts.promptVersion, systemHash: sha256(opts.system), userHash: sha256(userText), userChars: userText.length, temperature, maxTokens,
-        ...(localMcode ? { transport: "stdio-mcode", samplingParametersApplied: false } : {}) },
+        ...(localMcode ? { transport: `stdio-${spec.service}`, samplingParametersApplied: false, temperatureApplied: spec.key === "local-opencode" } : {}) },
       attemptTag: opts.attemptTag,
     },
     async () => {
