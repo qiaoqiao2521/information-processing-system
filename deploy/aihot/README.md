@@ -22,9 +22,28 @@ docker compose -f docker-compose.yml -f ../../deploy/aihot/compose.override.yaml
 
 Dockerfile构建时执行类型检查、网页构建及网页测试。后端测试只允许独立 `_test` / `_ci` 数据库，模型使用本地替身。不要把真实模型密钥传给测试环境。
 
-436未安装Buildx，本次使用`DOCKER_BUILDKIT=0 docker build -t muqiao-intel-aihot:local .`完成构建。源文件manifest放在服务器部署根目录，核对镜像内406个文件哈希；`AIHOT_RELEASE`与`/api/health`对应实际部署版本。
+436未安装Buildx，本次使用`DOCKER_BUILDKIT=0 docker build -t muqiao-intel-aihot:local .`完成构建。源文件manifest放在服务器部署根目录，核对镜像内409个文件哈希；`AIHOT_RELEASE`与`/api/health`对应实际部署版本。
 
-新部署模型预算默认0；`scripts/muqiao-budget.ts --validate`临时开放最多40次尝试。用户已批准436常态使用 `--daily-cap 300`：连续24小时最多300次模型请求，8次/分钟、60次/小时，其他付费服务保持0；无参数可关闭。`scripts/validate-hub.ts`只接受1–3个材料ID，经真实原文提取、双次评分、公开发布、归组及事件综述，不能冒充批量处理完成。
+新部署付费预算默认0；`scripts/muqiao-budget.ts --validate`临时开放最多40次模型尝试。用户已批准436常态使用 `--daily-cap 300 --jina-x-cap 50`：连续24小时最多300次模型请求，8次/分钟、60次/小时；Jina单独最多50次尝试，1次/分钟、10次/小时；其他付费服务保持0。无参数关闭所有付费服务；省略Jina参数也会关闭Jina。`scripts/validate-hub.ts`只接受1–3个材料ID，经真实原文提取、双次评分、公开发布、归组及事件综述，不能冒充批量处理完成。
+
+## Jina：只补已有X正文
+
+密钥保存在436的私密`.env`和`/etc/intelligence-hub/jina.env`（root 600），不得入库或放在CLI参数。部署设置`JINA_SCOPE=x`、`JINA_BODY_FALLBACK=false`、`JINA_MAX_TOKENS_PER_REQUEST=10000`。后端在创建回执之前拒绝普通网页、搜索页、账号时间线和伪装域名，只允许HTTPS X/Twitter原帖链接。
+
+```bash
+cd /opt/intelligence-hub/aihot/app
+docker compose -p muqiao-intel -f docker-compose.yml -f compose.override.yaml exec -T api \
+  node scripts/muqiao-budget.ts --daily-cap 300 --jina-x-cap 50
+# 一次只接受一个库中已有的X条目ID；不搜索，不调用模型。
+docker compose -p muqiao-intel -f docker-compose.yml -f compose.override.yaml exec -T api \
+  node scripts/read-x-body.ts <article-id>
+```
+
+Reader返回的是整页；辅助入口只识别与已有摘要匹配的原帖标题正文，丢弃登录提示、评论和推荐。登录/验证页或不认识的格式保持`unconfirmed`和搜索摘要，不自动重试；当天再次调用复用回执。成功补正文仅增加内容版本，保留日期、公开摘要、加工状态和全文权限，不自动重算旧帖。Google/X搜索继续暂停，此入口不加入定时采集。
+
+[Jina官方说明](https://jina.ai/reader/)按输出Token计费，请求次数上限与MiniMax预算独立；`X-Token-Budget`限制单次输出，不能把50次等同于免费。内部预算保守统计实际尝试，失败尝试也占次数。未启用充值或修改账单设置。
+
+## 静默维护
 
 数据库每日北京时间04:10本地备份，文件仅服务器可读，保留最近7份自动备份；不上传云存储，不发通知。先验证的首份备份保留于 `backups/`。
 

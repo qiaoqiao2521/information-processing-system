@@ -1,5 +1,5 @@
-// Jina Reader (r.jina.ai): browser-rendered page text. Paid per request, reached through the egress
-// proxy, always behind receipts and the per-minute/hour/day budget (any zero stops it).
+// Jina Reader (r.jina.ai): browser-rendered page text, billed in output tokens, reached through the egress
+// proxy, always behind receipts and the per-minute/hour/day attempt budget (any zero stops it).
 import { credential } from "../config.ts";
 import { guardedFetch } from "../lib/http-fetch.ts";
 import { paidRequest, ProviderRejectedError } from "./receipts.ts";
@@ -9,6 +9,20 @@ export interface JinaPage {
   url: string | null;
   publishedTime: string | null;
   markdown: string;
+}
+
+/** A restricted deployment buys individual public posts, never searches or account timelines. */
+export function xPostId(targetUrl: string): string | null {
+  const url = URL.parse(targetUrl);
+  if (!url || url.protocol !== "https:" || url.username || url.password || url.port) return null;
+  if (!["x.com", "www.x.com", "twitter.com", "www.twitter.com", "mobile.twitter.com"].includes(url.hostname)) return null;
+  return /^\/(?:[A-Za-z0-9_]{1,15}|i)\/status\/(\d+)\/?$/.exec(url.pathname)?.[1] ?? null;
+}
+
+export function assertJinaTarget(targetUrl: string, scope: string | null): void {
+  if (scope === null || scope === "all") return;
+  if (scope !== "x") throw new Error("JINA_SCOPE must be x or all");
+  if (!xPostId(targetUrl)) throw new Error("JINA_SCOPE=x permits only HTTPS X/Twitter post URLs");
 }
 
 export function parseJinaText(text: string): JinaPage {
@@ -27,6 +41,13 @@ export async function jinaRead(
   targetUrl: string,
   opts: { purpose: string; subject: string; format?: "markdown" | "html"; cacheToleranceSeconds?: number; perRead?: boolean },
 ): Promise<JinaPage & { receiptId: number; raw: string }> {
+  // Reject before receipts/budgets/network, including reuse of an earlier unrestricted receipt.
+  assertJinaTarget(targetUrl, credential("collectors", "JINA_SCOPE"));
+  const tokenLimit = credential("collectors", "JINA_MAX_TOKENS_PER_REQUEST");
+  if (tokenLimit && (!/^\d+$/.test(tokenLimit) || !Number.isSafeInteger(Number(tokenLimit)) || Number(tokenLimit) < 1)) {
+    throw new Error("JINA_MAX_TOKENS_PER_REQUEST must be a positive integer");
+  }
+  const tokenBudget: Record<string, string> = tokenLimit ? { "x-token-budget": tokenLimit } : {};
   const key = credential("collectors", "JINA_API_KEY");
   if (!key) throw new Error("JINA_API_KEY is not configured");
   const base = (credential("collectors", "JINA_BASE_URL") ?? "https://r.jina.ai").replace(/\/$/, "");
@@ -38,7 +59,7 @@ export async function jinaRead(
     { service: "jina", model: null, purpose: opts.purpose, subject: opts.subject, identity: { url: targetUrl, day, format: opts.format ?? "markdown" }, requestSummary: { url: targetUrl } },
     async () => {
       const res = await guardedFetch(`${base}/${targetUrl}`, {
-        headers: { authorization: `Bearer ${key}`, "x-return-format": opts.format ?? "markdown", accept: "text/plain", ...tolerance },
+        headers: { authorization: `Bearer ${key}`, "x-return-format": opts.format ?? "markdown", accept: "text/plain", ...tolerance, ...tokenBudget },
         timeoutMs: 60_000,
         maxBytes: 6 * 1024 * 1024,
       });
