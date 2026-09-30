@@ -1,0 +1,25 @@
+[Unit]
+Description=Refresh Information Hub sources and publish verified snapshots
+Wants=network-online.target
+After=network-online.target intelligence-hub.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/intelligence-hub/maintenance/current
+ExecStart=/opt/intelligence-hub/maintenance/venv/bin/python /opt/intelligence-hub/maintenance/current/web/maintain.py
+Environment=TZ=Asia/Shanghai
+Environment=PYTHONUNBUFFERED=1
+Environment=HUB_BROWSER_CDP_URL=http://127.0.0.1:9222
+EnvironmentFile=-/etc/intelligence-hub/jina.env
+TimeoutStartSec=6min
+UMask=0022
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ReadWritePaths=/opt/intelligence-hub
+ReadWritePaths=-/var/lib/ops-account-risk
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+StandardOutput=journal
+StandardError=journal

@@ -62,7 +62,8 @@
     "classification": "repo-local",
     "action": "move_to_project",
     "risk": "low",
-    "notes": "Project-owned RSS bundle collector used by the weekly refresh layer and adjacent information intake workflows."
+    "notes": "AK RSS 89-feed bundle; script-only 436 collection every two hours, seven-day candidates without AI scoring. Editorial digest is on demand.",
+    "web_source": "ak-rss"
   },
   "notebooklm": {
     "scope": "shared-global",
@@ -95,5 +96,126 @@
     "action": "keep_in_shared_and_register",
     "risk": "low",
     "notes": "Optional adapter family used as a reference, not as a project-owned active source."
+  },
+  "ai-influence-digest": {
+    "scope": "project-local-reference",
+    "source_of_truth": ".agents/skills/ai-influence-digest",
+    "runtime_targets": [],
+    "depends_on_project": "information-processing-system",
+    "status": "on-demand",
+    "classification": "project-local-reference",
+    "action": "keep_project_snapshot",
+    "notes": "X 默认定时搜索已暂停。新采集须检查 Ops 账号风控状态，验证提示后进入冷却且人工批准恢复；保留已有候选与按需周报。",
+    "web_workflow": "ai-influence-digest",
+    "scheduled": false,
+    "collector": "tools/knowledge_pipeline/acquisition/fetch_x_google.py"
+  },
+  "baoyu-danger-x-to-markdown": {
+    "scope": "project-local-reference",
+    "source_of_truth": ".agents/skills/baoyu-danger-x-to-markdown",
+    "runtime_targets": [],
+    "depends_on_project": "information-processing-system",
+    "status": "on-demand",
+    "classification": "project-local-reference",
+    "action": "keep_project_snapshot",
+    "notes": "将指定的 X 帖文、长文或线程整理为带出处的 Markdown。",
+    "web_workflow": "baoyu-danger-x-to-markdown",
+    "scheduled": false
+  },
+  "ljg-x-download": {
+    "scope": "project-local-reference",
+    "source_of_truth": ".agents/skills/ljg-x-download",
+    "runtime_targets": [],
+    "depends_on_project": "information-processing-system",
+    "status": "on-demand",
+    "classification": "project-local-reference",
+    "action": "keep_project_snapshot",
+    "notes": "下载指定 X 链接的图片或视频，保留素材出处。",
+    "web_workflow": "ljg-x-download",
+    "scheduled": false
+  },
+  "ljg-paper": {
+    "scope": "project-local-reference",
+    "source_of_truth": ".agents/skills/ljg-paper",
+    "runtime_targets": [],
+    "depends_on_project": "information-processing-system",
+    "status": "on-demand",
+    "classification": "project-local-reference",
+    "action": "keep_project_snapshot",
+    "notes": "梳理论文的问题、方法、证据与边界，保存为 Org 笔记。",
+    "web_workflow": "ljg-paper",
+    "scheduled": false
+  },
+  "ljg-paper-flow": {
+    "scope": "project-local-reference",
+    "source_of_truth": ".agents/skills/ljg-paper-flow",
+    "runtime_targets": [],
+    "depends_on_project": "information-processing-system",
+    "status": "on-demand",
+    "classification": "project-local-reference",
+    "action": "keep_project_snapshot",
+    "notes": "先完成论文解读，再用同一份 Org 笔记制作 PNG 卡片。",
+    "web_workflow": "ljg-paper-flow",
+    "scheduled": false
+  },
+  "ljg-card": {
+    "scope": "project-local-reference",
+    "source_of_truth": ".agents/skills/ljg-card",
+    "runtime_targets": [],
+    "depends_on_project": "information-processing-system",
+    "status": "on-demand",
+    "classification": "project-local-reference",
+    "action": "keep_project_snapshot",
+    "notes": "把已有笔记或文章转为卡片、长图、海报、信息图或漫画。",
+    "web_workflow": "ljg-card",
+    "scheduled": false
+  },
+  "ljg-learn": {
+    "scope": "project-local-reference",
+    "source_of_truth": ".agents/skills/ljg-learn",
+    "runtime_targets": [],
+    "depends_on_project": "information-processing-system",
+    "status": "on-demand",
+    "classification": "project-local-reference",
+    "action": "keep_project_snapshot",
+    "notes": "从一个具体概念出发，解释其结构、作用与适用边界。",
+    "web_workflow": "ljg-learn",
+    "scheduled": false
+  },
+  "ljg-plain": {
+    "scope": "project-local-reference",
+    "source_of_truth": ".agents/skills/ljg-plain",
+    "runtime_targets": [],
+    "depends_on_project": "information-processing-system",
+    "status": "on-demand",
+    "classification": "project-local-reference",
+    "action": "keep_project_snapshot",
+    "notes": "把难懂的表达讲清楚，保留原文含义与条件。",
+    "web_workflow": "ljg-plain",
+    "scheduled": false
+  },
+  "ljg-rank": {
+    "scope": "project-local-reference",
+    "source_of_truth": ".agents/skills/ljg-rank",
+    "runtime_targets": [],
+    "depends_on_project": "information-processing-system",
+    "status": "on-demand",
+    "classification": "project-local-reference",
+    "action": "keep_project_snapshot",
+    "notes": "寻找复杂表象背后的少数关键变量，形成分析文章。",
+    "web_workflow": "ljg-rank",
+    "scheduled": false
+  },
+  "ljg-xray-book": {
+    "scope": "project-local-reference",
+    "source_of_truth": ".agents/skills/ljg-xray-book",
+    "runtime_targets": [],
+    "depends_on_project": "information-processing-system",
+    "status": "on-demand",
+    "classification": "project-local-reference",
+    "action": "keep_project_snapshot",
+    "notes": "提取一本书的核心问题、论证结构和可迁移的思路。",
+    "web_workflow": "ljg-xray-book",
+    "scheduled": false
   }
 }

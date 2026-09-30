@@ -1,0 +1,11 @@
+[Unit]
+Description=Maintain Information Hub every two hours without agent or notifications
+
+[Timer]
+OnCalendar=*-*-* 00/2:15:00 Asia/Shanghai
+Persistent=true
+AccuracySec=1min
+Unit=intelligence-hub-maintenance.service
+
+[Install]
+WantedBy=timers.target

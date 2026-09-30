@@ -1,0 +1,15 @@
+# Use with the upstream compose file. Only the web origin is exposed, on loopback.
+name: muqiao-intel
+services:
+  setup:
+    image: muqiao-intel-aihot:local
+  api:
+    image: muqiao-intel-aihot:local
+  worker:
+    image: muqiao-intel-aihot:local
+    environment:
+      ANALYZE_CONCURRENCY: '1'
+  web:
+    image: muqiao-intel-aihot:local
+    ports: !override
+      - '127.0.0.1:8088:3000'

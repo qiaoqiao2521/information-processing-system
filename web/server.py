@@ -19,6 +19,10 @@ from http import HTTPStatus
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
 
+if not __package__:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from web.catalog import catalog, code_digest, load, scrub
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 WORKSPACE_ROOT = REPO_ROOT.parent
 OUTPUT_DIR = Path(os.environ.get("HUB_OUTPUT_DIR", str(WORKSPACE_ROOT / "output_to_user")))
@@ -30,6 +34,7 @@ PUBLIC_DIR = Path(__file__).parent / "public"
 
 MEDIA_STUDIO_API_URL = os.environ.get("MEDIA_STUDIO_API_URL", "http://127.0.0.1:3000/api/media")
 PUBLIC_READONLY = os.environ.get("HUB_PUBLIC_READONLY", "0") == "1"
+RUNTIME_CODE_DIGEST = code_digest(Path(__file__).parent)
 
 
 def read_json_safely(path: Path) -> dict | list | None:
@@ -58,7 +63,9 @@ class IntelligenceHubHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         url_path = self.path.split("?")[0]
 
-        if url_path == "/api/status":
+        if url_path == "/api/library":
+            self.send_json(catalog(OUTPUT_DIR, DATA_DIR))
+        elif url_path == "/api/status":
             self.handle_api_status()
         elif url_path == "/api/topics":
             self.handle_api_topics()
@@ -84,32 +91,42 @@ class IntelligenceHubHandler(BaseHTTPRequestHandler):
             self.send_error(HTTPStatus.NOT_FOUND, "Endpoint not found")
 
     def send_json(self, data: any, status: int = HTTPStatus.OK):
-        payload = json.dumps(data, ensure_ascii=False).encode("utf-8")
+        payload = json.dumps(scrub(data) if PUBLIC_READONLY else data, ensure_ascii=False).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(payload)))
         self.end_headers()
         self.wfile.write(payload)
 
+    def end_headers(self):
+        self.send_header("Cache-Control", "no-store" if self.path.startswith('/api/') else "no-cache")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("Referrer-Policy", "strict-origin-when-cross-origin")
+        self.send_header("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; base-uri 'none'; frame-ancestors 'self'")
+        super().end_headers()
+
     def handle_api_status(self):
+        library = catalog(OUTPUT_DIR, DATA_DIR)
+        release = load(REPO_ROOT / "release.json") or {}
         studio_status = {"online": False, "presetsCount": 0} if PUBLIC_READONLY else check_media_studio_status()
         brief_data = read_json_safely(OUTPUT_DIR / "consolidated_daily_brief.json")
-        trending_data = read_json_safely(ENRICHED_TRENDING_FILE) or read_json_safely(OUTPUT_DIR / "github_trending_latest.json")
-        radar_data = read_json_safely(OUTPUT_DIR / "builderpulse_opportunity_radar_sources_latest.json")
-        assets_data = read_json_safely(ASSETS_FILE) or []
-
-        trending_count = len(trending_data.get("repos", [])) if trending_data else 0
+        counts = {source["id"]: source["count"] for source in library["sources"]}
 
         self.send_json({
             "status": "operational",
             "date": brief_data.get("date") if brief_data else None,
             "mediaStudio": studio_status,
             "publicReadOnly": PUBLIC_READONLY,
+            "sources": library["sources"],
+            "datasetDigest": library["datasetDigest"],
+            "codeDigest": RUNTIME_CODE_DIGEST,
+            "release": {key: release.get(key) for key in ("id", "publishedAt", "sourceRevision")},
             "counts": {
-                "topics": brief_data.get("total_topics", 0) if brief_data else 0,
-                "trendingRepos": trending_count,
-                "opportunities": radar_data.get("selected_opportunity_count", 0) if radar_data else 0,
-                "curatedAssets": len(assets_data),
+                "topics": counts["topics"],
+                "trendingRepos": counts["trending"],
+                "opportunities": counts["radar"],
+                "curatedAssets": counts["assets"],
+                "totalItems": len(library["items"]),
             },
             "compressionRatio": brief_data.get("compression_ratio", "0%") if brief_data else "0%",
         })
@@ -122,8 +139,7 @@ class IntelligenceHubHandler(BaseHTTPRequestHandler):
             self.send_json({"error": "Topics data not generated yet"}, status=HTTPStatus.NOT_FOUND)
 
     def handle_api_trending(self):
-        # 优先读取包含要素提取和本地快照的 enriched 数据
-        data = read_json_safely(ENRICHED_TRENDING_FILE) or read_json_safely(OUTPUT_DIR / "github_trending_latest.json")
+        data = read_json_safely(OUTPUT_DIR / "github_trending_latest.json") or read_json_safely(ENRICHED_TRENDING_FILE)
         if data:
             self.send_json(data)
         else:
@@ -137,8 +153,9 @@ class IntelligenceHubHandler(BaseHTTPRequestHandler):
             self.send_json({"error": "Opportunity radar data not found"}, status=HTTPStatus.NOT_FOUND)
 
     def handle_api_digest(self):
-        # 优先读取包含要素提取与本地正文的 enriched 数据
-        data = read_json_safely(ENRICHED_DIGEST_FILE) or read_json_safely(OUTPUT_DIR / "ai_builders_digest_sources_latest.json")
+        data = read_json_safely(OUTPUT_DIR / "ai_builders_digest_sources_latest.json") or read_json_safely(ENRICHED_DIGEST_FILE)
+        if isinstance(data, dict) and "selectedSources" in data:
+            data = {**data, "sources": data["selectedSources"]}
         if data:
             self.send_json(data)
         else:
@@ -248,6 +265,8 @@ class IntelligenceHubHandler(BaseHTTPRequestHandler):
             mime_type = "application/octet-stream"
 
         content = resolved.read_bytes()
+        if resolved.name == "index.html":
+            content = content.replace(b"__HUB_ASSET_VERSION__", RUNTIME_CODE_DIGEST.encode("ascii"))
         self.send_response(HTTPStatus.OK)
         self.send_header("Content-Type", f"{mime_type}; charset=utf-8" if "text" in mime_type else mime_type)
         self.send_header("Content-Length", str(len(content)))

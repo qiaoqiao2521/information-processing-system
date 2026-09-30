@@ -1,6 +1,17 @@
 # Information Processing System
 
-Local information processing system extracted from the current workspace.
+木乔的信息工作台，以 [AIHOT](https://github.com/KKKKhazix/AIHOT) 开源框架为网站核心，接入自己的订阅与采集器。公网入口：[intel.muqiao.xyz](https://intel.muqiao.xyz/)。
+
+## Website core
+
+原生 RSS / 自定义采集 → 内容身份判重 → 预筛与两次独立评分 → 中文摘要及事实抽取 → 事件归组与热度 → 网页、RSS、API、MCP。自己的89个 AK RSS与当前乔木订阅已加入；X自动搜索继续暂停。模型调用受预算限制，存量迁移保留原日期并标明未重新评分。
+
+- [运行、部署与回退](deploy/aihot/README.md)
+- [项目上下文](PROJECT.md)
+- [当前替换计划与验收](plans/aihot-core-migration/task_plan.md)
+- [上游源码与版本](vendor/aihot/UPSTREAM.md)、[信息处理架构](vendor/aihot/docs/architecture.md)
+
+AIHOT源码和MIT许可保留在 `vendor/aihot`；行业配置与采集适配是本项目定制。阅读工具仍按需准备技能任务。下面的 knowledge_pack、NotebookLM 与旧 Python工作台保留为既有加工能力。
 
 This repository is the standalone code home for the pipeline that turns
 heterogeneous information sources into a canonical `knowledge_pack`, then
@@ -20,6 +31,12 @@ The upstream acquisition path is now documented as an explicit local layer:
   `tools/knowledge_pipeline/`
 - Cron task contracts and helper scripts used by the pipeline:
   `cron_tasks/`
+
+## Reading Workbench
+
+The current website uses the [AIHOT deployment](deploy/aihot/README.md).
+The retained Python reader, local media bridge and former snapshot release are documented in
+[`web/README.md`](web/README.md).
 
 ## Current Pipeline
 

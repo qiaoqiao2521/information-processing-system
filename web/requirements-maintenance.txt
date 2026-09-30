@@ -1,0 +1,2 @@
+# Attach to the installed server Chrome over loopback CDP; no browser download.
+playwright==1.63.0

@@ -55,3 +55,15 @@ Examples of shared-global skills currently used by this pipeline:
   Canonical classification table for information-processing-related skills.
 - `../tools/skill_governance/report_information_skill_inventory.py`
   Runtime scanner that reports current locations and source ownership status.
+
+## Project reading workflows (2026-09-30)
+
+The 11 scoped skills in `.agents/skills/PROJECT-SCOPE.md` are now mapped in
+`web/public/workflows.json` and `skills.registry.json`. Their copied files remain
+project-local snapshots; provenance and local adaptations are in
+`.agents/skills/scope-install.json`. This does not install them globally.
+
+AK RSS supplies automatic unscored reading candidates. AI influence discovery,
+X import, and seven interpretation/rendering skills are on-demand workflows.
+The public website prepares a task for the user's Agent; it does not execute
+these skills, upload source files, or automatically ingest generated artifacts.

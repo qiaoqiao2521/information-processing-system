@@ -3,3 +3,14 @@ __pycache__/
 .DS_Store
 output_to_user/
 *.log
+.env
+.env.*
+!.env.example
+node_modules/
+vendor/aihot/.data/
+vendor/aihot/apps/web/build/
+vendor/aihot/apps/web/.react-router/
+vendor/aihot/.env
+vendor/aihot/.env.*
+!vendor/aihot/.env.example
+/workbench_vault

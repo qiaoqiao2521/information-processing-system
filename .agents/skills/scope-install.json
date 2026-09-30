@@ -1,0 +1,194 @@
+{
+  "date": "2026-09-30",
+  "policy": "project snapshot; no auto-overwrite",
+  "skills": [
+    {
+      "name": "ai-influence-digest",
+      "action": "copied",
+      "source": "central-library/ai-influence-digest",
+      "sha256": {
+        "SKILL.md": "02394cd3cc22c08fe4043020b0e8295a50f21756d39eb8a604b6a80fb62799e7",
+        "CONTRIBUTORS": "f2559fb82a814e6608a07fc037a07fa58dfbb39205d3c8412526a17431a7ead8",
+        "README.md": "67f1700610241df8a6fbd019165e01d4469a80d94c582c51eb1b40839a005215",
+        "scripts/scan_x_weekly.py": "3c80fe6a0df10b3b579b1ac880ec875b0db442cbc3dd35949dd326bd02601cec",
+        "references/accounts_65.txt": "ba68ae4bc09fd0d4bbef40df678ce738c8cd49c598773fe382f6a1db566d0f7d",
+        "references/filters.md": "0800b37be23ddc2d0d736d2b0b38be966cd23b7ae1b36f308ec620fa985c0117"
+      },
+      "project_adaptation": {
+        "date": "2026-09-30",
+        "reason": "User requested browser Google collection plus Jina, no opencli; publish snippets until Jina key is configured.",
+        "collector": "tools/knowledge_pipeline/acquisition/fetch_x_google.py",
+        "sha256": {
+          "SKILL.md": "36d908844fa913e720e15f40e53b46cc7c3c28ee08f2f5e489f043f460380150",
+          "README.md": "a83aad4299f0e775744610f9cc1c8aa9767804ca6fd2096f66b92379a9e2932d",
+          "scripts/scan_x_weekly.py": "a7ceeeb1143d055b307f36b7eedb97835294ca1ea96d5e767dc6ea3bba9dd393"
+        }
+      }
+    },
+    {
+      "name": "ak-rss-digest",
+      "action": "linked-project-source",
+      "source": "skills/ak-rss-digest",
+      "sha256": {
+        "SKILL.md": "604f88432c490986a663624ac0469dbcc9b31f6855fa1e3dc71b334e776d6c83",
+        "scripts/fetch_today_feed_items.py": "207fb5bf5f94be35cb3141878764e6a767855805ce414d3a19ad6ba579c704fd",
+        "agents/openai.yaml": "da09ce1f6277f9d57aee64abb144ccbd581b631c94cccb0c66610cafc3bdf9f1",
+        "references/feeds.opml": "cd61d812579dccbba487e77947d26e0769358ad9b12c1e36ad1d44423fb15e1f",
+        "scripts/__pycache__/fetch_today_feed_items.cpython-312.pyc": "bc87a4521dd68b46bd4fa910069544e262976769d9a82481b83318a919bb7e75"
+      }
+    },
+    {
+      "name": "baoyu-danger-x-to-markdown",
+      "action": "copied",
+      "source": "central-library/baoyu-danger-x-to-markdown",
+      "sha256": {
+        "SKILL.md": "a4dbbc15f9505a081257517473ad810d02c2da4e0d546dfb80be2d950b96bccb",
+        "CONTRIBUTORS": "f2559fb82a814e6608a07fc037a07fa58dfbb39205d3c8412526a17431a7ead8",
+        "scripts/tweet-article.ts": "564ae4ac1381e768c3622fcab7d736088cba80cb78e6e2e2386336a948510176",
+        "scripts/graphql.ts": "eaed8a9076de6b5ab4dce081e8abccc291bdb29dfc477addfa9f4decb5505492",
+        "scripts/markdown.ts": "6a40cfe26385c06e88f71a0bac6e7bfb8709bde0c819b04a4c298bd3562f09a9",
+        "scripts/thread-markdown.ts": "2b1b4cd9722915b65cb7a38f18b035daf8a95a631370ff6eb9b4530cf9a8eae3",
+        "scripts/cookie-file.ts": "03a69efeef0f1d5311db55e30f5df2e06417fd4f8fd509e7995a411bfab4a63c",
+        "scripts/referenced-tweets.ts": "f2518fb1860509cc541d2d3aa00043cb1c7ddf425082c51c507848a612fda1cc",
+        "scripts/paths.ts": "ca6e752e5d9389dcfc87f69ff944a77db23c8abd7e423719d52d518e89d5ca6c",
+        "scripts/package.json": "7175b7298f862ece654e834154ecb4f1157eaf35331d3a36e3effe914b9af9bf",
+        "scripts/thread.ts": "5eb50c075d1aca32a8a30966b09440800b4cf83136772f832752fb35e5d3ab76",
+        "scripts/cookies.ts": "d2d8576053817a5bffb31b56b9e007b5fcd175a439c6ec5073df68575ad2fbb2",
+        "scripts/tweet-to-markdown.ts": "38c2d44f2260ed218bc9c924ed03b7d5aa55a7c9bdd99d53e4cec35e27e6c3b3",
+        "scripts/main.ts": "06968fd6e6fac6d13546b8d3e216b813dd5f57b1d418a83b6e67cfdd71268a6b",
+        "scripts/media-localizer.ts": "2ede3b587e3dd11af050a984ba94b813a5d16c9d58ff28e5404ae9fb3ba95c87",
+        "scripts/types.ts": "520d6462cf38c36194cf9bde0e42098750fc7fb07d010c4ce9b93af64c77c107",
+        "scripts/markdown.test.ts": "8349944b839ea8bbd6b108121256621b0c8daf3f623fa0a20e29a96a18a3dd01",
+        "scripts/http.ts": "196a9ab00495bb8eec1865464499758c64dd504946363d021aa6c49be41096e9",
+        "scripts/constants.ts": "67a30bea893af9a23ae6c8525bcff2466dcf11a1663bd74718dc7234ad63d758",
+        "scripts/bun.lock": "5174836ec68ea40ad13144a1664a0aeb93a9ad6459e7ef5eed0bf02d94f1ca38",
+        "scripts/vendor/baoyu-chrome-cdp/package.json": "0ea621c0de34760e0a74015e29b5a71af06236a696c51b54f37168911500088c",
+        "scripts/vendor/baoyu-chrome-cdp/src/index.ts": "eae68dbc3c42e5dc499e5dfec773bd54eaa8004d4ae056a085640798dd5da238",
+        "scripts/vendor/baoyu-chrome-cdp/src/index.test.ts": "3f47f857c28eb550f3130bdedebf44f2141ece516d1f0bbd43ce76652746a2cc",
+        "references/config/first-time-setup.md": "61db3aa0512d452163903d0b40c7d4062372e10df2053570a1a89ed656718800"
+      }
+    },
+    {
+      "name": "ljg-x-download",
+      "action": "copied",
+      "source": "central-library/ljg-x-download",
+      "sha256": {
+        "SKILL.md": "22dbc754beb6ed8af0e1296c606b6eeaa9d5c6d436edf6aa6333cac3e8b15061",
+        "CONTRIBUTORS": "f2559fb82a814e6608a07fc037a07fa58dfbb39205d3c8412526a17431a7ead8"
+      }
+    },
+    {
+      "name": "ljg-paper",
+      "action": "copied",
+      "source": "central-library/ljg-paper",
+      "sha256": {
+        "SKILL.md": "0501b531a427c94a36e14ba5c11622122d9f558d3822910ed9eb8b62690a78ff",
+        "CONTRIBUTORS": "f2559fb82a814e6608a07fc037a07fa58dfbb39205d3c8412526a17431a7ead8",
+        "references/template.org": "21b5ab9bfb1b5aaf3d0a07af4f69ce733ba352230a6da5bae573db9fbaffb086"
+      }
+    },
+    {
+      "name": "ljg-paper-flow",
+      "action": "copied",
+      "source": "central-library/ljg-paper-flow",
+      "sha256": {
+        "SKILL.md": "e1ad62fbcea2de89a8229e84c53329bfe5d3099514e79b64b5ea6156e9473c35",
+        "CONTRIBUTORS": "f2559fb82a814e6608a07fc037a07fa58dfbb39205d3c8412526a17431a7ead8"
+      }
+    },
+    {
+      "name": "ljg-card",
+      "action": "copied",
+      "source": "central-library/ljg-card",
+      "sha256": {
+        "SKILL.md": "836b17cc93b7e68ec9d2759ad4e50bbd97f6111eda6f4e3fdd76e37a77f839dd",
+        "CONTRIBUTORS": "f2559fb82a814e6608a07fc037a07fa58dfbb39205d3c8412526a17431a7ead8",
+        "package.json": "a3dc2e326147f1f0d86f51569f5496aebca80467d87099904771ceaf0fc6d5c3",
+        "package-lock.json": "c896de1b17e7b22d9f7bd2bfe7743ab19baeb3fca9e28e94f2deaa41d7c98571",
+        "assets/logo.png": "94da754943e270dd39eeba32aa8fa9fba1c7265f235d05e16a8b1ea02b1541f8",
+        "assets/comic_template.html": "86a97c431c47bd066cf1593f1fc29752122d786ecea6fcccf8f8d94a5a18839d",
+        "assets/sketchnote_template.html": "3fa2ecb37b9490d2d23819d57ff208771b548ef0afd34b74130ec71c446cb654",
+        "assets/poster_template.html": "9491fa15a64440ef35c5ca65d6b09648f31c2a10363878cc59e1bb7cfe2069e0",
+        "assets/capture.js": "a2d491ffd6bcaf23cf8df3c55b7cae56eaefbbf3492974333240dfd80ae6d151",
+        "assets/long_template.html": "a44ab6a9ff76625fbd217d1907afe722d74530cea958f3e6ee9242db33d2d590",
+        "assets/infograph_template.html": "80f379e59e11a7cb272f9f2a02ce2ad6a75e0b28f06075709dfc7555232c5020",
+        "references/taste.md": "d23312218ca0994e8f84af8100b6856e3efda4ac206dc9910e6a253c7ac0e40e",
+        "references/mode-sketchnote.md": "2c13da6f02b36bb9b49f245dfabf8b4fbeb12996bdb3b04548f2a74cd50d8939",
+        "references/mode-poster.md": "f5e9e6d17b273b4165affc921bc06bb2178c17bcaf4203b1856c173e68a48ad6",
+        "references/mode-long.md": "4d0eed0fe879b0bff60e9c77a547c0c15927bb4d00432facff39c41f784d9afb",
+        "references/mode-infograph.md": "e5dce323e9a628849447f7ef346d7695115c44ebdc5f2c7226dfdadf04d8e2bb",
+        "references/mode-comic.md": "7a555bc73d3fba65d159fb16d3cb914e1983e308891e37774a2182184c75e701"
+      },
+      "source_sha256": {
+        "SKILL.md": "836b17cc93b7e68ec9d2759ad4e50bbd97f6111eda6f4e3fdd76e37a77f839dd",
+        "CONTRIBUTORS": "f2559fb82a814e6608a07fc037a07fa58dfbb39205d3c8412526a17431a7ead8",
+        "package.json": "a3dc2e326147f1f0d86f51569f5496aebca80467d87099904771ceaf0fc6d5c3",
+        "package-lock.json": "c896de1b17e7b22d9f7bd2bfe7743ab19baeb3fca9e28e94f2deaa41d7c98571",
+        "assets/logo.png": "94da754943e270dd39eeba32aa8fa9fba1c7265f235d05e16a8b1ea02b1541f8",
+        "assets/comic_template.html": "86a97c431c47bd066cf1593f1fc29752122d786ecea6fcccf8f8d94a5a18839d",
+        "assets/sketchnote_template.html": "3fa2ecb37b9490d2d23819d57ff208771b548ef0afd34b74130ec71c446cb654",
+        "assets/poster_template.html": "9491fa15a64440ef35c5ca65d6b09648f31c2a10363878cc59e1bb7cfe2069e0",
+        "assets/capture.js": "a2d491ffd6bcaf23cf8df3c55b7cae56eaefbbf3492974333240dfd80ae6d151",
+        "assets/long_template.html": "a44ab6a9ff76625fbd217d1907afe722d74530cea958f3e6ee9242db33d2d590",
+        "assets/infograph_template.html": "80f379e59e11a7cb272f9f2a02ce2ad6a75e0b28f06075709dfc7555232c5020",
+        "references/taste.md": "d23312218ca0994e8f84af8100b6856e3efda4ac206dc9910e6a253c7ac0e40e",
+        "references/mode-sketchnote.md": "b73b496981ec007ac6c83917e5cc259113a0212b9aeb9752d70789b3ad2dbe0b",
+        "references/mode-poster.md": "823f7361efd9a1dbe4bbcd2215791c1dbdf93697f6bd9a81771344d670e03d49",
+        "references/mode-long.md": "16d1e4ffbd9bc0253ee98f017528dd45a96c0dd42d060dbbb625a3e8e5f94669",
+        "references/mode-infograph.md": "2eeb84dfa41d387fb9152c3313f0d394605c741c864779d70a4924ce43911e7f",
+        "references/mode-comic.md": "ef688ab5a76977945d317b0b36b9f667c57c215b27736318852586a62567e02c"
+      },
+      "local_adaptations": [
+        "references/mode-sketchnote.md",
+        "references/mode-poster.md",
+        "references/mode-long.md",
+        "references/mode-infograph.md",
+        "references/mode-comic.md"
+      ]
+    },
+    {
+      "name": "ljg-learn",
+      "action": "copied",
+      "source": "central-library/ljg-learn",
+      "sha256": {
+        "SKILL.md": "53c393cf9773b57a9799f6d3745f9838fa96a9fd5ca15a0723b7451171737f42",
+        "CONTRIBUTORS": "f2559fb82a814e6608a07fc037a07fa58dfbb39205d3c8412526a17431a7ead8"
+      },
+      "source_sha256": {
+        "SKILL.md": "2d610979e84e3d279d48aec21741c636ecfc3de335c9a10850e2337075ba4dd4",
+        "CONTRIBUTORS": "f2559fb82a814e6608a07fc037a07fa58dfbb39205d3c8412526a17431a7ead8"
+      },
+      "local_adaptations": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "name": "ljg-plain",
+      "action": "copied",
+      "source": "central-library/ljg-plain",
+      "sha256": {
+        "SKILL.md": "41b2e51effd897d01b984cbb8e2567014f4a2eada50999b16b578bd220e20977",
+        "CONTRIBUTORS": "f2559fb82a814e6608a07fc037a07fa58dfbb39205d3c8412526a17431a7ead8"
+      }
+    },
+    {
+      "name": "ljg-rank",
+      "action": "copied",
+      "source": "central-library/ljg-rank",
+      "sha256": {
+        "SKILL.md": "caaa060ca876664b5c5f965e36d1b8d8e8470bc3231f6e81cd7c81a7e1498c68",
+        "CONTRIBUTORS": "f2559fb82a814e6608a07fc037a07fa58dfbb39205d3c8412526a17431a7ead8",
+        "references/template.org": "6a2d3626d4477feafd740133e3bf60aaede3d516254829728ab19d5ee24912fd"
+      }
+    },
+    {
+      "name": "ljg-xray-book",
+      "action": "copied",
+      "source": "central-library/ljg-xray-book",
+      "sha256": {
+        "SKILL.md": "a9780d6b9afcf3846f572a4f8e92c6ae9b33479c775173504ace1d30157d6875",
+        "CONTRIBUTORS": "f2559fb82a814e6608a07fc037a07fa58dfbb39205d3c8412526a17431a7ead8"
+      }
+    }
+  ]
+}

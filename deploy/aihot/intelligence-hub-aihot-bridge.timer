@@ -1,0 +1,8 @@
+[Unit]
+Description=Quiet custom subscription collection every two hours
+[Timer]
+OnCalendar=*-*-* 00/2:15:00 Asia/Shanghai
+Persistent=true
+Unit=intelligence-hub-aihot-bridge.service
+[Install]
+WantedBy=timers.target

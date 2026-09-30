@@ -1,0 +1,7 @@
+[Unit]
+Description=Private local backup of Information Workbench database
+[Service]
+Type=oneshot
+ExecStart=/opt/intelligence-hub/aihot/tools/backup.sh
+UMask=0077
+NoNewPrivileges=yes

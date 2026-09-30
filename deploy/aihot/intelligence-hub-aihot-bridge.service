@@ -1,0 +1,22 @@
+[Unit]
+Description=Collect custom subscriptions and ingest into the AIHOT core
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/intelligence-hub/maintenance/current
+ExecStart=/opt/intelligence-hub/maintenance/venv/bin/python /opt/intelligence-hub/aihot/tools/bridge.py --refresh
+Environment=TZ=Asia/Shanghai
+Environment=PYTHONUNBUFFERED=1
+Environment=HUB_COLLECTOR_ROOT=/opt/intelligence-hub/maintenance/current
+TimeoutStartSec=6min
+UMask=0077
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ReadWritePaths=/opt/intelligence-hub/aihot
+StandardOutput=journal
+StandardError=journal
