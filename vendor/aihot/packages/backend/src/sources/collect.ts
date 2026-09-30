@@ -4,6 +4,7 @@ import { sql } from "../db.ts";
 import { identityKeyFor, upsertMaterial } from "../content/materials.ts";
 import { enqueue, QUEUES } from "../jobs/queue.ts";
 import { queueProcessing } from "../jobs/content.ts";
+import { publishArticle } from "../publication/publish.ts";
 import { BudgetExceededError } from "../providers/receipts.ts";
 import { fetchRss } from "./rss.ts";
 import { allowed, fetchDetail, fetchWebList, type DetailNeed } from "./web-list.ts";
@@ -61,7 +62,7 @@ const DAY_MS = 86_400_000;
 /** A listing title that is no headline: a label that swallowed its summary, or a call to action. */
 const needsTitle = (title: string) => title.length > 100 || /^(read more|learn more|continue reading|more|阅读全文|阅读更多|查看详情|了解更多)$/i.test(title.trim());
 
-async function store(sourceId: string, candidates: Candidate[], backfill: string | null): Promise<{ created: number; revised: number }> {
+async function store(sourceId: string, candidates: Candidate[], backfill: string | null, publishPending = false): Promise<{ created: number; revised: number }> {
   let created = 0;
   let revised = 0;
   const seen = new Set<string>();
@@ -75,6 +76,7 @@ async function store(sourceId: string, candidates: Candidate[], backfill: string
     const res = await upsertMaterial(material);
     if (res.created) created += 1;
     if (res.revised) revised += 1;
+    if (publishPending) await publishArticle(res.articleId);
     // Extraction first when the source wants full text and none came with the listing, else analysis.
     if (res.created || res.revised) await queueProcessing(res.articleId);
   }
@@ -124,7 +126,9 @@ export async function collectSource(sourceId: string, opts: { force?: boolean } 
     }
     found = candidates.length;
     candidates = candidates.filter((c) => allowed(c.url, source)).map((c) => rewriteUrl(c, source)).filter((c) => !noiseFiltered(c, source));
-    if (source.config.sortByPublishedAt) candidates.sort((a, b) => (b.publishedAt?.getTime() ?? 0) - (a.publishedAt?.getTime() ?? 0));
+    if (source.config.sortByPublishedAt || (source.kind === "rss" && source.config.sortByPublishedAt !== false)) {
+      candidates.sort((a, b) => (b.publishedAt?.getTime() ?? 0) - (a.publishedAt?.getTime() ?? 0));
+    }
 
     // First import of a new source: bounded, and archived by source time (never "today", never pushed).
     const backfillLimit = Number(source.config._aihot?.initialBackfillLimit ?? 30);
@@ -179,7 +183,8 @@ export async function collectSource(sourceId: string, opts: { force?: boolean } 
       }
     }
 
-    ({ created, revised } = await store(sourceId, candidates, firstImport ? "first-import" : null));
+    ({ created, revised } = await store(sourceId, candidates, firstImport ? "first-import" : null,
+      source.first_party && source.config._aihot?.publishPending === true));
 
     if (firstImport) nextCursor.initializedAt = new Date().toISOString();
     nextCursor.lastOkAt = new Date().toISOString();

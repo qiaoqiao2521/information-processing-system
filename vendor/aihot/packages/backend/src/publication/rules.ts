@@ -9,20 +9,22 @@ export interface SourceFacts {
   first_party: boolean;
   site_fulltext: boolean;
   syndicate_fulltext: boolean;
+  config?: { _aihot?: { publishPending?: boolean } };
 }
 
 export function channelOf(sourceKind: string, hasXPost: boolean): "x" | "news" {
   return sourceKind === "x_search" || hasXPost ? "x" : "news";
 }
 
-/** Public pool (/all): editorial sources, AI relevant, with a Chinese title and summary. */
+/** Public pool: judged editorial items, plus explicitly opted-in official indexes awaiting judgement. */
 export function isPoolEligible(input: {
   participationMode: string;
   relevance: string | null;
   title: string | null;
   summary: string | null;
+  pendingOfficial?: boolean;
 }): boolean {
-  return input.participationMode === "editorial" && input.relevance === "pass" && !!input.title && !!input.summary;
+  return input.participationMode === "editorial" && (input.relevance === "pass" || (input.pendingOfficial === true && input.relevance === null)) && !!input.title && !!input.summary;
 }
 
 /**

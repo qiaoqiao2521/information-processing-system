@@ -17,6 +17,29 @@ EXTERNAL = {
 
 def build_sources(demo):
     sources = [dict(s) for s in demo if not s['id'].startswith(('ak-', 'qiaomu-', 'hub-'))]
+    official = [
+        {'id': 'rss-google-gemini', 'name': 'Google Gemini 官方博客', 'kind': 'rss',
+         'config': {'feedUrl': 'https://blog.google/innovation-and-ai/models-and-research/gemini-models/rss/'}, 'owner_entity_id': 'google'},
+        {'id': 'web-anthropic-news', 'name': 'Anthropic 官方新闻', 'kind': 'web_list', 'owner_entity_id': 'anthropic',
+         'config': {'url': 'https://www.anthropic.com/news', 'parseMode': 'html',
+            'itemSelector': 'main a[class*="FeaturedGrid"], main a[class*="PublicationList"][href]',
+            'titleSelector': 'h2, h3, [class*="__title"], [class*="__sideTitle"]', 'publishedAtSelector': 'time',
+            'publishedAtUtcOffset': '+00:00', 'allowUrlPrefixes': ['https://www.anthropic.com/news/', 'https://www.anthropic.com/claude-'],
+            'detail': {'maxFetches': 8, 'titleSelector': 'h1', 'summarySelector': 'meta[name="description"]'}}},
+        {'id': 'web-claude-blog', 'name': 'Claude 官方博客', 'kind': 'web_list', 'owner_entity_id': 'anthropic',
+         'config': {'url': 'https://claude.com/blog', 'parseMode': 'html', 'itemSelector': '.blog_cms_item',
+            'linkSelector': 'a[href^="/blog/"]', 'titleSelector': '.card_blog_title',
+            'publishedAtSelector': '.card_blog_content .u-text-style-caption', 'publishedAtUtcOffset': '+00:00',
+            'allowUrlPrefixes': ['https://claude.com/blog/'], 'detail': {'maxFetches': 8, 'summarySelector': 'meta[name="description"]'}}},
+    ]
+    for item in official:
+        if not any(s['id'] == item['id'] for s in sources):
+            sources.append({**item, 'tier': 'T1', 'first_party': True, 'participation_mode': 'editorial',
+                'interval_minutes': 60, 'tags': ['官方'], 'site_fulltext': False, 'syndicate_fulltext': False})
+    for s in sources:
+        if s['id'] in {'rss-openai-news', 'rss-google-deepmind', 'rss-google-research', *(item['id'] for item in official)}:
+            s['config'] = {**s['config'], 'sortByPublishedAt': True,
+                '_aihot': {**s['config'].get('_aihot', {}), 'initialBackfillLimit': 8, 'publishPending': True}}
     seen = {s.get('config', {}).get('feedUrl') for s in sources}
 
     def add(name, url, origin):

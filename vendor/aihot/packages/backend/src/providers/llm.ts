@@ -6,6 +6,7 @@ import { config, credential } from "../config.ts";
 import { sha256 } from "../lib/ids.ts";
 import { completeReceipt, paidRequest, ProviderRejectedError, rejectReceivedResponse } from "./receipts.ts";
 import { sql } from "../db.ts";
+import { requestMcode } from "./mcode-stdio.ts";
 
 export interface ModelSpec {
   key: string;
@@ -29,6 +30,10 @@ function extraFromEnv(value: string | undefined): Record<string, unknown> | unde
 }
 
 export const MODELS: Record<string, ModelSpec> = {
+  "local-mcode": {
+    key: "local-mcode", service: "mcode", model: "minimax/MiniMax-M3.1-Flash-Preview",
+    baseUrlEnv: "MCODE_UNUSED_BASE_URL", apiKeyEnv: "MCODE_UNUSED_API_KEY", jsonMode: true,
+  },
   // Read from the environment at call time.
   default: {
     key: "default", service: "llm", baseUrlEnv: "LLM_BASE_URL", apiKeyEnv: "LLM_API_KEY",
@@ -163,7 +168,9 @@ export async function chatJson<S extends z.ZodType>(opts: ChatJsonOptions<S>): P
   if (!config.modelCallsEnabled) throw new Error("Model calls are disabled (MODEL_CALLS_ENABLED=false)");
   const baseUrl = credential("models", spec.baseUrlEnv);
   const apiKey = credential("models", spec.apiKeyEnv);
-  if (!baseUrl || !apiKey || !spec.model) throw new Error(`Model ${opts.model} is not configured (${spec.baseUrlEnv}, ${spec.apiKeyEnv}${spec.key === "default" ? ", LLM_MODEL" : ""})`);
+  const localMcode = spec.key === "local-mcode" && process.env.MCODE_STDIO_ENABLED === "true";
+  if (spec.key === "local-mcode" && !localMcode) throw new Error("Local mcode requires an operator-started stdio session");
+  if (!localMcode && (!baseUrl || !apiKey || !spec.model)) throw new Error(`Model ${opts.model} is not configured (${spec.baseUrlEnv}, ${spec.apiKeyEnv}${spec.key === "default" ? ", LLM_MODEL" : ""})`);
 
   const temperature = opts.temperature ?? 0.2;
   const maxTokens = Math.max(opts.maxTokens ?? 1500, 512) + (spec.key.endsWith("-think") ? 4000 : 0);
@@ -189,14 +196,19 @@ export async function chatJson<S extends z.ZodType>(opts: ChatJsonOptions<S>): P
       purpose: opts.purpose,
       subject: opts.subject,
       identity: { model: spec.model, promptVersion: opts.promptVersion, system: sha256(opts.system), user: sha256(userText), temperature, maxTokens, extra: spec.extra ?? null },
-      requestSummary: { promptVersion: opts.promptVersion, systemHash: sha256(opts.system), userHash: sha256(userText), userChars: userText.length, temperature, maxTokens },
+      requestSummary: { promptVersion: opts.promptVersion, systemHash: sha256(opts.system), userHash: sha256(userText), userChars: userText.length, temperature, maxTokens,
+        ...(localMcode ? { transport: "stdio-mcode", samplingParametersApplied: false } : {}) },
       attemptTag: opts.attemptTag,
     },
     async () => {
       const started = Date.now();
+      if (localMcode) {
+        const response = await requestMcode(body);
+        return { response: { ...response, _latencyMs: Date.now() - started }, usage: (response.usage as Record<string, unknown>) ?? null, cost: null };
+      }
       let res: Response;
       try {
-        res = await fetch(`${baseUrl.replace(/\/$/, "")}/chat/completions`, {
+        res = await fetch(`${baseUrl!.replace(/\/$/, "")}/chat/completions`, {
           method: "POST",
           headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
           body: JSON.stringify(body),

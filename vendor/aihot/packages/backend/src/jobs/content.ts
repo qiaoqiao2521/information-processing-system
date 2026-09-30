@@ -7,7 +7,7 @@ import type { PgBoss } from "pg-boss";
 import { sql, type Db } from "../db.ts";
 import { extractArticleBody, pageFetchable } from "../content/extract.ts";
 import { analyzeArticle, AnalysisInterruptedError } from "../editorial/analyze.ts";
-import { isHistorical } from "../content/materials.ts";
+import { isHistorical, STALE_ON_DISCOVERY_MS } from "../content/materials.ts";
 import { publishArticle } from "../publication/publish.ts";
 import { BudgetExceededError, ProviderRejectedError, ReceiptBusyError, ReceiptUnknownError } from "../providers/receipts.ts";
 import { ModelOutputError } from "../providers/llm.ts";
@@ -68,6 +68,7 @@ export async function queueProcessing(articleId: string, opts: { step?: Step; at
   const db = opts.db ?? sql;
   const r = await route(articleId, db);
   if (!r) return null;
+  if (r.historical && process.env.PROCESS_HISTORY_ENABLED === "false" && !opts.attemptTag) return null;
   const step = opts.step ?? r.step;
   await db`UPDATE articles SET processing_queued_at = now() WHERE id = ${articleId}`;
   if (step === "extract") return enqueue(QUEUES.extractBody, { articleId }, { singletonKey: articleId, priority: r.historical ? PRIORITY.history : PRIORITY.live }, opts.db);
@@ -99,6 +100,8 @@ export async function processArticle(articleId: string, opts: { attemptTag?: str
     SELECT s.participation_mode, a.processing_state, a.revision, a.backfill, a.published_at, a.discovered_at FROM articles a JOIN sources s ON s.id = a.source_id WHERE a.id = ${articleId}`;
   if (!found) return { state: "missing" };
   const row = { ...found, historical: isHistorical(found) };
+  // Covers jobs already queued before the operator paused historical processing.
+  if (row.historical && process.env.PROCESS_HISTORY_ENABLED === "false" && !opts.attemptTag) return { state: "history-paused" };
   if (row.participation_mode !== "editorial") {
     // Normally queued straight for grouping (queueProcessing); an explicit re-evaluation lands here.
     const { group } = await settleNonEditorial(articleId);
@@ -209,6 +212,7 @@ export async function sweepUnprocessed(): Promise<{ enqueued: number }> {
   const rows = await sql<{ id: string }[]>`
     SELECT id FROM articles
     WHERE processing_state = 'new' AND created_at < now() - interval '3 minutes'
+      AND (${process.env.PROCESS_HISTORY_ENABLED !== "false"} OR NOT (backfill AND (published_at IS NULL OR discovered_at - published_at > ${STALE_ON_DISCOVERY_MS}::double precision * interval '1 millisecond')))
       AND (processing_retry_at IS NULL OR processing_retry_at <= now())
       AND (processing_queued_at IS NULL OR processing_queued_at < now() - ${QUEUED_STALE}::interval)
     ORDER BY discovered_at DESC LIMIT 500`;

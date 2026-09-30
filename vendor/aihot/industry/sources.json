@@ -8,8 +8,10 @@
       "config": {
         "feedUrl": "https://openai.com/news/rss.xml",
         "_aihot": {
-          "initialBackfillLimit": 8
-        }
+          "initialBackfillLimit": 8,
+          "publishPending": true
+        },
+        "sortByPublishedAt": true
       },
       "tier": "T1",
       "first_party": true,
@@ -29,8 +31,10 @@
       "config": {
         "feedUrl": "https://deepmind.google/blog/rss.xml",
         "_aihot": {
-          "initialBackfillLimit": 8
-        }
+          "initialBackfillLimit": 8,
+          "publishPending": true
+        },
+        "sortByPublishedAt": true
       },
       "tier": "T1",
       "first_party": true,
@@ -50,8 +54,10 @@
       "config": {
         "feedUrl": "https://research.google/blog/rss/",
         "_aihot": {
-          "initialBackfillLimit": 8
-        }
+          "initialBackfillLimit": 8,
+          "publishPending": true
+        },
+        "sortByPublishedAt": true
       },
       "tier": "T1",
       "first_party": true,
@@ -380,6 +386,102 @@
       "interval_minutes": 180,
       "tags": [
         "个人"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "rss-google-gemini",
+      "name": "Google Gemini 官方博客",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/rss/",
+        "sortByPublishedAt": true,
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "publishPending": true
+        }
+      },
+      "owner_entity_id": "google",
+      "tier": "T1",
+      "first_party": true,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-anthropic-news",
+      "name": "Anthropic 官方新闻",
+      "kind": "web_list",
+      "owner_entity_id": "anthropic",
+      "config": {
+        "url": "https://www.anthropic.com/news",
+        "parseMode": "html",
+        "itemSelector": "main a[class*=\"FeaturedGrid\"], main a[class*=\"PublicationList\"][href]",
+        "titleSelector": "h2, h3, [class*=\"__title\"], [class*=\"__sideTitle\"]",
+        "publishedAtSelector": "time",
+        "publishedAtUtcOffset": "+00:00",
+        "allowUrlPrefixes": [
+          "https://www.anthropic.com/news/",
+          "https://www.anthropic.com/claude-"
+        ],
+        "detail": {
+          "maxFetches": 8,
+          "titleSelector": "h1",
+          "summarySelector": "meta[name=\"description\"]"
+        },
+        "sortByPublishedAt": true,
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "publishPending": true
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-claude-blog",
+      "name": "Claude 官方博客",
+      "kind": "web_list",
+      "owner_entity_id": "anthropic",
+      "config": {
+        "url": "https://claude.com/blog",
+        "parseMode": "html",
+        "itemSelector": ".blog_cms_item",
+        "linkSelector": "a[href^=\"/blog/\"]",
+        "titleSelector": ".card_blog_title",
+        "publishedAtSelector": ".card_blog_content .u-text-style-caption",
+        "publishedAtUtcOffset": "+00:00",
+        "allowUrlPrefixes": [
+          "https://claude.com/blog/"
+        ],
+        "detail": {
+          "maxFetches": 8,
+          "summarySelector": "meta[name=\"description\"]"
+        },
+        "sortByPublishedAt": true,
+        "_aihot": {
+          "initialBackfillLimit": 8,
+          "publishPending": true
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方"
       ],
       "site_fulltext": false,
       "syndicate_fulltext": false

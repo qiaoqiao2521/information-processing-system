@@ -3,9 +3,9 @@
 ## 当前交付（2026-10-01，北京时间）
 
 - `https://intel.muqiao.xyz/`已切到AIHOT核心；全部动态入口为`/all`。固定上游`cf8f8d07d68dfa9079becc72b0717a45b33485f3`，MIT和来源保留。
-- 最新运行版本`aihot-cf8f8d0-cc106eda1652`，Jina接入后镜像内409个源文件与本地manifest全部相符；公网`/api/health`返回同一版本。
-- 108 RSS / 10外部及存量源已seed，X和两类RSS存量源不调度。首轮RSS104成功、4失败，自定义HN/橘鸦/HF/GitHub/Builders五类全部更新，新建13条。
-- 用户批准MiniMax常态自动加工：连续24小时最多300次模型请求，8次/分钟、60次/小时。Jina另获批准50次/连续24小时，仅补已有X原帖正文，1次/分钟、10次/小时，普通网页回退关闭。已启用采集和模型Worker；其余付费服务预算0、通知关闭。首小时模型60次预算实际阻断后续请求，待窗口恢复继续；不批量重算迁移存量。
+- 最新运行版本`aihot-cf8f8d0-474813e47fab`，镜像内415个源文件与本地manifest全部相符；公网`/api/health`返回同一版本。官方覆盖与本地加工详情分别回源`plans/official-source-coverage`、`plans/local-mcode-processing`。
+- 当前109 RSS / 2官方网页 / 10外部及存量源已seed，X和两类RSS存量源不调度。初始108个RSS首轮104成功、4失败，自定义HN/橘鸦/HF/GitHub/Builders五类全部更新、新建13条；后续新增Google Gemini、Anthropic新闻和Claude博客，官方待处理内容也能公开阅读。
+- 原MiniMax API预算仍300/连续24小时、8/分钟、60/小时，消费者现暂停；用户改用本地mcode按需加工、SSH回传436，共17次真实调用完成Google75/Claude87/OpenAI46分三篇。独立mcode预算保守300/连续24小时，不迁移账号。Jina仍50/连续24小时，仅X，普通网页回退关闭；其余付费服务0、通知关闭。采集Worker继续运行，历史自动加工暂停，不批量重算存量。
 - 桥接`intelligence-hub-aihot-bridge.timer`北京时间每两小时15分运行，原Python维护timer已停止；采集/处理无编码Agent。备份timer每天04:10生成私有本地dump，保留7份。
 
 ## 数据与真实加工
