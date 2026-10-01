@@ -1,13 +1,12 @@
 [Unit]
-Description=Sync AIHOT RSS to a private reader cache
+Description=Sync RSS, reports, hot stories and selected changes to a private reader cache
 Wants=network-online.target
 After=network-online.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/python3 /opt/intelligence-hub/aihot-private-reader/upstream_feed.py --feed selected --cache-dir /opt/intelligence-hub/aihot-private-reader/cache
-ExecStart=/usr/bin/python3 /opt/intelligence-hub/aihot-private-reader/upstream_feed.py --feed all --cache-dir /opt/intelligence-hub/aihot-private-reader/cache
-TimeoutStartSec=90
+ExecStart=/usr/bin/python3 /opt/intelligence-hub/aihot-private-reader/upstream_reader.py --cache-dir /opt/intelligence-hub/aihot-private-reader/cache
+TimeoutStartSec=12min
 UMask=0077
 NoNewPrivileges=yes
 ProtectSystem=strict

@@ -115,6 +115,11 @@ python3 tools/aihot/local_mcode.py <article-id>
 
 `python3 tools/aihot/upstream_feed.py --feed selected`保存个人缓存到`~/.local/share/information-hub/aihot-reader/`；`--feed all`读取全部动态，另支持daily及五个分类。目录700、文件600、TTL30分钟、ETag/304、最多100条，失败保留旧快照，禁止DOCTYPE及不合法上游链接；遇no-store不保存。无模型调用、摄取、通知或公网导出。
 
-436的`intelligence-hub-upstream-reader.timer`每30分钟运行普通Python脚本，同步精选/全部到`/opt/intelligence-hub/aihot-private-reader/cache/`；目录不挂载到网站容器，不公开访问。本机TLS失败可通过既有SSH读取服务器私人缓存。
+436的`intelligence-hub-upstream-reader.timer`每30分钟运行`upstream_reader.py`普通Python脚本，同步精选/全部、日报、五类RSS、最新日报API、热点10个事件及近期精选评分/更正/撤选到`/opt/intelligence-hub/aihot-private-reader/cache/`；目录不挂载到网站容器，不公开访问。本机TLS失败可通过既有SSH读取服务器私人缓存。
 
 AIHOT公开使用规则1.1：https://aihot.news/terms。个人阅读与合理私有缓存允许直接使用；公网站点持续镜像/批量再分发需书面授权。当前RSS仅私有缓存；用户授权范围尚待确认，已部署的重置镜像亦需确认。接续见`plans/upstream-rss-reader`。
+
+
+私人批量入口：`python3 tools/aihot/upstream_reader.py --cache-dir <私人目录>`。436服务目录为`/opt/intelligence-hub/aihot-private-reader`；工具依赖同目录的`upstream_feed.py`和`upstream_api.py`。缓存根为`cache/`，API结果在`cache/api/`，检查`cache/reader-status.json`获取各资源成功/失败摘要。服务超时12分钟、互斥锁避免重入、匿名请求间隔1秒，429停止当前轮次，不在本轮重试；常规TTL30分钟，支持ETag/304与no-store，坏响应保留有效缓存，404/410删除失效API资源。没有公开导出或模型调用。
+
+精选初始快照只取游标，再取最近7天100条作为阅读种子；后续每轮最多5页、500个变更，状态最多200条近期文章，不覆盖全部历史。每页变更与游标原子保存；409过期时重建近期基线。API来源评分直接保存，摘要/评分更正及撤选同步至精选和分类RSS缓存，撤选不删除全部动态。热点之外的旧事件缓存清理；事件原始报道日期、来源链接、综述及storyline保留，缺少综述不补造。最新日报JSON与最近30期日报RSS分别保存。此目录不挂载网站容器。
