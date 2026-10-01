@@ -119,7 +119,10 @@ def main(engine="mcode"):
     parser.add_argument("--mcode", default=str(Path.home() / ".minimax-code/bin/mcode"))
     parser.add_argument("--opencode", default="opencode")
     parser.add_argument("--engine", choices=("mcode", "opencode"), default=engine)
+    parser.add_argument("--review", action="store_true", help="Process explicit upstream review IDs into drafts, without publishing")
     args = parser.parse_args()
+    if args.review and (args.engine != "opencode" or args.next is not None):
+        parser.error("Review processing requires OpenCode and explicit IDs")
     if not re.fullmatch(r"[A-Za-z0-9_.-]+", args.host) or not 1 <= args.max_calls <= 300:
         parser.error("Invalid host or call limit")
     if args.next is not None:
@@ -133,7 +136,8 @@ def main(engine="mcode"):
     executable = shutil.which(args.opencode if args.engine == "opencode" else args.mcode)
     if not executable:
         parser.error("Local model CLI executable not found")
-    remote = "cd /opt/intelligence-hub/aihot/app && docker compose -p muqiao-intel -f docker-compose.yml -f compose.override.yaml exec -T -e MCODE_STDIO_ENABLED=true -e MODEL_CALLS_ENABLED=true -e LOCAL_CLI_PROVIDER=" + args.engine + " api node scripts/process-local-mcode.ts " + shlex.join(selection)
+    script = "process-upstream-reviews.ts" if args.review else "process-local-mcode.ts"
+    remote = "cd /opt/intelligence-hub/aihot/app && docker compose -p muqiao-intel -f docker-compose.yml -f compose.override.yaml exec -T -e MCODE_STDIO_ENABLED=true -e MODEL_CALLS_ENABLED=true -e LOCAL_CLI_PROVIDER=" + args.engine + " api node scripts/" + script + " " + shlex.join(selection)
     child = subprocess.Popen(["ssh", "-T", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10",
                               "-o", "ServerAliveInterval=15", "-o", "ServerAliveCountMax=3", args.host, remote],
                              stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, bufsize=1)

@@ -5,6 +5,10 @@ services:
     image: muqiao-intel-aihot:local
   api:
     image: muqiao-intel-aihot:local
+    environment:
+      UPSTREAM_REVIEW_CACHE: /upstream-reader/snapshot.json
+    volumes:
+      - /opt/intelligence-hub/aihot/private-reader-api:/upstream-reader:ro
   worker:
     image: muqiao-intel-aihot:local
     environment:

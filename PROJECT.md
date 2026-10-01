@@ -22,7 +22,7 @@
 
 - 用户授权同步AIHOT公开Codex重置结果：`CODEX_RESET_UPSTREAM_ENABLED=true`，现有worker每15分钟条件获取完整快照，45分钟过期提示；不启用X直采、模型识别或通知。见[同步计划](plans/upstream-reset-sync/task_plan.md)。
 
-- AIHOT 已部署8路RSS、最新日报、热点10个事件详情及近期精选评分/变更游标的私人缓存与30分钟脚本timer，复用上游摘要、综述和评分，不进模型队列或公网站点数据库。新核实上游公开使用规则：公网镜像/批量再分发须书面授权；当前等待用户确认授权范围（含此前重置镜像），见[RSS计划](plans/upstream-rss-reader/task_plan.md)。
+- AIHOT 已部署8路RSS、最新日报、热点10个事件详情及近期精选评分/变更游标的私人缓存与30分钟脚本timer，复用上游摘要、综述和评分，不进模型队列或公网站点数据库。新核实上游公开使用规则：公网镜像/批量再分发须书面授权；当前无上游书面授权记录；用户在2026-10-01明确选择引用保留、AI二次加工、人工审批后发布网站，二次加工不作为授权依据。定时采集仍只生成私人缓存，不自动公开镜像；审批入口见[加工审批](plans/upstream-editorial-review/task_plan.md)。
 
 ## Current State / Priority
 

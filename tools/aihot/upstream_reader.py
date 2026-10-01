@@ -3,6 +3,7 @@
 import argparse
 import fcntl
 import json
+import os
 from pathlib import Path
 import time
 import urllib.error
@@ -10,7 +11,7 @@ from upstream_feed import FEEDS, sync, atomic_json
 from upstream_api import ApiCache, story_id, now
 
 
-def refresh(root, pause=1):
+def refresh(root, pause=1, admin_export_dir=None):
     results = []; errors = []
     rate_limited = False
     root.mkdir(parents=True, exist_ok=True); root.chmod(0o700)
@@ -68,13 +69,22 @@ def refresh(root, pause=1):
                 cache['items'] = items; atomic_json(path, cache)
         report = {'checkedAt': now().isoformat(), 'privateOnly': True, 'results': results, 'errors': errors}
         atomic_json(root / 'reader-status.json', report)
+        if admin_export_dir is not None and state_path.exists():
+            admin_export_dir.mkdir(parents=True, exist_ok=True); admin_export_dir.chmod(0o700)
+            state = json.loads(state_path.read_text())
+            target = admin_export_dir / 'snapshot.json'
+            atomic_json(target, {'checkedAt':state['fetchedAt'], 'items':state['items'],
+                                 'removed':state['removed'], 'complete':state['complete'], 'privateOnly':True})
+            if os.geteuid() == 0:
+                os.chown(admin_export_dir,1000,1000); os.chown(target,1000,1000)
         return report
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--cache-dir', type=Path, default=Path.home() / '.local/share/information-hub/aihot-reader')
-    args = parser.parse_args(); result = refresh(args.cache_dir)
+    parser.add_argument('--admin-export-dir', type=Path, help='Private read-only projection for the UID1000 API container')
+    args = parser.parse_args(); result = refresh(args.cache_dir, admin_export_dir=args.admin_export_dir)
     print(json.dumps(result, ensure_ascii=False))
     return 1 if result.get('errors') else 0
 

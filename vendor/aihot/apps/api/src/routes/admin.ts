@@ -3,6 +3,7 @@
 import { readFile } from "node:fs/promises";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { actorOf } from "@aihot/backend/admin/auth";
+import { createReview, decideReview, listReviews, reviewDetail, saveReview } from "@aihot/backend/admin/upstream-reviews";
 
 import { importSelectBenchRun, listSelectBenchRuns, selectBenchRun } from "@aihot/backend/admin/selectbench";
 import { modelsOverview, switchModel } from "@aihot/backend/admin/models";
@@ -33,6 +34,11 @@ function decodeImage(dataUrl: unknown): Buffer {
 }
 
 export function registerAdmin(app: FastifyInstance) {
+  app.get("/api/admin/upstream-reviews", adminHandler(async () => listReviews()));
+  app.post("/api/admin/upstream-reviews", adminHandler(async (req, _reply, admin) => createReview(String(body(req).id ?? ""), actorOf(admin))));
+  app.get("/api/admin/upstream-reviews/:id", adminHandler(async (req, reply) => orNotFound(req, reply, await reviewDetail(param(req,"id")))));
+  app.post("/api/admin/upstream-reviews/:id/save", adminHandler(async (req, _reply, admin) => saveReview(param(req,"id"),body(req),actorOf(admin))));
+  app.post("/api/admin/upstream-reviews/:id/decision", adminHandler(async (req, _reply, admin) => decideReview(param(req,"id"),body(req),actorOf(admin))));
   // Sources (F18)
   app.get("/api/admin/sources", adminHandler(async (req) => {
     const f = q(req);

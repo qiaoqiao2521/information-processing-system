@@ -5,7 +5,8 @@ After=network-online.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/python3 /opt/intelligence-hub/aihot-private-reader/upstream_reader.py --cache-dir /opt/intelligence-hub/aihot-private-reader/cache
+ExecStart=/usr/bin/python3 /opt/intelligence-hub/aihot-private-reader/upstream_reader.py --cache-dir /opt/intelligence-hub/aihot-private-reader/cache --admin-export-dir /opt/intelligence-hub/aihot/private-reader-api
+ExecStartPost=/usr/bin/docker compose -p muqiao-intel -f /opt/intelligence-hub/aihot/app/docker-compose.yml -f /opt/intelligence-hub/aihot/app/compose.override.yaml exec -T api node scripts/reconcile-upstream-reviews.ts
 TimeoutStartSec=12min
 UMask=0077
 NoNewPrivileges=yes
@@ -13,6 +14,6 @@ ProtectSystem=strict
 ProtectHome=yes
 PrivateTmp=yes
 PrivateDevices=yes
-ReadWritePaths=/opt/intelligence-hub/aihot-private-reader
+ReadWritePaths=/opt/intelligence-hub/aihot-private-reader /opt/intelligence-hub/aihot/private-reader-api
 StandardOutput=journal
 StandardError=journal

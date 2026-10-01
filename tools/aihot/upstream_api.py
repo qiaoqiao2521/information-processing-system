@@ -151,7 +151,7 @@ class ApiCache:
                             else: items.pop(key, None); removed.append(key)
                         else:
                             raise ValueError('Invalid selected mutation')
-                    state = {**state, 'cursor': page['cursor'], 'items': bounded(items), 'removed': removed[-200:],
+                    state = {**state, 'cursor': page['cursor'], 'items': bounded(items), 'removed': removed[-1000:],
                              'complete': not page['hasMore'], 'fetchedAt': now().isoformat()}
                     atomic_json(path, state)  # Answer mutations and their watermark commit together.
                     changes += len(page['changes'])

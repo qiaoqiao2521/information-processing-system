@@ -117,9 +117,24 @@ python3 tools/aihot/local_mcode.py <article-id>
 
 436的`intelligence-hub-upstream-reader.timer`每30分钟运行`upstream_reader.py`普通Python脚本，同步精选/全部、日报、五类RSS、最新日报API、热点10个事件及近期精选评分/更正/撤选到`/opt/intelligence-hub/aihot-private-reader/cache/`；目录不挂载到网站容器，不公开访问。本机TLS失败可通过既有SSH读取服务器私人缓存。
 
-AIHOT公开使用规则1.1：https://aihot.news/terms。个人阅读与合理私有缓存允许直接使用；公网站点持续镜像/批量再分发需书面授权。当前RSS仅私有缓存；用户授权范围尚待确认，已部署的重置镜像亦需确认。接续见`plans/upstream-rss-reader`。
+AIHOT公开使用规则1.1：https://aihot.news/terms。个人阅读与合理私有缓存允许直接使用；公网站点持续镜像/批量再分发需书面授权。定时RSS仍仅私有缓存；用户后续明确选择二次加工、人工审批后发布，见下节。当前没有上游书面授权记录，润色和审批不作为授权依据。接续见`plans/upstream-rss-reader`。
 
 
 私人批量入口：`python3 tools/aihot/upstream_reader.py --cache-dir <私人目录>`。436服务目录为`/opt/intelligence-hub/aihot-private-reader`；工具依赖同目录的`upstream_feed.py`和`upstream_api.py`。缓存根为`cache/`，API结果在`cache/api/`，检查`cache/reader-status.json`获取各资源成功/失败摘要。服务超时12分钟、互斥锁避免重入、匿名请求间隔1秒，429停止当前轮次，不在本轮重试；常规TTL30分钟，支持ETag/304与no-store，坏响应保留有效缓存，404/410删除失效API资源。没有公开导出或模型调用。
 
 精选初始快照只取游标，再取最近7天100条作为阅读种子；后续每轮最多5页、500个变更，状态最多200条近期文章，不覆盖全部历史。每页变更与游标原子保存；409过期时重建近期基线。API来源评分直接保存，摘要/评分更正及撤选同步至精选和分类RSS缓存，撤选不删除全部动态。热点之外的旧事件缓存清理；事件原始报道日期、来源链接、综述及storyline保留，缺少综述不补造。最新日报JSON与最近30期日报RSS分别保存。此目录不挂载网站容器。
+
+
+## 加工审批（人工通过后上站）
+
+后台入口`/admin/reviews`：建立待审稿 → 对照引用 → 本地AI生成/手工修改 → 填写审批依据、确认事实/新增价值/重复检查 → 通过并发布。默认进入全部动态，人工精选可进入首页。退回、重新保存或来源更正/撤选会撤回已有公开版本。素材与稿件均需管理员登录；公开接口看不到未审批稿。
+
+```bash
+python3 tools/aihot/local_opencode.py --review <上游ID> --max-calls 1
+```
+
+只支持1–10个显式ID，固定本地OpenCode的minimax-cn-coding-plan/MiniMax-M3.1-Flash-Preview；新闻加工和审批加工共用原opencode预算8/分钟、60/小时、300/24小时，既有预算不重置。真实回答先保存待审而非自动发布，人工编辑保留最近模型回执。
+
+API从`UPSTREAM_REVIEW_CACHE=/upstream-reader/snapshot.json`读取有界私人投影：宿主`/opt/intelligence-hub/aihot/private-reader-api`以UID1000拥有，目录700、JSON600，只读挂载给API，未挂载原始私人缓存。reader通过`--admin-export-dir`更新投影，现有30分钟timer的ExecStartPost运行reconcile-upstream-reviews.ts，无模型/通知。近期材料最多200条，明确撤选记录保留最近1000个，覆盖单轮最多500变更；不把材料离开近期窗口当作撤选。维护失败需检查reader日志和投影新鲜度，超过1小时禁止新的审批，不拿旧来源审批；没有承诺完整历史覆盖。
+
+0039迁移仅新增表，旧镜像可忽略它。此次旧镜像tag为muqiao-intel-aihot:pre-review，源码/override备份在review-staging/app-before-review.tgz、compose.previous.yaml；回退须恢复旧镜像及override，并恢复reader的RSS-only单元以免调用旧镜像没有的reconcile脚本。不要删除数据库/卷。根目录.env不进入源码备份，服务器仍保留原密钥，仅release标记更新。
