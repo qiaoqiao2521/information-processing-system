@@ -22,6 +22,8 @@
 
 - 用户授权同步AIHOT公开Codex重置结果：`CODEX_RESET_UPSTREAM_ENABLED=true`，现有worker每15分钟条件获取完整快照，45分钟过期提示；不启用X直采、模型识别或通知。见[同步计划](plans/upstream-reset-sync/task_plan.md)。
 
+- AIHOT RSS已准备私人缓存与30分钟脚本timer，复用公开摘要，不进模型队列或公网站点数据库。新核实上游公开使用规则：公网镜像/批量再分发须书面授权；当前等待用户确认授权范围（含此前重置镜像），见[RSS计划](plans/upstream-rss-reader/task_plan.md)。
+
 ## Current State / Priority
 
 核心源码快照 `vendor/aihot`。109 RSS + 2个官方网页源 + 10个外部/存量源（3个暂停）。旧Python工作台与knowledge_pack链路仍可本地使用，436旧站和快照用于回退。核心迁移进度回源 `plans/aihot-core-migration`，官方覆盖修复见 `plans/official-source-coverage`。

@@ -1,0 +1,11 @@
+[Unit]
+Description=Refresh private upstream RSS every 30 minutes
+
+[Timer]
+OnBootSec=5min
+OnUnitInactiveSec=30min
+Persistent=true
+Unit=intelligence-hub-upstream-reader.service
+
+[Install]
+WantedBy=timers.target

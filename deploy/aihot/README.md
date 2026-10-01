@@ -110,3 +110,11 @@ python3 tools/aihot/local_mcode.py <article-id>
 ## AIHOT公开Codex重置结果
 
 设置`CODEX_RESET_UPSTREAM_ENABLED=true`，现有worker每15分钟执行`monitor.upstream`，同步`https://aihot.news/api/v1/codex-resets`完整快照，使用ETag。首次可在api容器运行`node scripts/sync-upstream-reset.ts`。无数据库迁移，不导入本站原始X监测表，不触发模型或通知。页面`/codex-reset`、历史日历和公开v1读取同一缓存；来源、原文、状态不改写，45分钟过期提示，失败保留最后有效结果。撤回/修正随完整快照更新。关闭该环境变量回到原生监测读取（当前没有SocialData计划），模块开关false则隐藏入口。
+
+## 上游RSS私人缓存（不进入公网内容库）
+
+`python3 tools/aihot/upstream_feed.py --feed selected`保存个人缓存到`~/.local/share/information-hub/aihot-reader/`；`--feed all`读取全部动态，另支持daily及五个分类。目录700、文件600、TTL30分钟、ETag/304、最多100条，失败保留旧快照，禁止DOCTYPE及不合法上游链接；遇no-store不保存。无模型调用、摄取、通知或公网导出。
+
+436的`intelligence-hub-upstream-reader.timer`每30分钟运行普通Python脚本，同步精选/全部到`/opt/intelligence-hub/aihot-private-reader/cache/`；目录不挂载到网站容器，不公开访问。本机TLS失败可通过既有SSH读取服务器私人缓存。
+
+AIHOT公开使用规则1.1：https://aihot.news/terms。个人阅读与合理私有缓存允许直接使用；公网站点持续镜像/批量再分发需书面授权。当前RSS仅私有缓存；用户授权范围尚待确认，已部署的重置镜像亦需确认。接续见`plans/upstream-rss-reader`。

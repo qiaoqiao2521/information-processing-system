@@ -1,0 +1,19 @@
+[Unit]
+Description=Sync AIHOT RSS to a private reader cache
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/intelligence-hub/aihot-private-reader/upstream_feed.py --feed selected --cache-dir /opt/intelligence-hub/aihot-private-reader/cache
+ExecStart=/usr/bin/python3 /opt/intelligence-hub/aihot-private-reader/upstream_feed.py --feed all --cache-dir /opt/intelligence-hub/aihot-private-reader/cache
+TimeoutStartSec=90
+UMask=0077
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ReadWritePaths=/opt/intelligence-hub/aihot-private-reader
+StandardOutput=journal
+StandardError=journal
