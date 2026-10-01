@@ -87,6 +87,7 @@ export interface CodexResetOutage {
 }
 
 export interface CodexResetsSnapshot {
+  upstream?: { url: string; fetchedAt: string; stale: boolean };
   schemaVersion: 1;
   timezone: "Asia/Shanghai";
   today: string;

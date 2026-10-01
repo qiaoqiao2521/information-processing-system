@@ -4,6 +4,7 @@
 import { addDays, beijingDate, beijingMidnight } from "@aihot/contracts/time";
 import type { CodexCalendarMark, CodexResetMonitor, CodexResetPageData, CodexResetsSnapshot } from "@aihot/contracts/monitor";
 import { sql } from "../db.ts";
+import { readUpstreamReset, upstreamResetEnabled } from "./upstream.ts";
 import { sha256, stableJson } from "../lib/ids.ts";
 import { proxiedImage } from "../media/imgproxy.ts";
 import { siteUrl } from "../publication/links.ts";
@@ -219,6 +220,7 @@ export async function codexResetsRecent(now = Date.now()): Promise<CodexResetsSn
 
 /** The complete public snapshot served at GET /api/v1/codex-resets. */
 export async function codexResetsSnapshot(now = Date.now()): Promise<CodexResetsSnapshot> {
+  if (upstreamResetEnabled()) return readUpstreamReset(now);
   const { events, links, posts, state, counts } = await loadAll();
   const eventJsons = events.map((e) => eventJson(e, links, posts, now));
   const activities = [...posts.values()]
@@ -293,7 +295,7 @@ export async function codexResetPage(now = Date.now()): Promise<CodexResetPageDa
   const median = sorted.length ? (sorted.length % 2 ? sorted[(sorted.length - 1) / 2]! : (sorted[sorted.length / 2 - 1]! + sorted[sorted.length / 2]!) / 2) : null;
   const pending = snap.events.find((e) => e.presentation && ["announced", "in_progress", "expired_unconfirmed"].includes(e.presentation.status));
   // Tibo's current X avatar, from his latest collected post.
-  const [author] = await sql<{ avatar: string | null }[]>`
+  const [author] = upstreamResetEnabled() ? [] : await sql<{ avatar: string | null }[]>`
     SELECT x_post->>'avatarUrl' AS avatar FROM articles
     WHERE source_id = 'x-account-thsottiaux' AND x_post ? 'avatarUrl' ORDER BY discovered_at DESC LIMIT 1`;
   const lastLanded = snap.events.find((e) => e.presentation?.status === "confirmed" || e.presentation?.status === "likely_completed");
@@ -312,12 +314,16 @@ export async function codexResetPage(now = Date.now()): Promise<CodexResetPageDa
     confirmMinutes: snap.events
       .filter((e) => e.type === "direct_reset" && e.confirmedAt && e.confirmationBasis === "source_post")
       .map((e) => Number(e.confirmedAt!.slice(11, 13)) * 60 + Number(e.confirmedAt!.slice(14, 16))),
-    version: versionHash(snap.events.map((e) => [e.id, e.updatedAt, e.presentation?.status]), snap.outage?.postId ?? null),
+    version: versionHash(snap.events.map((e) => [e.id, e.updatedAt, e.presentation?.status]), snap.outage?.postId ?? null) + (snap.upstream?.stale ? "-stale" : ""),
   };
 }
 
 /** Cheap version probe for the page's foreground polling. */
 export async function codexResetVersion(now = Date.now()) {
+  if (upstreamResetEnabled()) {
+    const s = await readUpstreamReset(now);
+    return { version: versionHash(s.events.map((e) => [e.id, e.updatedAt, e.presentation?.status]), s.outage?.postId ?? null) + (s.upstream.stale ? "-stale" : ""), checkedAt: s.checkedAt, today: s.today };
+  }
   // Keep clock-driven transitions in the hash, without loading posts, citations, calendars or avatars.
   type VersionEvent = Pick<EventRow, "id" | "updated_at" | "status" | "estimate" | "schedule" | "presentation">;
   const [events, [outage], [state]] = await Promise.all([

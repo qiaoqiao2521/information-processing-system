@@ -106,3 +106,7 @@ python3 tools/aihot/local_mcode.py <article-id>
 ## 说明待确认
 
 用户将自行补充使用/隐私说明，草稿在 [terms.draft.md](../../plans/aihot-core-migration/terms.draft.md) 和 [privacy.draft.md](../../plans/aihot-core-migration/privacy.draft.md)。公开页仅显示待补充，未发布未经确认的模板条款。
+
+## AIHOT公开Codex重置结果
+
+设置`CODEX_RESET_UPSTREAM_ENABLED=true`，现有worker每15分钟执行`monitor.upstream`，同步`https://aihot.news/api/v1/codex-resets`完整快照，使用ETag。首次可在api容器运行`node scripts/sync-upstream-reset.ts`。无数据库迁移，不导入本站原始X监测表，不触发模型或通知。页面`/codex-reset`、历史日历和公开v1读取同一缓存；来源、原文、状态不改写，45分钟过期提示，失败保留最后有效结果。撤回/修正随完整快照更新。关闭该环境变量回到原生监测读取（当前没有SocialData计划），模块开关false则隐藏入口。

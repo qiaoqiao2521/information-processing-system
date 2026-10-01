@@ -15,3 +15,7 @@
 ## OpenCode入口更正
 
 用户更正目标为OpenCode内的MiniMax Token Plan。新增`local-opencode`，完整模型ID为`minimax-cn-coding-plan/MiniMax-M3.1-Flash-Preview`，服务回执/预算独立于原mcode与API。`LOCAL_CLI_PROVIDER=opencode`在同一有界SSH会话中固定选择此模型；原MCODE_STDIO_ENABLED与stdio协议名保留兼容。默认推荐外层入口`tools/aihot/local_opencode.py`。OpenCode以`--pure`、独立临时目录、禁用分享、全部工具deny、单步news agent运行；系统/用户Prompt分别传递，temperature应用，max_tokens尚不保证CLI等价。原有已完成mcode分析保留真实记录，不重算或伪造。
+
+## 公开重置结果同步
+
+Codex模块开启展示，`CODEX_RESET_UPSTREAM_ENABLED=true`时由现有worker每15分钟同步AIHOT公开完整v1快照（ETag、4MiB、30秒、有界schema校验），保存在独立settings键，不伪装为本站X采集或账号核验。读取层共用快照，页面保留上游来源/状态/时间，超过45分钟提示缓存；失败不覆盖旧快照。直采SocialData计划在镜像模式禁用，不触发模型和通知。

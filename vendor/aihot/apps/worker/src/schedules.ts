@@ -15,6 +15,7 @@ import { catchUpReports, composeDaily, composeMonthly, composeWeekly } from "@ai
 import { addDays, beijingDate, isoWeekLabel } from "@aihot/contracts/time";
 import { runLeaderboardRound } from "@aihot/backend/leaderboard/method/run";
 import { refreshLeaderboard } from "@aihot/backend/leaderboard/fetch/refresh";
+import { refreshUpstreamReset, upstreamResetEnabled } from "@aihot/backend/monitor/upstream";
 import { monitorTick } from "@aihot/backend/monitor/scan";
 import { dailyRetention } from "@aihot/backend/operations/retention";
 import { submitIndexNow } from "@aihot/backend/operations/indexnow";
@@ -88,7 +89,9 @@ export const SCHEDULES: Scheduled[] = [
     : []),
   // Codex reset monitor: checked every minute, scanned every 5 (every 3 while hot). It reads X through
   // SocialData, so without that key there is nothing to run.
-  ...(collecting && FEATURES.codexResetMonitor && credential("collectors", "SOCIALDATA_API_KEY")
+  ...(collecting && FEATURES.codexResetMonitor && upstreamResetEnabled()
+    ? [{ name: "monitor.upstream", cron: "*/15 * * * *", missed: "once" as const, run: () => refreshUpstreamReset() }] : []),
+  ...(collecting && FEATURES.codexResetMonitor && !upstreamResetEnabled() && credential("collectors", "SOCIALDATA_API_KEY")
     ? [
         { name: "monitor.tick", cron: "* * * * *", run: () => monitorTick() },
         { name: "monitor.lookback", cron: "40 4 * * *", run: () => monitorTick({ lookbackHours: 48 }) },

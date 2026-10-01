@@ -190,6 +190,11 @@ export default function CodexResetPage() {
         <p className="text-[12px] text-ink-4">全部为北京时间 · UTC+8</p>
       </header>
 
+      {d.upstream && <p className="mb-4 rounded-sheet border border-line p-3 text-[13px] text-ink-3">
+        来源：<a href="https://aihot.news/codex-reset" target="_blank" rel="noreferrer" className="underline">AIHOT 公开重置监测</a> · 每15分钟同步 · 最近成功同步 {stamp(d.upstream.fetchedAt)}。
+        {d.upstream.stale ? " 同步或上游核验已超过45分钟，当前为缓存结果，请核对来源。" : ""}
+        {" "}上游确认不代表你的个人账号已到账。
+      </p>}
       <LiveMonitor d={d} />
 
       <details className="disclosure group mt-8 border-t border-line">
