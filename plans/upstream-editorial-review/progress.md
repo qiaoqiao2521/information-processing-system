@@ -1,16 +1,23 @@
 # Current
 
-工程已完成并部署436，真实本地OpenCode稿件version3待审，引用/加工/审批流程可用。Owner：当前Codex。
+2026-10-03已完成自动加工发布纠偏，部署436。实际3篇：2篇通过并公开、1篇因效果推断写成确定能力而留待审；旧ChatGPT Sites样稿仍保留待审。Owner：当前根Codex。
 
 # Done
 
-- 0039增量表、后台/admin/reviews列表和引用对照编辑页、版本/来源hash校验、管理员登录/CSRF、审计、审批/退回；原文去重，不覆盖已有独立来源文章。
-- 审批通过在事务中写入文章/override/publishArticleTx，公开层共享；来源更正/明确撤选撤回，退出近期窗口不撤回。模型分数保持null，人工精选另记。
-- 私人投影700/600、UID1000，只读挂载API；原始缓存仍不挂载。30分钟reader/reconcile Result=success，下一次实查北京时间15:48:09（当时快照）。
-- 型检、构建、前端16项、后端200项（全新隔离数据库）、Python12项通过。隔离Playwright实测登录、编辑保存、审批发布200、退回404；未审批404/匿名后台401，移动390px无横向溢出，无pageerror。截图仅临时验收产物。
-- 436正式health、匿名后台API401、页面302跳登录、公网站点完整smoke（含MCP）通过。旧镜像/override/源码备份保留。
-- 一篇真实素材ed0fkjtzo2sbnpzqlara60ghs（ChatGPT Sites/MCP相关X转述），本地OpenCode MiniMax 3.1单次真实请求返回成功，回执326 completed，生成draft/version2，未建公开文章。未声称该X说法已由官方核验。
+- 原0039草稿/引用/人工审批、登录/CSRF、版本和source hash、更正/撤选、原文URL去重、统一publication边界保留。初版仅1篇草稿且无常态本地处理，是用户在/all看不到加工的原因。
+- 新增最近7天新材料批次与独立质量复核。只有材料支撑、具体新增价值、无重复全部通过才发布；AI复核如实标记，评分null、不自动精选，不声称独立查阅原文。
+- 预算暂停可续跑；hold、人工改稿、失败/unknown不定时重复付费。source hash或稿件版本在模型等待期间变化，阻止旧答复发布。
+- /all新增“AI加工”筛选，正文展示分析、待核实、原样引用和原文链接；后台显示最新复核理由。
+- 实际本地OpenCode MiniMax-M3.1-Flash-Preview共6次调用，回执328–333均completed、transport=stdio-opencode：Project Suncatcher（review-ljyywltag6vvryw193ryz7lgd）与DGX Spark（review-epb245so8hb7m1r74gumw2dze）通过公开；Finances（ouqidz9vopsnd1srzkmfz4zmn）hold，公开404。
+- 436运行镜像26f8e7e4e8c3，release=aihot-auto-26f8e7e4e8c3；health正常，匿名后台401，已发布详情200，原日期和空评分保持。436原API模型消费者false，reader timer active。
+- 本机~/.config/systemd/user/intelligence-hub-local-processing.{service,timer}已启用，每30分钟3篇、最多6次无工具请求，共享opencode预算8/分钟、60/小时、300/连续24小时；首次下一轮当时检查为04:24:29 CST。普通Python/SSH脚本，不发通知，账号留本机；本机离线时436采集继续。
+- 类型/构建、前端16项、全新隔离数据库后端202项、Python适配器4项与上游12项通过。公网31条smoke通过。隔离Playwright1440/390实测/all点击AI加工→已发布详情，分析/待核实/引用可见，无pageerror或横向溢出；截图仅/tmp验收产物。
+- 旧镜像tag muqiao-intel-aihot:pre-auto-processing及auto-processing-staging/app-before-auto.tgz、compose.previous.yaml保留，可停本机timer后回退；生产数据库/卷保留。
 
 # Remaining
 
-最终镜像9b853e13ed42、release=aihot-review-9b853e13ed42已上线，health正常；匿名后台401，未审批公开文章404，timer active。v2提示词/前言过滤以及模型列表规范化通过追加行为测试和型检/构建/16前端项。第二次真实模型回答因uncertainties数组被旧schema拒收，已修复为最多3项列表→逐行文字；在输入hash匹配下恢复回执327的已收到回答，没有第三次模型请求。回执327 completed并保留原格式错误/恢复审计，最终draft/version3，analysis3段、待核实3行，共2次真实调用。10个变动运行时代码/迁移文件与本地SHA256全部一致。功能提交89b6cdb已推送并核对远端SHA。隔离API/Web/PostgreSQL测试容器及专用SSH隧道已按身份核实后清理；正式服务、数据库和回退镜像保留。实际发稿由用户在后台审阅点击通过；上游书面授权仍无记录，已向用户说明并如实保留其选择，未代其申请授权。
+Finances及旧Sites稿保持待审，可在/admin/reviews查看原因并修改后再审；不能宣称已完成原文独立事实核验。自动任务仅覆盖近期上游材料，不重算旧存量或恢复X/Google搜索。本机服务依赖机器在线且用户服务运行。
+
+# Next
+
+后续从timer日志和后台稿件查看新结果；模型额度/认证失效则保持草稿，不回退付费API。

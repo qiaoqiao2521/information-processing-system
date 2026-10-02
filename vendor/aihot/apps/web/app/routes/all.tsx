@@ -100,6 +100,12 @@ export default function AllPage() {
         </div>
       </div>
 
+      <nav aria-label="加工内容" className="my-3 flex flex-wrap items-center gap-3 text-[13px]">
+        <Link to="/all" className={!f.tag ? 'font-medium text-accent' : 'text-ink-3 hover:text-accent'}>全部动态</Link>
+        <Link to={`/all?tag=${encodeURIComponent('二次加工')}`} className={f.tag==='二次加工' ? 'font-medium text-accent' : 'text-ink-3 hover:text-accent'}>AI 加工</Link>
+        {f.tag==='二次加工' && <span className="text-ink-4">已复核 <span className="num">{data.total}</span> 篇 · 打开文章查看分析与来源引用</span>}
+      </nav>
+
       {f.q && (
         <div className="mb-3 mt-3 flex flex-wrap items-center justify-between gap-2 lg:mt-0">
           <PillTabs

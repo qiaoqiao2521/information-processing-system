@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""On-demand news processing: remote AIHOT logic, local model CLI answers.
+"""News processing: remote AIHOT logic, local model CLI answers.
 
-No DB copy, account export, HTTP listener, unattended schedule or API fallback.
+No DB copy, account export, HTTP listener or API fallback.
 """
 import argparse
 from concurrent.futures import ThreadPoolExecutor
@@ -114,6 +114,7 @@ def main(engine="mcode"):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("ids", nargs="*")
     parser.add_argument("--next", type=int, metavar="N")
+    parser.add_argument("--upstream-next", type=int, metavar="N", help="Process and independently review 1–10 new upstream items")
     parser.add_argument("--max-calls", type=int, default=40, help="Per-run stop, independent of DB 300/24h cap")
     parser.add_argument("--host", default="racknerd-436b0c0")
     parser.add_argument("--mcode", default=str(Path.home() / ".minimax-code/bin/mcode"))
@@ -121,11 +122,17 @@ def main(engine="mcode"):
     parser.add_argument("--engine", choices=("mcode", "opencode"), default=engine)
     parser.add_argument("--review", action="store_true", help="Process explicit upstream review IDs into drafts, without publishing")
     args = parser.parse_args()
+    if args.upstream_next is not None and (args.engine != "opencode" or args.review or args.next is not None or args.ids):
+        parser.error("Use --upstream-next with OpenCode, without other selections")
     if args.review and (args.engine != "opencode" or args.next is not None):
         parser.error("Review processing requires OpenCode and explicit IDs")
     if not re.fullmatch(r"[A-Za-z0-9_.-]+", args.host) or not 1 <= args.max_calls <= 300:
         parser.error("Invalid host or call limit")
-    if args.next is not None:
+    if args.upstream_next is not None:
+        if not 1 <= args.upstream_next <= 10:
+            parser.error("Use --upstream-next 1–10")
+        selection = ["--next", str(args.upstream_next)]
+    elif args.next is not None:
         if args.ids or not 1 <= args.next <= 10:
             parser.error("Use --next 1–10 or explicit IDs")
         selection = ["--next", str(args.next)]
@@ -136,7 +143,7 @@ def main(engine="mcode"):
     executable = shutil.which(args.opencode if args.engine == "opencode" else args.mcode)
     if not executable:
         parser.error("Local model CLI executable not found")
-    script = "process-upstream-reviews.ts" if args.review else "process-local-mcode.ts"
+    script = "process-upstream-batch.ts" if args.upstream_next is not None else "process-upstream-reviews.ts" if args.review else "process-local-mcode.ts"
     remote = "cd /opt/intelligence-hub/aihot/app && docker compose -p muqiao-intel -f docker-compose.yml -f compose.override.yaml exec -T -e MCODE_STDIO_ENABLED=true -e MODEL_CALLS_ENABLED=true -e LOCAL_CLI_PROVIDER=" + args.engine + " api node scripts/" + script + " " + shlex.join(selection)
     child = subprocess.Popen(["ssh", "-T", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10",
                               "-o", "ServerAliveInterval=15", "-o", "ServerAliveCountMax=3", args.host, remote],

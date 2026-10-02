@@ -1,0 +1,10 @@
+[Unit]
+Description=Maintain news processing quietly while this local machine is available
+
+[Timer]
+OnActiveSec=30min
+OnUnitInactiveSec=30min
+Unit=intelligence-hub-local-processing.service
+
+[Install]
+WantedBy=timers.target

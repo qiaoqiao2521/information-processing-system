@@ -5,7 +5,7 @@ import { mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { sql, closeDb } from '@aihot/backend/db';
-import { createReview, reviewDetail, saveReview, decideReview, reconcileReviews, generatedReviewDraft, ReviewModelDraft } from '@aihot/backend/admin/upstream-reviews';
+import { createReview, reviewDetail, saveReview, decideReview, reconcileReviews, generatedReviewDraft, ReviewModelDraft, QualityVerdict, qualityAllowsPublication, nextAutomaticReviews } from '@aihot/backend/admin/upstream-reviews';
 const dir=await mkdtemp(join(tmpdir(),'review-test-'));
 process.env.UPSTREAM_REVIEW_CACHE=join(dir,'snapshot.json');
 const t=tag();const id='draft-'+t;
@@ -18,6 +18,10 @@ const draft={title:'审批标题',summary:'仅根据所附材料做有条件的�
 const checks={facts:true,addedValue:true,duplicates:true};
 after(async()=>{delete process.env.UPSTREAM_REVIEW_CACHE;await rm(dir,{recursive:true,force:true});await closeDb();});
 test('drafts stay private, approvals preserve quotations, conflicts and changes revoke publication',async()=>{
+ const verdict=QualityVerdict.parse({decision:'approve',factsSupported:true,addedValue:true,duplicate:false,reason:'有条件分析，引用支持'});
+ assert.equal(qualityAllowsPublication(verdict),true);
+ for(const change of [{decision:'hold' as const},{factsSupported:false},{addedValue:false},{duplicate:true}])
+   assert.equal(qualityAllowsPublication({...verdict,...change}),false);
  assert.equal(generatedReviewDraft({...draft,analysis:'处理状态：代理已达到最大步骤数，未使用外部工具。\n\n'+draft.analysis}).analysis,draft.analysis);
  assert.equal(generatedReviewDraft(draft).analysis,draft.analysis);
  assert.equal(ReviewModelDraft.parse({...draft,uncertainties:['问题一','问题二']}).uncertainties,'问题一\n问题二');
@@ -56,4 +60,23 @@ test('drafts stay private, approvals preserve quotations, conflicts and changes 
  await assert.rejects(decideReview(id,{version:republished!.version+1,decision:'approve',reason:'source gone',checks},'test:editor'),/来源已变化/);
  await snapshot(61*60_000);await assert.rejects(createReview(second.id,'test:editor'),/超过一小时/);
  assert.ok((await sql`SELECT * FROM audit_log WHERE subject=${'upstream-review:'+id}`).length>=6);
+});
+test('automatic batches skip existing drafts, old materials and duplicate originals; AI approval is labelled honestly',async()=>{
+ const fresh={...material,id:'auto-'+t,publishedAt:new Date().toISOString(),summary:'一份具有足够细节的近期材料，用于检查自动批次仅处理新材料，不覆盖手动修改或旧稿件。',
+   links:{aihot:'https://aihot.news/items/auto-'+t,original:'https://example.com/auto-'+t}};
+ const old={...fresh,id:'old-'+t,publishedAt:new Date(Date.now()-8*86400_000).toISOString()};
+ const duplicate={...fresh,id:'same-'+t,links:{...fresh.links,original}};
+ const unknownDate={...fresh,id:'undated-'+t,publishedAt:null};
+ items={[fresh.id]:fresh,[old.id]:old,[duplicate.id]:duplicate,[unknownDate.id]:unknownDate};removed=[];
+ await snapshot();assert.deepEqual(await nextAutomaticReviews(3),[fresh.id]);
+ const row=(await createReview(fresh.id,'test:batch'))!;
+ assert.deepEqual(await nextAutomaticReviews(3),[]);
+ const detail=(await reviewDetail(fresh.id))!;
+ const saved=(await saveReview(fresh.id,{version:row.version,sourceHash:detail.currentHash,draft},'test:batch'))!;
+ await decideReview(fresh.id,{version:saved.version,decision:'approve',reason:'AI独立复核通过',checks},'local:opencode:review','ai');
+ const [published]=await sql`SELECT tags,selected,score FROM publications WHERE article_id=${'review-'+fresh.id}`;
+ assert.ok(published!.tags.includes('AI复核'));assert.ok(!published!.tags.includes('人工审阅'));
+ assert.equal(published!.selected,false);assert.equal(published!.score,null);
+ items[fresh.id]={...fresh,summary:fresh.summary+' 更正'};await snapshot();
+ await reconcileReviews();assert.deepEqual(await nextAutomaticReviews(3),[fresh.id]);
 });

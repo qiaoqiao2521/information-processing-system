@@ -47,7 +47,7 @@ Reader返回的是整页；辅助入口只识别与已有摘要匹配的原帖�
 
 数据库每日北京时间04:10本地备份，文件仅服务器可读，保留最近7份自动备份；不上传云存储，不发通知。先验证的首份备份保留于 `backups/`。
 
-当前新站继续`COLLECT_ENABLED=true`；本地mcode验收后436设置`MODEL_CALLS_ENABLED=false`，暂停服务器模型消费者，保留队列。按需本地会话单独启用模型调用。旧`intelligence-hub-maintenance.timer`已停止，新bridge/backup timers启用。回退配置保存在`/opt/intelligence-hub/aihot/rollback-current`；旧8080服务仍在。
+当前新站继续`COLLECT_ENABLED=true`；本地模型接入后436设置`MODEL_CALLS_ENABLED=false`，暂停服务器模型消费者，保留队列。按需本地会话单独启用模型调用。旧`intelligence-hub-maintenance.timer`已停止，新bridge/backup timers启用。回退配置保存在`/opt/intelligence-hub/aihot/rollback-current`；旧8080服务仍在。
 
 ## 订阅与回灌
 
@@ -117,7 +117,7 @@ python3 tools/aihot/local_mcode.py <article-id>
 
 436的`intelligence-hub-upstream-reader.timer`每30分钟运行`upstream_reader.py`普通Python脚本，同步精选/全部、日报、五类RSS、最新日报API、热点10个事件及近期精选评分/更正/撤选到`/opt/intelligence-hub/aihot-private-reader/cache/`；目录不挂载到网站容器，不公开访问。本机TLS失败可通过既有SSH读取服务器私人缓存。
 
-AIHOT公开使用规则1.1：https://aihot.news/terms。个人阅读与合理私有缓存允许直接使用；公网站点持续镜像/批量再分发需书面授权。定时RSS仍仅私有缓存；用户后续明确选择二次加工、人工审批后发布，见下节。当前没有上游书面授权记录，润色和审批不作为授权依据。接续见`plans/upstream-rss-reader`。
+AIHOT公开使用规则1.1：https://aihot.news/terms。个人阅读与合理私有缓存允许直接使用；公网站点持续镜像/批量再分发需书面授权。定时RSS仍仅私有缓存；用户后续明确选择二次加工、审批后发布，2026-10-03确认AI独立复核通过后自动上站，见下节。当前没有上游书面授权记录，润色和审批不作为授权依据。接续见`plans/upstream-rss-reader`。
 
 
 私人批量入口：`python3 tools/aihot/upstream_reader.py --cache-dir <私人目录>`。436服务目录为`/opt/intelligence-hub/aihot-private-reader`；工具依赖同目录的`upstream_feed.py`和`upstream_api.py`。缓存根为`cache/`，API结果在`cache/api/`，检查`cache/reader-status.json`获取各资源成功/失败摘要。服务超时12分钟、互斥锁避免重入、匿名请求间隔1秒，429停止当前轮次，不在本轮重试；常规TTL30分钟，支持ETag/304与no-store，坏响应保留有效缓存，404/410删除失效API资源。没有公开导出或模型调用。
@@ -125,7 +125,7 @@ AIHOT公开使用规则1.1：https://aihot.news/terms。个人阅读与合理私
 精选初始快照只取游标，再取最近7天100条作为阅读种子；后续每轮最多5页、500个变更，状态最多200条近期文章，不覆盖全部历史。每页变更与游标原子保存；409过期时重建近期基线。API来源评分直接保存，摘要/评分更正及撤选同步至精选和分类RSS缓存，撤选不删除全部动态。热点之外的旧事件缓存清理；事件原始报道日期、来源链接、综述及storyline保留，缺少综述不补造。最新日报JSON与最近30期日报RSS分别保存。此目录不挂载网站容器。
 
 
-## 加工审批（人工通过后上站）
+## 加工审批与自动复核发布
 
 后台入口`/admin/reviews`：建立待审稿 → 对照引用 → 本地AI生成/手工修改 → 填写审批依据、确认事实/新增价值/重复检查 → 通过并发布。默认进入全部动态，人工精选可进入首页。退回、重新保存或来源更正/撤选会撤回已有公开版本。素材与稿件均需管理员登录；公开接口看不到未审批稿。
 
@@ -138,3 +138,19 @@ python3 tools/aihot/local_opencode.py --review <上游ID> --max-calls 1
 API从`UPSTREAM_REVIEW_CACHE=/upstream-reader/snapshot.json`读取有界私人投影：宿主`/opt/intelligence-hub/aihot/private-reader-api`以UID1000拥有，目录700、JSON600，只读挂载给API，未挂载原始私人缓存。reader通过`--admin-export-dir`更新投影，现有30分钟timer的ExecStartPost运行reconcile-upstream-reviews.ts，无模型/通知。近期材料最多200条，明确撤选记录保留最近1000个，覆盖单轮最多500变更；不把材料离开近期窗口当作撤选。维护失败需检查reader日志和投影新鲜度，超过1小时禁止新的审批，不拿旧来源审批；没有承诺完整历史覆盖。
 
 0039迁移仅新增表，旧镜像可忽略它。此次旧镜像tag为muqiao-intel-aihot:pre-review，源码/override备份在review-staging/app-before-review.tgz、compose.previous.yaml；回退须恢复旧镜像及override，并恢复reader的RSS-only单元以免调用旧镜像没有的reconcile脚本。不要删除数据库/卷。根目录.env不进入源码备份，服务器仍保留原密钥，仅release标记更新。
+
+### 静默自动加工（本地）
+
+2026-10-03用户确认：AI复核通过后自动上站，存疑稿留待审。此前只有一篇后台draft，没有常态模型处理，因此/all看不到二次加工。
+
+```bash
+python3 tools/aihot/local_opencode.py --upstream-next 3 --max-calls 6
+```
+
+每批最近7天的3篇新上游精选材料（有真实日期、摘要至少40字符），先原文URL去重，再一次加工、一次独立质量复核。只在材料支撑、具体新增价值、无内容重叠全部通过后发布到/all；按原日期排序，网页/RSS/API共用publication。AI稿标记“二次加工 / AI复核”，无自造评分、自动精选或原文独立核验声明。详情包含分析、待核实、原样引用及出处。公开入口[/all?tag=二次加工](https://intel.muqiao.xyz/all?tag=%E4%BA%8C%E6%AC%A1%E5%8A%A0%E5%B7%A5)。
+
+部署目录下local-processing的service/timer安装到本机`~/.config/systemd/user/`，工作目录为`~/projects/information-processing-system`，每30分钟运行普通Python脚本，单轮最多6请求，共享opencode的8/分钟、60/小时、300/连续24小时上限；账户留在本机，436原API模型消费者继续关闭，不发通知。仅本机用户服务运行时有效；离线/退出用户服务时436采集照常，加工等本机恢复。复核hold、人工编辑、失败或unknown保留待审，不定时反复付费；预算暂停的阶段可续跑，已收到回答按原回执复用。
+
+检查：`systemctl --user status intelligence-hub-local-processing.timer`和`journalctl --user -u intelligence-hub-local-processing.service -n 20`。暂停自动发布：`systemctl --user disable --now intelligence-hub-local-processing.timer`（正在执行的service需单独stop）；436reader与更正/撤选维护不受影响。自动复核不是事实的独立验证，后台仍可退回/更改；来源更正使已发表稿退出公开层并可重新处理，明确撤选则撤回。
+
+本次自动加工镜像为`26f8e7e4e8c3`（release `aihot-auto-26f8e7e4e8c3`）。回退前停止/禁用本机local-processing timer及正在执行的service，再恢复`muqiao-intel-aihot:pre-auto-processing`镜像为local，并按`auto-processing-staging/app-before-auto.tgz`恢复源码；`.env`、数据库与卷保留，compose.previous.yaml可核对服务配置。reader仍使用原review reconcile脚本，不需要停采集。
