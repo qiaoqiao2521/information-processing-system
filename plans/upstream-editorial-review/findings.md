@@ -23,3 +23,16 @@
 436 tailnet SSH 当时有间歇超时；同主机已登记公网 SSH 命令级直连可用，known_hosts 身份匹配。只做来源查询，没有修改全局网络或公众号启动环境。
 
 公开 `/api/v1/items` 是发现契约；官方全文受 `site_fulltext=false` 限制。公众号现有采集器的论文摘要/README 入口不足以自动证明技术长文材料充分。源侧交出 Google Research 昨日主题的官方博客全文、116页官方技术报告与带页码选读材料，编辑建议独立存储，正文和文档 hash 已验。原文和冻结数据留在忽略目录 `output_to_user/source-handoff-20261006/`；通用契约见 [公众号写作素材交接](../../docs/信息源处理系统/Consumers/wechat-writing-source.md)。公众号根任务负责冻结接入、写作、QA与新 SQLite 入库；信息源不并行编辑它的仓库。
+
+### 13:42CST左右的真实协作回执
+
+公众号根任务在同root/HOME的systemd环境完成新草稿112《给Agent权限之后，为什么它仍可能越界？》。作者requested/actual为`gemini-3.8-flash-medium`，实际wire为`gemini-3.8-flash-n`；独立内容预审`MiniMax-M3.1-Flash-Preview`一次、上游请求一次，通过并保留两条非阻断建议。修复试跑总作者5次，含旧run继承预算，没有清零或把排版/引文程序错误伪装成内容审查。
+
+实际SQLite只读查询显示`articles.id=112`、`status=draft_created`、真实草稿引用存在；微信fresh readback检查正文、链接、图片序列、代码、标题、摘要、封面、元数据均一致，375/390视图通过，v3状态`draft_verified`。本任务读取该实际工具输出，并独立核对已取回本地的交付文件：
+
+- 素材包SHA256仍为`268f69bb0ce057e192de9b1c8dfec67f46266475dda7ba89ae371eda70d6c5a1`。
+- 含frontmatter源稿SHA256为`1bfdec8a6fbdfc420219c15256c5dac2309bdef2654f1c61befc98a4181d8e30`。
+- SQLite对应Markdown SHA256为`2f52b3e3592df28250a4aa48dbf9b8b8662a429db4bc721b114db31ca40abdc4`，不含frontmatter，不能和源稿文件hash混同。
+- 微信回读HTML SHA256为`eaa704fa61f88ea99075460a49ba714cd406543c4a7eb7ceb2af48d9b7e4c5a7`。
+
+这证明一篇新文章已从来源、写作、审查到草稿入库闭环；没有公开发布，也不证明后三个cron槽已经成功。脱敏协作回执保存在忽略目录`output_to_user/source-handoff-20261006/publisher-receipt-112.json`，不再触发模型或微信写入。
