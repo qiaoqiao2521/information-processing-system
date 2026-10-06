@@ -37,6 +37,7 @@ last_verified: 2026-04-20
 
 ### Consumers
 
+- [[Consumers/wechat-writing-source]]：公众号写作的一手材料、发现 API、附件与实际入库验收边界。
 - [[Consumers/notebooklm-report]]
 - [[Consumers/notebooklm-artifact-trigger]]
 

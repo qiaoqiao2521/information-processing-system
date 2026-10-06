@@ -40,3 +40,4 @@
 - [上游架构](vendor/aihot/docs/architecture.md)、[评分](vendor/aihot/docs/selection.md)、[事件关系](vendor/aihot/docs/grouping.md)
 - [信源配置](vendor/aihot/docs/sources.md)、[行业定制](vendor/aihot/docs/customize.md)
 - [旧站与媒体桥接](web/README.md)、[来源契约](docs/信息源处理系统/README.md)
+- [公众号写作素材交接](docs/信息源处理系统/Consumers/wechat-writing-source.md)：沿用公开发现 API，原文和附件独立归档；网站与公众号入库分别验收。
