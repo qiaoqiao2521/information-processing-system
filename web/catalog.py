@@ -16,6 +16,7 @@ OUTPUT_FILES = (
     'hacker_news_sources_latest.json', 'hf_daily_papers_sources_latest.json',
     'juya_daily_sources_latest.json', 'qiaomu_rss_sources_latest.json', 'ak_rss_sources_latest.json',
     'x_google_sources_latest.json',
+    'cli_releases_sources_latest.json',
     'collection_status.json',
 )
 DATA_FILES = ('media_assets.json', 'enriched_trending.json', 'enriched_digest.json')
@@ -28,6 +29,7 @@ SOURCES = (
     ('x', 'X 关注动态', '公开帖文', 'x_google_sources_latest.json'),
     ('trending', 'GitHub 趋势', '开源项目', 'github_trending_latest.json'),
     ('digest', 'AI Builders', '一线动态', 'ai_builders_digest_sources_latest.json'),
+    ('cli-releases', 'Claude Code / Codex 更新', '官方发布', 'cli_releases_sources_latest.json'),
     ('radar', '机会雷达', '机会观察', 'builderpulse_opportunity_radar_sources_latest.json'),
     ('topics', '融合简报', '主题汇总', 'consolidated_daily_brief.json'),
     ('assets', '媒体素材', '创作素材', 'media_assets.json'),
@@ -188,7 +190,7 @@ def catalog(output_dir: Path, data_dir: Path):
             for r in rows(doc, 'items'):
                 address = r.get('url') or r.get('arxiv_url') or r.get('hf_url')
                 add(r.get('title'), r.get('summary') or r.get('description'), r.get('content') or r.get('body'), address,
-                    r.get('published_at') or r.get('date'), r.get('author') or r.get('feed_title') or ', '.join(r.get('authors', [])),
+                    r.get('published_at') or r.get('publishedAt') or r.get('date'), r.get('author') or r.get('feed_title') or ', '.join(r.get('authors', [])),
                     fields=[('分类', r.get('category') or r.get('feed_category'))] + (
                         [('正文状态', 'Jina 已提取正文' if r.get('content_status') == 'full-text' else '搜索摘要 · 正文未取得'),
                          ('正文读取时间', r.get('body_fetched_at')), ('发现方式', 'Google 浏览器搜索'),

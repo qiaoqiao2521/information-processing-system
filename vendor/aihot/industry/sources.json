@@ -2377,6 +2377,57 @@
       "syndicate_fulltext": false
     },
     {
+      "id": "rss-ruanyifeng-weekly",
+      "name": "阮一峰 · 科技爱好者周刊",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://www.ruanyifeng.com/blog/atom.xml",
+        "sortByPublishedAt": true,
+        "_aihot": {
+          "initialBackfillLimit": 3,
+          "publishPending": true
+        }
+      },
+      "first_party": true,
+      "tags": [
+        "个人订阅",
+        "周刊"
+      ],
+      "tier": "T2",
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "web-builderpulse-reports",
+      "name": "BuilderPulse 中文日报",
+      "kind": "web_list",
+      "config": {
+        "url": "https://github.com/BuilderPulse/BuilderPulse",
+        "itemSelector": "a[href*=\"/BuilderPulse/BuilderPulse/blob/main/zh/\"]",
+        "publishedAtRegex": "(20\\d{2}-\\d{2}-\\d{2})\\.md",
+        "publishedAtUtcOffset": "+00:00",
+        "sortByPublishedAt": true,
+        "allowUrlPrefixes": [
+          "https://github.com/BuilderPulse/BuilderPulse/blob/main/zh/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 7
+        }
+      },
+      "first_party": false,
+      "tags": [
+        "上游日报",
+        "BuilderPulse"
+      ],
+      "tier": "T2",
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
       "id": "hub-hacker-news",
       "name": "Hacker News",
       "kind": "external",
@@ -2464,7 +2515,7 @@
       "tier": "T2",
       "participation_mode": "editorial",
       "interval_minutes": 120,
-      "enabled": true,
+      "enabled": false,
       "tags": [
         "旧站适配",
         "radar"
@@ -2480,7 +2531,7 @@
       "tier": "T2",
       "participation_mode": "editorial",
       "interval_minutes": 120,
-      "enabled": true,
+      "enabled": false,
       "tags": [
         "旧站适配",
         "topics"
@@ -2503,6 +2554,23 @@
       ],
       "site_fulltext": false,
       "syndicate_fulltext": false
+    },
+    {
+      "id": "hub-cli-releases",
+      "name": "Claude Code / Codex 更新",
+      "kind": "external",
+      "config": {},
+      "tier": "T1",
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "enabled": true,
+      "tags": [
+        "官方",
+        "CLI更新"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "first_party": true
     },
     {
       "id": "hub-rss",

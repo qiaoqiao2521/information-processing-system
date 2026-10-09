@@ -51,16 +51,20 @@ Reader返回的是整页；辅助入口只识别与已有摘要匹配的原帖�
 
 ## 订阅与回灌
 
-- `python3 tools/aihot/subscriptions.py`合并89 AK OPML订阅、乔木当前3个及上游示范源；当前109 RSS、2官方网页源及10外部/存量源，总121。
+- `python3 tools/aihot/subscriptions.py`合并89 AK OPML订阅、乔木当前3个及上游示范源；当前110 RSS、3网页源及11外部/存量源，总124。现场125项包含已有独有来源，种子不覆盖管理员改动。
 - 首次seed新增信源，复跑不覆盖后台修改。以后订阅在 `/admin/sources`管理。
 - `scripts/import-hub.ts public-library.json`保存真实发表/采集日期、无模型分数的旧站摘要和旧ID映射；同网址跨来源只留一个身份，复跑不新增。
-- `tools/aihot/bridge.py`推送HN/橘鸦/HF/GitHub/Builders最新材料；文章摘要、正文有界传输，旧抓取失败则保留快照。不会重跑已原生接入的RSS和暂停的X。
+- `tools/aihot/bridge.py`推送HN/橘鸦/HF/GitHub/Builders与CLI发布六路材料。文章摘要、正文有界传输；抓取失败保留旧快照、跳过该路摄取并返回失败，不拿旧数据更新来源成功时间。不会重跑已原生接入的RSS和暂停的X。
 - 同一条文章被不同来源发现会留发现记录，重复发现不会制造新文章。
 - 默认不展示或再分发原文全文；阅读工具只复制任务，不直接调用模型。
 
+2026-10-09已补阮一峰Atom与BuilderPulse中文报告，复用原生RSS／web_list；CLI独立读取Claude最新稳定版、Codex最新稳定版及最近10项中的首个preview。BuilderPulse从官方README报告链接解析文件日期，不使用提交RSS冒充报告。首次实采分别为3／7／3条，见[集中采集验收](../../plans/centralized-source-completion-20261009/progress.md)。
+
+这批部署只更新四个维护程序和官方source配置，未重建上游镜像。maintenance current指向`20261009T152851-central-sources`；原bridge入口指向该release，现有timer沿用。可用`--refresh --sources cli-releases`窄范围验收。生产API／worker模型开关保持false；采集成功不等于加工或公开发布。旧分布采集与Notebook定时消费由Ops退役，历史资料和手动入口保留。
+
 ## 官方覆盖与模型等待
 
-OpenAI News、Google DeepMind/Research/Gemini、Anthropic newsroom、Claude博客六个明确官方来源启用`config._aihot.publishPending=true`。采集成功就通过同一公共发布层展示原始标题/摘要和“待AI处理”标记，不写假分数、不入精选、不改变原日期；真实模型判断可替换原始索引，判定block后仍退出公开池。其他来源不自动获得此待遇。
+OpenAI News、Google DeepMind/Research/Gemini、Anthropic newsroom、Claude博客六个明确官方来源启用`config._aihot.publishPending=true`。本次另为阮一峰个人订阅明确启用该配置；CLI发布与BuilderPulse未启用。采集成功就通过同一公共发布层展示原始标题/摘要和“待AI处理”标记，不写假分数、不入精选、不改变原日期；真实模型判断可替换原始索引，判定block后仍退出公开池。其他来源不自动获得此待遇。
 
 RSS默认按发表时间降序再截断，显式`sortByPublishedAt=false`可保留发布者顺序。436设置`PROCESS_HISTORY_ENABLED=false`，暂停历史自动加工及已入队历史模型任务；资料、原日期、人工按需处理入口保留，模型日额度仍300。
 

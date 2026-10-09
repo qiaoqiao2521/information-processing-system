@@ -27,6 +27,7 @@ COLLECTORS = {
     'x': ('fetch_x_google.py', 'x_google_sources_latest.json'),
     'trending': ('fetch_github_trending.py', 'github_trending_latest.json'),
     'digest': ('fetch_follow_builders.py', 'ai_builders_digest_sources_latest.json'),
+    'cli-releases': ('fetch_cli_releases.py', 'cli_releases_sources_latest.json'),
 }
 DEFAULT_SOURCES = tuple(source for source in COLLECTORS if source != 'x')
 

@@ -12,11 +12,13 @@ EXTERNAL = {
     'papers': 'HF 每日论文', 'trending': 'GitHub 趋势',
     'digest': 'AI Builders', 'radar': '机会雷达',
     'topics': '融合简报', 'x': 'X 关注动态（采集暂停）',
+    'cli-releases': 'Claude Code / Codex 更新',
 }
 
 
 def build_sources(demo):
-    sources = [dict(s) for s in demo if not s['id'].startswith(('ak-', 'qiaomu-', 'hub-'))]
+    sources = [dict(s) for s in demo if not s['id'].startswith(('ak-', 'qiaomu-', 'hub-'))
+               and s['id'] not in {'rss-ruanyifeng-weekly', 'web-builderpulse-reports'}]
     official = [
         {'id': 'rss-google-gemini', 'name': 'Google Gemini 官方博客', 'kind': 'rss',
          'config': {'feedUrl': 'https://blog.google/innovation-and-ai/models-and-research/gemini-models/rss/'}, 'owner_entity_id': 'google'},
@@ -57,11 +59,31 @@ def build_sources(demo):
     ai = [f for f in json.loads((ROOT / 'data/qiaomu-rss/tidings.json').read_text())['feeds'] if 'ai' in f.get('packs', [])]
     for feed in ai[:3]:  # Matches the existing collector selection, not the entire catalogue.
         add(feed['title'], feed['feed_url'], 'qiaomu')
+    additions = [
+        {'id': 'rss-ruanyifeng-weekly', 'name': '阮一峰 · 科技爱好者周刊', 'kind': 'rss',
+         'config': {'feedUrl': 'https://www.ruanyifeng.com/blog/atom.xml', 'sortByPublishedAt': True,
+                    '_aihot': {'initialBackfillLimit': 3, 'publishPending': True}},
+         'first_party': True, 'tags': ['个人订阅', '周刊']},
+        {'id': 'web-builderpulse-reports', 'name': 'BuilderPulse 中文日报', 'kind': 'web_list',
+         'config': {'url': 'https://github.com/BuilderPulse/BuilderPulse',
+                    'itemSelector': 'a[href*="/BuilderPulse/BuilderPulse/blob/main/zh/"]',
+                    'publishedAtRegex': r'(20\d{2}-\d{2}-\d{2})\.md',
+                    'publishedAtUtcOffset': '+00:00', 'sortByPublishedAt': True,
+                    'allowUrlPrefixes': ['https://github.com/BuilderPulse/BuilderPulse/blob/main/zh/'],
+                    '_aihot': {'initialBackfillLimit': 7}},
+         'first_party': False, 'tags': ['上游日报', 'BuilderPulse']},
+    ]
+    for item in additions:
+        if not any(s['id'] == item['id'] for s in sources):
+            sources.append({**item, 'tier': 'T2', 'participation_mode': 'editorial',
+                            'interval_minutes': 120, 'site_fulltext': False, 'syndicate_fulltext': False})
     for key, name in EXTERNAL.items():
         sources.append({'id': 'hub-' + key, 'name': name, 'kind': 'external', 'config': {},
             'tier': 'T2', 'participation_mode': 'editorial', 'interval_minutes': 120,
-            'enabled': key != 'x', 'tags': ['旧站适配', key],
+            'enabled': key not in {'x', 'radar', 'topics'}, 'tags': ['旧站适配', key],
             'site_fulltext': False, 'syndicate_fulltext': False})
+        if key == 'cli-releases':
+            sources[-1].update(tier='T1', first_party=True, tags=['官方', 'CLI更新'])
     # Read-only history endpoints for aggregate RSS snapshots, never collected twice.
     for key, name in [('rss', '乔木 RSS（迁移存量）'), ('ak-rss', 'AK RSS（迁移存量）')]:
         sources.append({'id': 'hub-' + key, 'name': name, 'kind': 'external', 'config': {},
