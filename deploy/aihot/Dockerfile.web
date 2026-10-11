@@ -1,0 +1,14 @@
+# Reuse the existing Node 24 build image; only the web service uses this output.
+ARG BUILD_BASE=muqiao-intel-aihot:auto-build
+FROM ${BUILD_BASE}
+USER root
+WORKDIR /app
+COPY . .
+RUN npm ci --no-audit --no-fund \
+ && npm run typecheck \
+ && npm run build -w @aihot/web \
+ && node --test apps/web/tests/*.test.ts \
+ && npm prune --omit=dev --no-audit --no-fund
+ENV NODE_ENV=production
+USER node
+CMD ["node", "apps/web/server.ts"]

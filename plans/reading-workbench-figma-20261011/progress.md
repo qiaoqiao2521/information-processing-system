@@ -14,3 +14,19 @@
 - 已把 48 个不可用的 Liberation Mono 引用换为可用的 Roboto Mono；两个导入页面缺失字体均为 0。已检查修复后的首页和全部动态预览，页面文字和布局保持当前站点样式。下载目录 `design/` 新增 `figma-current-first-party.png`、`figma-current-all.png`，并更新 Figma链接.md、README.md。
 - 两个捕获 ID 均完成且已消费；未调用采集、模型或修改生产数据。三个专用后台浏览器已关闭，临时容器和传输包已删除，本机专用 SSH 转发已停止。436 root.tsx 哈希仍为 `4bba6ee2e2b9eab694563a9f2c90ce2d64f7aeb63fd30e25983025c5d693ac27`；生产首页 HTTP 200，web/API/worker 未重启。
 - 当前页面导入已交付；原计划的改版实现和部署仍未开始。知识回写：already_covered，采用的验收依据已覆盖本次结构和截图校验。接续 owner：根 Codex；从 Figma `16:208`、`14:208` 与设计草案对照继续。
+
+
+## 当前：Make Version 8 已接回并部署
+
+- 冻结2026-10-11 Version 8地图版；保留点阵地图、配色、光晕、卡片比例和解码效果。原始包、源文件及集成hash记录于 make-v8-manifest.json。
+- 接回 timeline/pool/stats 和真实日期、六类分类、来源频道、组合搜索/排序、分页、AI加工、收藏/已读、文章/原文、事件及原有辅助入口。模拟新闻/随机延迟/固定在线和虚构指标移除。标题解码按750毫秒实际时间完成；减少动效时静态更新正文。
+- 本地 Node24.21.0 临时工具完成全仓typecheck、web build、18/18网页测试；436最终镜像重新执行相同构建门槛。新增测试覆盖组合条件保留/分页重置和日期/待处理/事件定位映射。
+- 真实436 API + 浏览器：一手搜索OpenAI保留来源；收藏写入并在收藏页读回；详情来源链接和返回条件正常；公网第二页实际取得40条；首页3张卡片均有定位key，打开后返回恢复，已读状态可见。手机390宽，无整体横向溢出，分类独立横滑；未把程序验证宣称为用户主观审美验收。
+- 436最终web镜像 `516129543c0ef1db2baeb08e2202aeaadf065d760ccd98dea0a87f0cd079dbc3`，仅绑定127.0.0.1:8088。API/worker/db镜像和启动时间不变，无数据库迁移、模型消费、采集开关或通知变更。
+- 首次冒烟紧接容器启动、监听尚未就绪，31项连接失败；随后确认origin HTTP200，再运行既有smoke脚本，31项页面、公开API、RSS和MCP初始化全部通过。公网浏览器已读回最终定位标记及真实数据，没有捕获到运行错误。
+- 回退：`/opt/intelligence-hub/aihot/web-make-v8-20261011/compose.previous.yaml`和`app-web-before.tgz`；旧镜像保留为`muqiao-intel-aihot:pre-make-v8`。只恢复web镜像和前端源码，不操作数据库卷。
+- 下载目录新增 make-v8-source、integrated-web 及 review/make-v8-live-*.jpg。integrated-web仅变更文件交接，完整工程是仓库，未声称下载目录可独立安装。
+- Knowledge closeout: already_covered。采用的 Wiki/自动化开发范式与智能体协作「按当前任务选择验收依据」已覆盖源码/构建/真实交互/外部读回以及启动不等于就绪，无共享知识改写。
+- Remaining：无必要工程工作待用户操作；自动加工质量、模型额度及最新精选条数属于既有后台流程，本次未改造。后端数据库测试未运行，因为本次仅前端展示和依赖；全仓类型与既有网页缓存/取消/本机状态测试已执行。
+
+- 收尾仅移除两个新文件的尾随空格／EOF空行；不改代码语义。manifest分别保留构建源码hash与提交源码hash，避免混淆字节校验与行为验收。临时本机预览和专用API SSH转发已停止。

@@ -158,3 +158,12 @@ python3 tools/aihot/local_opencode.py --upstream-next 3 --max-calls 6
 检查：`systemctl --user status intelligence-hub-local-processing.timer`和`journalctl --user -u intelligence-hub-local-processing.service -n 20`。暂停自动发布：`systemctl --user disable --now intelligence-hub-local-processing.timer`（正在执行的service需单独stop）；436reader与更正/撤选维护不受影响。自动复核不是事实的独立验证，后台仍可退回/更改；来源更正使已发表稿退出公开层并可重新处理，明确撤选则撤回。
 
 本次自动加工镜像为`26f8e7e4e8c3`（release `aihot-auto-26f8e7e4e8c3`）。回退前停止/禁用本机local-processing timer及正在执行的service，再恢复`muqiao-intel-aihot:pre-auto-processing`镜像为local，并按`auto-processing-staging/app-before-auto.tgz`恢复源码；`.env`、数据库与卷保留，compose.previous.yaml可核对服务配置。reader仍使用原review reconcile脚本，不需要停采集。
+
+
+## Make Version 8 web 独立更新
+
+2026-10-11保留Make地图版视觉，接回现有真实接口。436仅web使用`muqiao-intel-aihot:make-v8-20261011`，API/worker继续原local镜像。`Dockerfile.web`复用服务器现有Node24构建镜像`muqiao-intel-aihot:auto-build`；构建执行全仓类型、网页构建和网页测试，不接生产数据库或模型。
+
+在vendor/aihot构建上下文中执行 `docker build -f ../../deploy/aihot/Dockerfile.web -t muqiao-intel-aihot:make-v8-20261011 .`，只修改既有override的web镜像，再用`docker compose -p muqiao-intel -f docker-compose.yml -f compose.override.yaml up -d --no-deps --force-recreate web`。等待origin首页HTTP200之后再运行 `docker exec muqiao-intel-web-1 node scripts/smoke.ts --base http://127.0.0.1:3000`，避免把启动前连接失败误判为页面故障。
+
+此次回退文件在`/opt/intelligence-hub/aihot/web-make-v8-20261011/`：恢复compose.previous.yaml和app-web-before.tgz里的前端/锁文件，web指回`muqiao-intel-aihot:pre-make-v8`后只重建web服务。数据库、API/worker和定时任务保持原状。

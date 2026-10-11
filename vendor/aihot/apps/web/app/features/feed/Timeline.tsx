@@ -1,3 +1,4 @@
+import { FrozenCards } from "../workbench/FrozenCards";
 // The day-grouped feed (精选 home, topics): a time rail with cards on desktop, dated rows under grey
 // day bars on phones. Keeps its place across back navigation and loads further pages. There is no
 // "new items" prompt: readers refresh for the latest head (feedback #1199).
@@ -123,6 +124,13 @@ export function Timeline({ initial, filters }: { initial: TimelineResponse; filt
     }
     return fromResponse(initial);
   });
+  const lastInitial = useRef({ initial, historyKey });
+  useLayoutEffect(() => {
+    const previous = lastInitial.current;
+    lastInitial.current = { initial, historyKey };
+    // Explicit same-page refresh replaces the head; history navigation keeps its snapshot.
+    if (previous.initial !== initial && previous.historyKey === historyKey) setState(fromResponse(initial));
+  }, [initial, historyKey]);
   const restoredRef = useRef(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [loadError, setLoadError] = useState(false);
@@ -252,52 +260,9 @@ export function Timeline({ initial, filters }: { initial: TimelineResponse; filt
     return () => io.disconnect();
   }, [state.nextCursor, state.batches, loadMore]);
 
-  const today = beijingDate(Date.now());
-  const days = useMemo(() => {
-    const out: Array<{ day: string; cards: TimelineCard[] }> = [];
-    for (const c of state.cards) {
-      const d = beijingDate(c.anchorAt);
-      const last = out[out.length - 1];
-      if (last && last.day === d) last.cards.push(c);
-      else out.push({ day: d, cards: [c] });
-    }
-    return out;
-  }, [state.cards]);
-
-  const toggleDay = (day: string) =>
-    setState((s) => ({ ...s, collapsed: s.collapsed.includes(day) ? s.collapsed.filter((d) => d !== day) : [...s.collapsed, day] }));
-
-  let order = 0;
   return (
     <div className="relative">
-      {days.length === 0 && (
-        <div className="lg:card">
-          <EmptyState title="这个筛选下还没有精选内容">换个类别看看，或者去全部动态里找找。</EmptyState>
-        </div>
-      )}
-
-      {days.map(({ day, cards }) => {
-        const collapsed = state.collapsed.includes(day);
-        const count = state.dayCounts[day] ?? cards.length;
-        return (
-          <section key={day} aria-label={day} className="lg:mb-1">
-            <DayHeader day={day} today={today} count={count} collapsed={collapsed} onToggle={() => toggleDay(day)} />
-            <Collapse open={!collapsed}>
-                <ol className="lg:pt-1">
-                  {cards.map((c) => {
-                    const fresh = freshKeys.has(c.key);
-                    const delay = fresh ? Math.min(order++, 10) * 40 : 0;
-                    return (
-                      <TimelineSlot key={c.key} dataKey={c.key} at={c.anchorAt} fresh={fresh} delay={delay}>
-                        <FeedItem item={c.item} group={c.group} filters={filters} read={readSet.has(c.item.id)} onOpen={markRead} />
-                      </TimelineSlot>
-                    );
-                  })}
-                </ol>
-            </Collapse>
-          </section>
-        );
-      })}
+      <FrozenCards items={[]} cards={state.cards} variant="featured" />
 
       <div ref={sentinel} aria-hidden="true" />
       <FeedEnd loading={loadingMore} error={loadError} hasMore={!!state.nextCursor} manual={state.batches >= AUTO_BATCHES} empty={state.cards.length === 0} onMore={loadMore} />

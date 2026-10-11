@@ -1,0 +1,53 @@
+{
+  "fileKey": "CD0X7NAaLqMe4JoPm9n9bn",
+  "version": 8,
+  "versionLabel": "更换背景为地图",
+  "export": "2026-10-11",
+  "zipSha256": "0ca82f5392e4d83b8b1d8a2099f8fc18c7f518fe8f459e7d17529021bbeedf11",
+  "sourceFiles": {
+    "pnpm-lock.yaml": "ed7f3c029b821ccb0e6b71450fdffb5d0977e2be644dbb1c3f7bd72af77698a2",
+    "package.json": "3f30d9bd201746615a053772e6ab66a4594f4c965179151494a5953ab64f6f3c",
+    "src/index.css": "0efb453e89109f011d8aeaf827f83cf6abf190c95e7874b0db35da2a30158c3f",
+    "src/App.tsx": "1562be8f602910f21f6bbf2cd2311cc1bc6ed310183fda67349ec73d2452a84e",
+    "src/WorldMap.tsx": "96f2799d6c7cf769345bd7dc3f448775205e4e8f00116729fbece7e450b92bac",
+    "src/main.tsx": "5f49dce6e6cc4b5d678cf529ef892af0ab7dfa6afb300b11ad559224019b8b05",
+    "src/data.ts": "c99dd46ff1855ef6e2a46478b7305311df4b3c0651faa42b7f0a7eb496803792"
+  },
+  "integration": "React Router loaders; production publication API; visual layout and WorldMap retained; simulated feed/metrics removed",
+  "integratedFiles": {
+    "apps/web/app/features/workbench/model.ts": "ffe9345b327f409e8ef2a0762e5f3a9b4c2be5231f8b5a97cc1ced261e418184",
+    "apps/web/app/features/workbench/Workbench.tsx": "20cfeeab3810c2873bf5fdd96266dda5d61d3cc31b1cc048ecd2e6a2b2ce17fe",
+    "apps/web/app/features/workbench/make.css": "b44242d270c9ac079754567066fdf1fadfa528156f849f5d20a902d0832041a9",
+    "apps/web/app/features/workbench/WorldMap.tsx": "4f0d992d8fd9c976fe70aeb14e18d45da50626b493d1777d47d15759e39a168a",
+    "apps/web/app/features/workbench/stats.server.ts": "9590b34bd8e36405bfa43e293fb1225745fcb31f8bb5eae65518717d330b5ac6",
+    "apps/web/app/features/workbench/FrozenCards.tsx": "612b0538216a646122638ffde3bdbdea391ec4ad3ba5ce0431b022ceccc869c7",
+    "apps/web/app/root.tsx": "d53e807a46a787460c3088b50bb48b1618e1522365ac83fa010743c8d940aae6",
+    "apps/web/app/app.css": "da61964f3dd3c5edf73e32017091de74b7677cbd463daf4117c448b17e07bba6",
+    "apps/web/app/features/feed/Timeline.tsx": "d8dc492c144075c4d4085a8db9504b3201edc4a3428d463e6bc8e5a3ef7eda64",
+    "apps/web/app/routes/home.tsx": "747e46a51d0b69f30115dfaed3fec868db1cf90c658f5724573cb8738b92f6a2",
+    "apps/web/app/routes/all.tsx": "ae8ab4040f2d7816715d298921cd48344985f8dc40142f9e85a9b5f655a3b9c2",
+    "apps/web/package.json": "015f70c31b2fae95ced9d034d65b6e29d14896fc83089a58fb19266846748048",
+    "package-lock.json": "a07caf622d63e9a0a2a2c33b672021dc88b09774162ee9745561780b065b0e71"
+  },
+  "deployedImage": "sha256:516129543c0ef1db2baeb08e2202aeaadf065d760ccd98dea0a87f0cd079dbc3",
+  "patchSha256": "42e9bc17c4c0d1874e39874e11edfaa4b9d6cfa5332c77c0515575aef9aef49a",
+  "builtSourceFiles": {
+    "apps/web/app/features/workbench/model.ts": "a3567adaf443440b5480f6e976d5d474dafc38714a4ab33a8b38598271c53ab8",
+    "apps/web/app/features/workbench/Workbench.tsx": "20cfeeab3810c2873bf5fdd96266dda5d61d3cc31b1cc048ecd2e6a2b2ce17fe",
+    "apps/web/app/features/workbench/make.css": "b44242d270c9ac079754567066fdf1fadfa528156f849f5d20a902d0832041a9",
+    "apps/web/app/features/workbench/WorldMap.tsx": "4f0d992d8fd9c976fe70aeb14e18d45da50626b493d1777d47d15759e39a168a",
+    "apps/web/app/features/workbench/stats.server.ts": "9590b34bd8e36405bfa43e293fb1225745fcb31f8bb5eae65518717d330b5ac6",
+    "apps/web/app/features/workbench/FrozenCards.tsx": "97510b73bc43d7d395d1c47dd589e564da07e4148b19986133981be99b18290a",
+    "apps/web/app/root.tsx": "d53e807a46a787460c3088b50bb48b1618e1522365ac83fa010743c8d940aae6",
+    "apps/web/app/app.css": "da61964f3dd3c5edf73e32017091de74b7677cbd463daf4117c448b17e07bba6",
+    "apps/web/app/features/feed/Timeline.tsx": "d8dc492c144075c4d4085a8db9504b3201edc4a3428d463e6bc8e5a3ef7eda64",
+    "apps/web/app/routes/home.tsx": "747e46a51d0b69f30115dfaed3fec868db1cf90c658f5724573cb8738b92f6a2",
+    "apps/web/app/routes/all.tsx": "ae8ab4040f2d7816715d298921cd48344985f8dc40142f9e85a9b5f655a3b9c2",
+    "apps/web/package.json": "015f70c31b2fae95ced9d034d65b6e29d14896fc83089a58fb19266846748048",
+    "package-lock.json": "a07caf622d63e9a0a2a2c33b672021dc88b09774162ee9745561780b065b0e71"
+  },
+  "postBuildFormatting": [
+    "apps/web/app/features/workbench/FrozenCards.tsx",
+    "apps/web/app/features/workbench/model.ts"
+  ]
+}

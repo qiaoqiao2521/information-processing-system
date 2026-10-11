@@ -33,3 +33,7 @@ Codex模块开启展示，`CODEX_RESET_UPSTREAM_ENABLED=true`时由现有worker�
 用户确认AI复核通过后自动上站。新增process-upstream-batch.ts及质量复核：仅最近7天有摘要的上游精选材料，先按原文URL去重，再分别进行加工和独立复核，共享原opencode预算/回执。源码仍不自动访问用户浏览器、复制账号或调用付费API。AI通过稿走同一decideReview/publishArticleTx事务并标记AI复核；存疑稿保留draft及理由，不冒充人工审阅、独立原文核验或本站模型评分。原版本/source hash和更正撤选规则继续有效。
 
 外层本机用户级timer每30分钟运行普通Python脚本（3篇/轮、最多6调用）；本机离线时436采集继续，公开加工更新等待本机恢复。/all提供二次加工筛选入口，后台显示最新复核理由。预算暂停允许续跑；已hold、人工编辑或失败/unknown不自动重试。
+
+## 2026-10-11 Make Version 8 前端接回
+
+使用用户 Make 地图版视觉，保留 React Router SSR 和原公开读取层。新增 workbench 展示组件、真实数据映射及组合筛选，沿用 timeline 游标、取消请求和历史恢复；文章详情、原文、收藏、报表、事件及公开接口仍走原实现。真实统计失败仅显示本页数量，不把随机指标或模拟新闻发布。地图属于装饰，不宣称地点/传输核验。按时间完成解码、减少动效支持和手机横滑修复。新增的 d3-geo/topojson-client/world-atlas 采用 Make 版本的固定依赖；上游 MIT 许可保留。只更新 web 镜像。
