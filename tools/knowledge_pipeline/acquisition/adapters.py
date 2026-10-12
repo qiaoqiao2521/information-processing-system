@@ -13,10 +13,11 @@ from .models import AcquisitionTask, Attempt, PromotedItem, SourceCandidate, can
 
 FetchFn = Callable[[str, dict[str, str] | None], str]
 
-DEFAULT_USER_AGENT = (
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/122.0 Safari/537.36"
-)
+DEFAULT_USER_AGENT = "information-processing-system/source-acquisition"
+
+# Compatibility entries retain old ledger identities, but this legacy engine
+# has neither the X Jina ledger nor the approved Firecrawl source budget.
+UNBUDGETED_READERS = {"jina_reader", "firecrawl_web_agent"}
 
 FETCH_CHAR_CAP = 200_000
 
@@ -65,7 +66,7 @@ def default_http_fetcher(
     headers: dict[str, str] | None = None,
     timeout_seconds: int = 30,
 ) -> str:
-    """Built-in HTTP fetcher with timeout and browser UA.
+    """Built-in HTTP fetcher with timeout and an identified project user agent.
 
     Reads at most FETCH_CHAR_CAP + 1 chars: overflow is truncated and the
     truncation is surfaced with an end-of-content marker; a response shorter
@@ -133,6 +134,8 @@ class AcquisitionAdapter:
 
     def is_enabled(self, env: dict[str, str] | None = None) -> bool:
         env = env or {}
+        if self.name in UNBUDGETED_READERS:
+            return False
         if not self.env_key:
             return True
         return bool(env.get(self.env_key))
@@ -158,7 +161,7 @@ class AcquisitionAdapter:
                 candidate_id=candidate.candidate_id,
                 candidate_url=candidate.url,
                 request_url=request_url,
-                detail=f"missing_env:{self.env_key}",
+                detail="project_policy:use_existing_budgeted_reader" if self.name in UNBUDGETED_READERS else f"missing_env:{self.env_key}",
                 metadata={"mode": self.mode},
             )
             return attempt, None
@@ -257,7 +260,7 @@ def default_adapters() -> dict[str, AcquisitionAdapter]:
         "jina_reader": AcquisitionAdapter(
             name="jina_reader",
             mode="reader_proxy",
-            description="Primary no-key reader cascade entry using Jina Reader.",
+            description="Historical Jina adapter; disabled outside the existing budgeted X reader.",
             request_builder=lambda candidate: jina_reader_url(candidate.url),
         ),
         "defuddle": AcquisitionAdapter(
@@ -269,7 +272,7 @@ def default_adapters() -> dict[str, AcquisitionAdapter]:
         "direct_browser_ua": AcquisitionAdapter(
             name="direct_browser_ua",
             mode="direct_fetch",
-            description="Direct fetch with browser-like user agent headers.",
+            description="Direct original retrieval; legacy ledger name retained.",
             request_builder=lambda candidate: candidate.url,
             default_headers={"User-Agent": DEFAULT_USER_AGENT},
         ),
@@ -311,7 +314,7 @@ def default_adapters() -> dict[str, AcquisitionAdapter]:
         "firecrawl_web_agent": AcquisitionAdapter(
             name="firecrawl_web_agent",
             mode="optional_hosted_adapter",
-            description="Optional Firecrawl/web-agent adapter, gated on FIRECRAWL_API_KEY.",
+            description="Historical Firecrawl stub; use the approved budgeted collector instead.",
             request_builder=lambda candidate: candidate.url,
             env_key="FIRECRAWL_API_KEY",
         ),

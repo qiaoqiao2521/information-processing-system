@@ -15,7 +15,7 @@ class InformationSourcesRound3FirstResponseExamplesTests(unittest.TestCase):
             "### GitHub repo metadata",
             "Source of truth: GitHub repository metadata",
             "Preferred tool: `gh`",
-            "Fallback: `Jina Reader` for direct GitHub page reading",
+            "Fallback: Direct GitHub API or public repository page reading",
             "### RSS feed parsing",
             "Source of truth: Feed URL",
             "Preferred tool: `feedparser`",

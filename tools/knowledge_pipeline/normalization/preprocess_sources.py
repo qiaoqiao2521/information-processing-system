@@ -13,10 +13,7 @@ from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
 
-USER_AGENT = (
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/122.0 Safari/537.36"
-)
+USER_AGENT = "information-processing-system/source-preprocessor"
 MAX_SOURCE_CHARS = 180_000
 DEFAULT_TIMEOUT_SECONDS = 35
 
@@ -138,13 +135,13 @@ def read_url_text(url: str, timeout_seconds: int = DEFAULT_TIMEOUT_SECONDS) -> s
         url,
         headers={
             "User-Agent": USER_AGENT,
-            "Accept": "text/markdown,text/plain,text/html,application/pdf,*/*",
-            "Referer": "https://www.google.com/",
-            "X-Forwarded-For": "66.249.66.1",
+            "Accept": "text/markdown,text/plain,text/html",
         },
     )
     with urlopen(request, timeout=timeout_seconds) as response:
         payload = response.read(MAX_SOURCE_CHARS + 1)
+        if response.headers.get_content_type() == "application/pdf" or payload.startswith(b"%PDF-"):
+            raise ValueError("PDF requires a verified document extractor")
         charset = response.headers.get_content_charset() or "utf-8"
         return payload.decode(charset, errors="replace")
 
@@ -199,25 +196,6 @@ def is_useful_text(text: str) -> bool:
     return not any(marker in lowered for marker in bad_markers)
 
 
-def jina_url(url: str) -> str:
-    return f"https://r.jina.ai/{url}"
-
-
-def defuddle_url(url: str) -> str:
-    return f"https://defuddle.md/{url}"
-
-
-def raw_github_blob_url(raw_url: str) -> str | None:
-    parsed = urlparse(raw_url)
-    if parsed.netloc.lower() != "raw.githubusercontent.com":
-        return None
-    parts = parsed.path.lstrip("/").split("/", 3)
-    if len(parts) < 4:
-        return None
-    owner, repo, branch, rest = parts
-    return f"https://github.com/{owner}/{repo}/blob/{branch}/{rest}"
-
-
 def arxiv_pdf_url(item: dict[str, Any]) -> str | None:
     for target in item.get("import_targets", []):
         value = str(target.get("value") or "")
@@ -248,36 +226,16 @@ def arxiv_abs_url(item: dict[str, Any]) -> str | None:
 
 def source_candidates(item: dict[str, Any], reason: str) -> list[tuple[str, str]]:
     url = str(item.get("url") or "")
-    candidates: list[tuple[str, str]] = []
+    # This legacy path has no Jina budget ledger. Existing X bodies belong to
+    # the current budgeted reader; never restore search or unmetered fallback.
+    if is_x_url(url) or reason == "pdf_document":
+        return []
     if reason == "arxiv_paper":
-        pdf_url = arxiv_pdf_url(item)
         abs_url = arxiv_abs_url(item)
-        if pdf_url:
-            candidates.append(("jina_reader_pdf", jina_url(pdf_url)))
-        if abs_url:
-            candidates.append(("jina_reader_abs", jina_url(abs_url)))
-            candidates.append(("defuddle_abs", defuddle_url(abs_url)))
-        return candidates
-
-    if reason == "pdf_document":
-        if url:
-            candidates.append(("jina_reader_pdf", jina_url(url)))
-        return candidates
-
+        return [("direct_arxiv_abstract", abs_url)] if abs_url else []
     if reason == "raw_github_text":
-        if url:
-            candidates.append(("jina_reader_raw", jina_url(url)))
-            candidates.append(("direct_raw", url))
-            blob_url = raw_github_blob_url(url)
-            if blob_url:
-                candidates.append(("defuddle_github_blob", defuddle_url(blob_url)))
-        return candidates
-
-    if url:
-        candidates.append(("jina_reader", jina_url(url)))
-        candidates.append(("defuddle", defuddle_url(url)))
-        candidates.append(("direct_browser_ua", url))
-    return candidates
+        return [("direct_raw", url)] if url else []
+    return [("direct_original", url)] if url else []
 
 
 def fetch_best_text(item: dict[str, Any], reason: str) -> tuple[str | None, str | None, str | None, list[FetchAttempt]]:
@@ -361,6 +319,12 @@ def localize_item(
     fetched_text, method, fetched_via, attempts = fetch_best_text(item, reason)
     status = "localized"
     notes = [reason]
+    if is_x_url(str(item.get("url") or "")):
+        notes.append("existing_x_body_requires_budgeted_reader")
+    if reason == "pdf_document":
+        notes.append("pdf_requires_verified_extractor")
+    if method == "direct_arxiv_abstract":
+        notes.append("abstract_only_not_full_paper")
     if timeout_note:
         notes.append(timeout_note)
 

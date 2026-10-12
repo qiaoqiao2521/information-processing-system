@@ -62,13 +62,11 @@ def default_registry() -> Registry:
             task_kinds=("fetch", "scrape"),
             priority=10,
             steps=(
-                RecipeStep("jina_reader"),
-                RecipeStep("defuddle"),
                 RecipeStep("direct_browser_ua"),
+                RecipeStep("defuddle"),
                 RecipeStep("amp"),
                 RecipeStep("archive_today"),
                 RecipeStep("agent_fetch"),
-                RecipeStep("firecrawl_web_agent", required_env="FIRECRAWL_API_KEY"),
             ),
         ),
         AcquisitionRecipe(
@@ -78,7 +76,6 @@ def default_registry() -> Registry:
             priority=15,
             steps=(
                 RecipeStep("direct_raw"),
-                RecipeStep("jina_reader"),
                 RecipeStep("defuddle"),
                 RecipeStep("agent_fetch"),
             ),
@@ -90,7 +87,6 @@ def default_registry() -> Registry:
             priority=15,
             steps=(
                 RecipeStep("arxiv_abstract"),
-                RecipeStep("jina_reader"),
                 RecipeStep("defuddle"),
                 RecipeStep("agent_fetch"),
             ),
@@ -100,9 +96,8 @@ def default_registry() -> Registry:
             description="Fallback recipe for URL-like tasks that still emits deterministic ledger entries.",
             priority=100,
             steps=(
-                RecipeStep("jina_reader"),
-                RecipeStep("defuddle"),
                 RecipeStep("direct_browser_ua"),
+                RecipeStep("defuddle"),
                 RecipeStep("agent_fetch"),
             ),
         ),

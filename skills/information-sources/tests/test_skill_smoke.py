@@ -29,12 +29,12 @@ class InformationSourcesSkillSmokeTests(unittest.TestCase):
         self.assertIn("only use `mcporter` when the MCP server is actually configured", text)
         self.assertIn("if MCP is not configured, skip `mcporter` immediately and fall through to the next direct source path", text)
         self.assertIn("fall back to direct feed URL checks or page fetch only after `feedparser` fails", text)
-        self.assertIn("fall back to source-specific direct page reading, then broad search only as last resort", text)
+        self.assertIn("preserve the existing summary and report the gap", text)
         self.assertIn("[references/fallback-matrix.md](references/fallback-matrix.md)", text)
 
         self.assertIn('"看这个 GitHub 仓库" -> `gh`', text)
-        self.assertIn('"读这个 GitHub README" -> `gh` first, `Jina Reader` fallback', text)
-        self.assertIn('"读这个网页/推文/PDF/图片" -> `Jina Reader`', text)
+        self.assertIn('"读这个 GitHub README" -> `gh` first, official API/raw fallback', text)
+        self.assertIn('"读这个网页/PDF/图片" -> official/direct retrieval; existing X body -> budgeted `Jina Reader`', text)
         self.assertIn('"看最新/最近/今天的情况" -> live upstream source first, not memory', text)
 
 

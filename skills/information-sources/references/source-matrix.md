@@ -1,22 +1,17 @@
 # Source Matrix
 
-## Task to tool mapping
+PROJECT.md owns the source allowlist, paused searches and shared budgets.
 
-| Task | Preferred tool | Why |
+| Task | Preferred tool | Fallback / evidence boundary |
 | --- | --- | --- |
-| GitHub repo / release / issue / PR | `gh` | Official, structured, authenticated |
-| Video metadata / subtitles / transcript | `yt-dlp` | Better extraction than generic scraping |
-| RSS / Atom parsing | `feedparser` | Structured feed parsing |
-| MCP-backed search or platform action | `mcporter` | Uses configured local MCP servers |
-| Normal web page | `Jina Reader` | Fast plain-text read |
-| Twitter/X single post | `Jina Reader` | Quick read without extra wrapper |
-| PDF URL | `Jina Reader` | Direct text-friendly conversion |
-| Image URL | `Jina Reader` | Quick text-side read path |
+| GitHub metadata / README | `gh` | Official API or direct raw content |
+| Video metadata / subtitles | Installed `yt-dlp` | Official subtitles; preserve unavailable language and timestamps |
+| RSS / Atom | `feedparser` | Direct feed URL check; preserve original URLs and dates |
+| Configured MCP source | `mcporter` | Direct official source; skip unconfigured MCP |
+| Public web page | Official/direct retrieval | Approved Firecrawl only, within existing budget |
+| Existing X post body | Budgeted `Jina Reader` | Preserve summary on failure; no new X/Google search |
+| PDF | Original download + document extractor | Record selected pages, incomplete extraction and body hash |
+| Image | Original image + available OCR | Preserve image identity and OCR uncertainty |
 
-## Fallback order
-
-1. Primary source + official tool
-2. Configured MCP source
-3. Jina Reader
-4. Search engine result page
-5. Secondary summary
+A readable summary is not full text. Jina is not a generic fallback in this project.
+See [evidence-report-contract.md](evidence-report-contract.md) before writing from source packets.

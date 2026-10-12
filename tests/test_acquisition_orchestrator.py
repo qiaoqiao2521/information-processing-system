@@ -31,9 +31,8 @@ class AcquisitionOrchestratorTests(unittest.TestCase):
 
         self.assertEqual(recipe.recipe_id, "public_webpage_default")
         self.assertEqual(recipe.step_names_without_disabled(env={}), [
-            "jina_reader",
-            "defuddle",
             "direct_browser_ua",
+            "defuddle",
             "amp",
             "archive_today",
             "agent_fetch",
@@ -46,9 +45,8 @@ class AcquisitionOrchestratorTests(unittest.TestCase):
         ledger = orchestrator.run(task)
 
         self.assertEqual([attempt.adapter for attempt in ledger.attempts], [
-            "jina_reader",
-            "defuddle",
             "direct_browser_ua",
+            "defuddle",
             "amp",
             "archive_today",
             "agent_fetch",
@@ -61,7 +59,20 @@ class AcquisitionOrchestratorTests(unittest.TestCase):
 
         self.assertFalse(adapter.is_enabled(env={}))
         self.assertFalse(adapter.is_enabled(env={"FIRECRAWL_API_KEY": ""}))
-        self.assertTrue(adapter.is_enabled(env={"FIRECRAWL_API_KEY": "fc-test"}))
+        self.assertFalse(adapter.is_enabled(env={"FIRECRAWL_API_KEY": "fc-test"}))
+
+    def test_manual_legacy_reader_attempt_cannot_bypass_budget_with_keys(self):
+        from unittest.mock import Mock
+        task = AcquisitionTask.from_url('https://x.com/a/status/1', task_id='policy-test')
+        candidate = Orchestrator(registry=default_registry()).source_candidates_for(task)[0]
+        for name in ('jina_reader', 'firecrawl_web_agent'):
+            fetch = Mock()
+            attempt, promoted = default_registry().adapters[name].attempt(task=task, candidate=candidate,
+                env={'JINA_API_KEY': 'fixture', 'FIRECRAWL_API_KEY': 'fixture'}, execute=True, fetcher=fetch)
+            fetch.assert_not_called()
+            self.assertEqual(attempt.status, 'disabled')
+            self.assertEqual(attempt.detail, 'project_policy:use_existing_budgeted_reader')
+            self.assertIsNone(promoted)
 
     def test_ledger_json_shape_is_suitable_for_later_knowledge_pack_promotion(self) -> None:
         task = AcquisitionTask.from_url(
@@ -80,7 +91,7 @@ class AcquisitionOrchestratorTests(unittest.TestCase):
         self.assertEqual(payload["recipe_id"], "public_webpage_default")
         self.assertEqual(payload["status"], "attempted")
         self.assertEqual(payload["source_candidates"][0]["url"], "https://example.com/research")
-        self.assertEqual(payload["attempts"][0]["adapter"], "jina_reader")
+        self.assertEqual(payload["attempts"][0]["adapter"], "direct_browser_ua")
         self.assertEqual(payload["attempts"][0]["status"], "not_executed")
         self.assertEqual(payload["promoted_items"], [])
         self.assertIn("knowledge_pack_candidate", encoded)

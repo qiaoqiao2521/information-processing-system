@@ -83,3 +83,11 @@ GET /api/v1/items?mode=all&window=24h&by=timeline&limit=100
 - [自动加工发布的任务边界](../../../plans/upstream-editorial-review/task_plan.md)
 
 采用知识：`Wiki/自动化开发范式与智能体协作.md#按当前任务选择验收依据`，在这条交接中分别核对来源材料、生成行为和目标入库。
+
+## 2026-10-13 引用定位与结构化提取
+
+交接仍用现有来源包。新增契约见 [引用定位与报告提取](../../../skills/information-sources/references/evidence-report-contract.md)。具体校验位于公众号仓库的 automation/daily-wechat/source_evidence.py。
+
+正文与附件hash检查、包内引用编号、正文字符范围、原文行号、页码/时间戳映射和缺口报告接入既有作者与独立复核。结构化报告包设置 analysis_request: true，随同一次作者响应返回 source_analysis；事实、作者建议、义务、例外、本文推演分别保存。未知责任人和期限保持null，不创建任务。
+
+本次为代码与离线验收，不代表436已部署、模型已完成真实新报告或草稿已发布。旧冻结运行不迁移或重新签名。

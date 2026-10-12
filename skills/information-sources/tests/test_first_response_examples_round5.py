@@ -13,7 +13,7 @@ class InformationSourcesRound5FirstResponseExamplesTests(unittest.TestCase):
             "### GitHub README body",
             "Source of truth: GitHub README",
             "Preferred tool: `gh` first",
-            "Fallback: `Jina Reader` for direct README body reading if `gh` is awkward or unavailable",
+            "Fallback: Direct GitHub API or raw README retrieval if `gh` is unavailable",
         ]
 
         for expected in expected_examples:

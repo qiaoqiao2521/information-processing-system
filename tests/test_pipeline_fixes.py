@@ -87,12 +87,42 @@ class PreprocessSourceTests(unittest.TestCase):
 
         candidates = module.source_candidates(item, "pdf_document")
 
-        self.assertTrue(candidates)
+        self.assertEqual(candidates, [])
         self.assertNotIn(
             ("direct_browser_ua", "https://example.com/files/report.pdf"),
             candidates,
         )
         self.assertFalse(any(url == "https://example.com/files/report.pdf" for _, url in candidates))
+
+    def test_legacy_routes_do_not_bypass_x_budget_or_send_other_sources_to_jina(self):
+        module = load_module('preprocess_sources', 'tools/knowledge_pipeline/normalization/preprocess_sources.py')
+        self.assertEqual(module.source_candidates({'url': 'https://x.com/a/status/1'}, 'x_post'), [])
+        self.assertEqual(module.source_candidates({'url': 'https://raw.githubusercontent.com/a/b/main/readme.md'}, 'raw_github_text'),
+                         [('direct_raw', 'https://raw.githubusercontent.com/a/b/main/readme.md')])
+        self.assertEqual(module.source_candidates({'url': 'https://arxiv.org/abs/2601.00001'}, 'arxiv_paper'),
+                         [('direct_arxiv_abstract', 'https://arxiv.org/abs/2601.00001')])
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as tmp, patch.object(module, 'fetch_attempt') as fetch:
+            result = module.localize_item({'url': 'https://x.com/a/status/1', 'title': 'source', 'item_id': 'x1',
+                                          'summary': 'An existing search summary that remains explicitly incomplete. ' * 3}, Path(tmp), '2026-10-13')
+            fetch.assert_not_called()
+            self.assertEqual(result.status, 'fallback_localized')
+            self.assertIn('existing_x_body_requires_budgeted_reader', result.notes)
+
+    def test_direct_reader_rejects_binary_pdf_and_does_not_spoof_google(self):
+        module = load_module('preprocess_sources', 'tools/knowledge_pipeline/normalization/preprocess_sources.py')
+        from email.message import Message
+        from unittest.mock import MagicMock, patch
+        response = MagicMock(); response.headers = Message()
+        response.headers['Content-Type'] = 'application/pdf'
+        response.read.return_value = b'%PDF-1.7 binary'
+        with patch.object(module, 'urlopen') as fetch:
+            fetch.return_value.__enter__.return_value = response
+            with self.assertRaisesRegex(ValueError, 'verified document extractor'):
+                module.read_url_text('https://primary.test/file')
+            headers = dict(fetch.call_args.args[0].header_items())
+            self.assertNotIn('Referer', headers)
+            self.assertNotIn('X-forwarded-for', headers)
 
 
 class NotebookLmHarvestTests(unittest.TestCase):

@@ -12,8 +12,8 @@ class InformationSourcesRound4FirstResponseExamplesTests(unittest.TestCase):
         expected_examples = [
             "### Generic page-shaped reading",
             "Source of truth: Original page or document",
-            "Preferred tool: `Jina Reader`",
-            "Fallback: Source-specific direct page reading or platform-native tool if one exists, then broad search only as last resort",
+            "Preferred tool: Source-specific official tool or direct original retrieval",
+            "Fallback: Approved Firecrawl sources within the existing budget; otherwise report unavailable content",
         ]
 
         for expected in expected_examples:

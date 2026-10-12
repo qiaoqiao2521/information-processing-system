@@ -34,13 +34,13 @@ Use these as the default shape when the user mainly needs routing.
 
 - Source of truth: GitHub repository metadata
 - Preferred tool: `gh`
-- Fallback: `Jina Reader` for direct GitHub page reading
+- Fallback: Direct GitHub API or public repository page reading
 
 ### GitHub README body
 
 - Source of truth: GitHub README
 - Preferred tool: `gh` first
-- Fallback: `Jina Reader` for direct README body reading if `gh` is awkward or unavailable
+- Fallback: Direct GitHub API or raw README retrieval if `gh` is unavailable
 
 ### RSS feed parsing
 
@@ -51,8 +51,8 @@ Use these as the default shape when the user mainly needs routing.
 ### Generic page-shaped reading
 
 - Source of truth: Original page or document
-- Preferred tool: `Jina Reader`
-- Fallback: Source-specific direct page reading or platform-native tool if one exists, then broad search only as last resort
+- Preferred tool: Source-specific official tool or direct original retrieval
+- Fallback: Approved Firecrawl sources within the existing budget; otherwise report unavailable content
 
 ### Latest or current status ask
 
@@ -60,6 +60,11 @@ Use these as the default shape when the user mainly needs routing.
 - Preferred tool: source-specific official tool first
 - Fallback: Direct page reading, then broad search only if the direct source path is blocked
 - Freshness note: verify live; do not answer from memory alone
+
+## Project scope
+
+PROJECT.md owns collection budgets and paused sources. Tool availability does not override those limits.
+The routes below apply to this repository; check installed tools before choosing them.
 
 ## Core reminders
 
@@ -74,7 +79,7 @@ Use these as the default shape when the user mainly needs routing.
 1. Direct primary source
 2. Official tool for that source
 3. Local configured MCP or parser
-4. Jina Reader as a generic reader
+4. Approved Firecrawl source retrieval within its existing budget
 5. Search results or summaries only as fallback
 
 Do not use `agent-reach` as a source layer. Treat it only as an old wrapper that is no longer part of the workflow.
@@ -85,22 +90,22 @@ Do not use `agent-reach` as a source layer. Treat it only as an old wrapper that
 - `yt-dlp`: YouTube and other video-page metadata, subtitles, transcripts, media info
 - `mcporter`: configured MCP servers and MCP-backed sources
 - `feedparser`: RSS and Atom feeds
-- `Jina Reader`: generic web reading, especially tweets, normal web pages, PDFs, and images
+- `Jina Reader`: existing X post bodies only, through the budgeted reader; not generic web/PDF/image reading
 
 ## Failure Recovery Order
 
 When the preferred tool fails, keep the same source of truth and fall back in a fixed order.
 
 - `gh` failed:
-  keep GitHub as source of truth, then fall back to `Jina Reader` for README or page body retrieval, then broad search only if the direct GitHub page is still not readable.
+  keep GitHub as source of truth, then use the official API or direct raw README; report missing content if unavailable.
 - `mcporter` failed or MCP is not configured:
   only use `mcporter` when the MCP server is actually configured; if MCP is not configured, skip `mcporter` immediately and fall through to the next direct source path.
 - `yt-dlp` failed:
-  keep the video page as source of truth, then fall back to source-specific direct page reading with `Jina Reader` when the user mainly needs page正文, then broad search only as last resort.
+  keep the video page as source of truth, then use available official subtitles or direct public page reading; preserve missing transcript/timestamp gaps.
 - `feedparser` failed:
   keep the feed as source of truth, then fall back to direct feed URL checks or page fetch only after `feedparser` fails, and do not start from generic broad search.
 - `Jina Reader` failed:
-  keep the original page or document as source of truth, then fall back to source-specific direct page reading, then broad search only as last resort.
+  keep the X original post as source of truth; preserve the existing summary and report the gap. Do not bypass account-risk cooldown or the 50 attempts/24h budget.
 
 Do not change the authority layer just because the first access path broke.
 
@@ -109,11 +114,12 @@ Do not change the authority layer just because the first access path broke.
 | User intent | Source of truth | Preferred tool | Notes |
 | --- | --- | --- | --- |
 | 看 GitHub 仓库信息 | GitHub repo metadata | `gh` | Metadata, releases, issues, stars all use `gh` first |
-| 读 GitHub README 正文 | GitHub README | `gh` first, `Jina Reader` fallback | Keep GitHub as source of truth even if Jina is used for body text |
+| 读 GitHub README 正文 | GitHub README | `gh` first, official API/raw fallback | Keep GitHub as source of truth |
 | 提取视频字幕/元数据 | Video platform page | `yt-dlp` | Better than generic scraping |
 | 读 RSS/Atom | Feed itself | `feedparser` | Do not scrape feed HTML first |
 | 调 MCP 已配置源 | MCP-backed source | `mcporter` | Only when server is actually configured |
-| 读普通网页/推文/PDF/图片 | Original page/document | `Jina Reader` | Best generic page-shaped reader in this environment |
+| 读普通网页/PDF/图片 | Original page/document | official/direct retrieval + document extractor | Preserve original body and verified positions |
+| 读既有 X 正文 | Original post | budgeted `Jina Reader` | No new X/Google search; 50 attempts/24h |
 | 问 latest/current/recent | Live upstream source | source-specific tool first | Never rely on memory or stale summaries |
 
 ## Source selection rules
@@ -129,12 +135,12 @@ Prefer `gh` first for:
 - authenticated access
 - README body retrieval when possible
 
-Use Jina Reader only for plain-page reading fallback, not as the first choice for GitHub.
+Use the official API or raw content for GitHub fallback. Jina Reader is outside this route.
 
 Practical split:
 
 - Repo metadata / release / issue / PR / stars -> `gh`
-- README or page body when `gh` is awkward -> `Jina Reader` fallback is acceptable
+- README or page body when `gh` is unavailable -> official API or direct raw content
 - Even on fallback, GitHub remains the source of truth
 
 ### 2. Video pages
@@ -146,7 +152,7 @@ Prefer `yt-dlp` first for:
 - title, uploader, duration, upload date
 - multi-site media extraction
 
-If the user only wants to read the surrounding article page, Jina Reader is acceptable, but `yt-dlp` remains the source of truth for video metadata.
+Read surrounding public articles directly. Verify that `yt-dlp` is installed before selecting it; preserve unavailable metadata and subtitle gaps.
 
 ### 3. RSS and Atom
 
@@ -159,7 +165,7 @@ Use it for:
 - titles and links
 - structured feed consumption
 
-Do not scrape RSS pages with Jina Reader unless the feed itself is inaccessible.
+Do not send RSS failures to Jina Reader. Preserve the feed URL and failure reason.
 
 ### 4. MCP-backed sources
 
@@ -177,22 +183,22 @@ Do not treat "MCP might exist" as enough reason to pause routing; configured and
 
 ### 5. Web pages, tweets, PDFs, images
 
-Prefer Jina Reader first.
+Use the official source tool or direct original retrieval for public pages.
+Use PDF/image extractors for attachments. Preserve OCR uncertainty and selected pages.
+Approved Firecrawl sources may use the existing 60 attempts/24h budget, two documents per source per round.
+Unapproved sources need a routing decision; do not silently expand the allowlist.
 
-Use:
+Jina Reader is limited to existing X post bodies: 50 attempts/24h, 1/min, 10/h.
+Use the existing budgeted X reader. Raw curl and the legacy preprocessor must not bypass this budget.
+X/Google searches remain paused; honor account-risk cooldowns and stop on verification prompts.
+Do not substitute a summary, abstract, raw PDF bytes or failed fetch for verified full text.
 
-```powershell
-curl "https://r.jina.ai/<original-url>"
-```
+## Evidence and report handoff
 
-Default Jina Reader wins for:
-
-- Twitter/X single-post reading
-- normal web pages
-- PDFs
-- image URLs
-
-WeChat articles often require login or render unstably, so do not assume Jina Reader is a reliable default there.
+Reuse the existing `claims/documents/provenance` packet, not a second source ledger.
+Read [references/evidence-report-contract.md](references/evidence-report-contract.md) for source hashes,
+article and original positions, verified page/time maps, structured report records and gap reporting.
+Missing owner/date stays unknown; extraction does not create external tasks.
 
 ## Latest and current rule
 
@@ -240,9 +246,9 @@ Read [references/fallback-matrix.md](references/fallback-matrix.md) when the pre
 ## Fast choices
 
 - "看这个 GitHub 仓库" -> `gh`
-- "读这个 GitHub README" -> `gh` first, `Jina Reader` fallback
+- "读这个 GitHub README" -> `gh` first, official API/raw fallback
 - "提取这个视频字幕" -> `yt-dlp`
 - "读这个 RSS" -> `feedparser`
 - "调用已配置的 MCP 源" -> `mcporter`
-- "读这个网页/推文/PDF/图片" -> `Jina Reader`
+- "读这个网页/PDF/图片" -> official/direct retrieval; existing X body -> budgeted `Jina Reader`
 - "看最新/最近/今天的情况" -> live upstream source first, not memory

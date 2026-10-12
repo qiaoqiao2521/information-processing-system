@@ -1,12 +1,24 @@
 ---
 doc_type: reference
 entity: qiaomu-anything-to-notebooklm 适配器
-status: candidate
+status: historical
 owner: Muqiao
 last_verified: 2026-04-19
 ---
 
-# qiaomu-anything-to-notebooklm
+# qiaomu-anything-to-notebooklm（历史评估）
+
+## 2026-10-13 路由更正
+
+下文保留2026-04-19的历史评估，不是当前执行路由。当前规则以 PROJECT.md 和 `skills/information-sources` 为准：
+
+- 普通网页、GitHub、PDF不走Jina；优先官方工具、原文下载与附件提取。
+- Firecrawl仅处理现有批准来源并遵守共享预算；不扩大allowlist。
+- 既有X正文只走现有计费预算入口；X/Google搜索仍暂停。
+- 遗留preprocess_sources.py移除第三方兜底与伪装请求头；PDF保留提取缺口，arXiv摘要明确不等于全文。
+- NotebookLM旧入库链不恢复；正文hash、引用定位和报告提取复用claims/documents/provenance。
+
+以下“当前”“默认”“已吸收”等措辞仅描述当时的方案。
 
 ## Identity
 
