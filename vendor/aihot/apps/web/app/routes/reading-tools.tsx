@@ -1,3 +1,4 @@
+import { arxivHubHref } from '../features/workbench/model';
 import { useState } from 'react';
 import { useSearchParams } from 'react-router';
 import workflows from '@aihot/industry/workflows/reading.json';
@@ -10,11 +11,13 @@ export default function ReadingTools() {
   const [skill, setSkill] = useState(choices[0]?.id ?? '');
   const [input, setInput] = useState(query.get('url') ?? '');
   const [status, setStatus] = useState('');
+  const paperLink = arxivHubHref(input);
   const tool = choices.find((choice) => choice.id === skill);
   const task = tool && input.trim() ? `使用项目技能 ${tool.id}（${tool.name}）。\n${tool.task}\n\n处理材料：\n${input.trim()}\n\n保留原文出处和日期；只有摘要时不要声称已阅读全文。遇到登录或验证请停止并交给我操作。` : '';
   return <section className="py-5">
     <h1 className="text-[24px] font-bold text-ink">阅读工具</h1>
     <p className="mt-2 text-[14px] text-ink-3">选好材料与技能，复制任务交给 Agent。此页面只准备文本。</p>
+    <div className="mt-6 rounded-control border border-line p-4"><a href="https://arxivhub.github.io/" target="_blank" rel="noopener noreferrer" className="text-cyan-200">ArXivHub · 论文阅读、翻译与讨论 ↗</a><p className="mt-2 text-sm text-ink-3">填入 arXiv ID 或原文链接，可直接打开该论文的工具目录。</p>{paperLink && <a href={paperLink} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block text-cyan-200">打开这篇论文的工具入口 ↗</a>}</div>
     <div className="mt-6 grid gap-4">
       <label className="grid gap-2 text-[14px]">选择技能
         <select value={skill} onChange={(event) => { setSkill(event.target.value); setStatus(''); }} className="rounded-control border border-line bg-surface p-3">

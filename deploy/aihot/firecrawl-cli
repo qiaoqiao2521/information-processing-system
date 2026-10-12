@@ -1,0 +1,7 @@
+#!/bin/sh
+# Root-only cloud authentication; credentials never enter command arguments.
+set -eu
+set -a
+. /opt/intelligence-hub/aihot/frontier.env
+set +a
+exec /usr/local/bin/node /root/.nvm/versions/node/v22.22.1/lib/node_modules/firecrawl-cli/dist/index.js "$@"

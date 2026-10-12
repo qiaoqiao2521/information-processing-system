@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { FeedItemSummary } from '@aihot/contracts/site';
-import { filterHref, toWorkbenchItem } from '../app/features/workbench/model.ts';
+import { arxivHubHref, filterHref, toWorkbenchItem } from '../app/features/workbench/model.ts';
 
 test('combined filters preserve query and tag while resetting legacy paging', () => {
   const params = new URLSearchParams('q=OpenAI&tag=二次加工&channel=firstParty&page=8&deep=1&anchorAt=old&search=1&tab=relevance');
@@ -17,7 +17,7 @@ test('combined filters preserve query and tag while resetting legacy paging', ()
 });
 
 test('card adapter retains genuine publication dates, pending status and event identity', () => {
-  const raw: FeedItemSummary = {id:'article-1',title:'真实报道',summary:null,reason:null,source:{name:'Official'},publishedAt:'2026-10-01T16:15:00Z',timelineAt:'2026-10-11T00:00:00Z',category:null,tags:[],score:null,selected:false,channel:'news',x:null};
+  const raw: FeedItemSummary = {id:'article-1',title:'真实报道',originalTitle:null,summary:null,reason:null,source:{name:'Official'},publishedAt:'2026-10-01T16:15:00Z',timelineAt:'2026-10-11T00:00:00Z',category:null,tags:[],score:null,selected:false,channel:'news',x:null};
   const group = {factId:'f',story:{publicId:'event-1',title:'事件'},additionalSourceCount:1,reportCount:2,developmentCount:1};
   const item = toWorkbenchItem(raw,group,"fact:f");
   assert.equal(item.dataKey,'fact:f');
@@ -28,4 +28,14 @@ test('card adapter retains genuine publication dates, pending status and event i
   assert.equal(item.group,group);
   assert.equal(item.raw.score,null);
   assert.equal(toWorkbenchItem({...raw,publishedAt:null}).date,'2026-10-11');
+});
+
+test('paper tool links use the upstream paper route and reject unrelated input', () => {
+  assert.equal(arxivHubHref('https://arxiv.org/abs/2610.01234v2'), 'https://arxivhub.github.io/p/2610.01234v2');
+  assert.equal(arxivHubHref('https://arxiv.org/pdf/2610.01234.pdf'), 'https://arxivhub.github.io/p/2610.01234');
+  assert.equal(arxivHubHref(' 2610.01234 '), 'https://arxivhub.github.io/p/2610.01234');
+  assert.equal(arxivHubHref('https://arxiv.org.evil.test/abs/2610.01234'), null);
+  assert.equal(arxivHubHref('https://user:pass@arxiv.org/abs/2610.01234'), null);
+  assert.equal(arxivHubHref('https://arxiv.org/search/2610.01234'), null);
+  assert.equal(arxivHubHref('任意材料'), null);
 });

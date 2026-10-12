@@ -24,11 +24,12 @@ const api = createServer((req, res) => {
     const respond = () => res.end(JSON.stringify({ changelogVersion: "2026-09-28T12:00" }));
     return metaDelayMs ? setTimeout(respond, metaDelayMs) : respond();
   }
-  if (url.pathname === "/api/site/timeline") {
+  if (url.pathname === "/api/site/pool") {
     const filters = { channel: "all", category: url.searchParams.get("category"), tag: null, topic: null };
-    res.setHeader("X-Accel-Expires", `@${deadline}`);
+    res.setHeader("X-Accel-Expires", Date.parse(refreshAt) < Date.now() ? "0" : `@${deadline}`);
     res.setHeader("Cache-Control", "public, max-age=30, s-maxage=30");
-    return res.end(JSON.stringify({ filters, cards: [], nextCursor: null, refreshAt, dayCounts: [], hot: null, generatedAt: "2026-09-28T00:00:00Z" }));
+    const item = { id: 'pending-paper', title: '未入选论文仍可阅读', summary: '公开原始摘要', reason: null, source: {name:'Paper Source'}, publishedAt: '2026-10-12T00:00:00Z', timelineAt:'2026-10-12T00:00:00Z', category:'paper', tags:[], score:null, selected:false, channel:'news', x:null };
+    return res.end(JSON.stringify({ filters, items: !filters.category || filters.category === 'paper' ? [item] : [], page: 1, pageCount: 1, total: 0, todayCount: 0, freshness: "current", generatedAt: "2026-09-28T00:00:00Z" }));
   }
   if (url.pathname === "/api/site/hot") return res.end(JSON.stringify({ entries: [] }));
   if (url.pathname === "/api/site/echo-client") return res.end(JSON.stringify({ forwarded: req.headers["x-forwarded-for"], real: req.headers["x-real-ip"] }));
@@ -99,7 +100,7 @@ test("HTML and navigation share freshness; cookies do not personalize public res
   const html = await fetch(`${origin}/`);
   assert.equal(html.status, 200);
   assert.equal(html.headers.get("X-Accel-Expires"), `@${deadline}`);
-  assert.match(await html.text(), /精选/);
+  assert.match(await html.text(), /分类阅读/);
   const plain = await fetch(`${origin}/about.data`);
   const signedIn = await fetch(`${origin}/about.data?_routes=root`, { headers: { cookie: "admin_session=private; aihot_vid=reader" } });
   assert.match(plain.headers.get("Cache-Control")!, /^public,/);
@@ -161,7 +162,7 @@ test("an elapsed release deadline cannot be extended by a fresh page/data respon
   assert.equal(headers["X-Accel-Expires"], upstream.get("X-Accel-Expires"));
 });
 
-test("browser freshness shares the selected deadline, including slow sibling loaders", async () => {
+test("browser freshness shares the public pool deadline, including slow sibling loaders", async () => {
   const savedDeadline = deadline;
   const savedRefresh = refreshAt;
   try {
@@ -179,7 +180,7 @@ test("browser freshness shares the selected deadline, including slow sibling loa
       assert.doesNotMatch(cc, /stale/);
       await res.text();
     }
-    // The selected loader initially grants a positive TTL, but root metadata finishes after it.
+    // The pool loader initially grants a positive TTL, but root metadata finishes after it.
     deadline = Math.floor(Date.now() / 1000) + 2;
     refreshAt = new Date((deadline + 5) * 1000).toISOString();
     metaDelayMs = 2300;
@@ -219,4 +220,14 @@ test("browser caching preserves noindex and private sign-in responses", async ()
 test("a visitor cannot name its own address to the api without a trusted proxy in front", async () => {
   const res = await fetch(`${origin}/api/site/echo-client`, { headers: { "X-Forwarded-For": "6.6.6.6", "X-Real-IP": "6.6.6.6" } });
   assert.deepEqual(await res.json(), { forwarded: "127.0.0.1", real: "127.0.0.1" });
+});
+
+test("category homepage exposes unselected public papers with correct filter links and canonical", async () => {
+  const res = await fetch(`${origin}/?category=paper`);
+  assert.equal(res.status, 200);
+  const html = await res.text();
+  assert.match(html, /未入选论文仍可阅读/);
+  assert.match(html, /分类阅读/);
+  assert.match(html, /href="\/\?category=ai-models"/);
+  assert.match(html, /rel="canonical" href="[^"]+\/\?category=paper"/);
 });

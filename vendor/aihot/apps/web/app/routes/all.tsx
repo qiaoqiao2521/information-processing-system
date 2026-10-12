@@ -1,17 +1,18 @@
 import { loadWorkbenchStats } from "../features/workbench/stats.server";
 import { WorkbenchFeed } from "../features/workbench/Workbench";
 import { FrozenCards } from "../features/workbench/FrozenCards";
+import { CATEGORIES } from "@aihot/industry/taxonomy";
 import { SITE, withSubject } from "@aihot/industry/site";
-import { Link, useLoaderData, useNavigation, useSearchParams } from "react-router";
+import { data as withHeaders, Link, useLoaderData, useNavigation, useSearchParams, useLocation } from "react-router";
 import type { Route } from "./+types/all";
 import type { PoolResponse } from "@aihot/contracts/site";
 import { isCategoryKey, isChannelKey } from "@aihot/contracts/taxonomy";
-import { loadOr404, queryString } from "../lib/api.server";
+import { loadOr404, queryString, releaseBoundCache } from "../lib/api.server";
 import { listPath, pageMeta } from "../lib/seo";
 import { Pagination } from "../features/feed/DayList";
 import { RingMark } from "../components/Logo";
 
-export async function loader({ request }: Route.LoaderArgs) {
+export async function loader({ request }: { request: Request }) {
   const url = new URL(request.url);
   const channelParam = url.searchParams.get("channel") ?? "all";
   const categoryParam = url.searchParams.get("category");
@@ -22,30 +23,31 @@ export async function loader({ request }: Route.LoaderArgs) {
   const tab = url.searchParams.get("tab") === "relevance" ? "relevance" : null;
   // Legacy deep-paging parameters (deep, anchorAt) still open a normal page.
   const page = Math.min(Math.max(Number.parseInt(url.searchParams.get("page") ?? "1", 10) || 1, 1), 50);
+  const upstream = new Headers();
   const [data, stats] = await Promise.all([loadOr404<PoolResponse>(
     `/api/site/pool${queryString({ channel: channel === "all" ? null : channel, category, tag, q, tab, page: page > 1 ? page : null })}`,
-    { signal: request.signal, busyRedirect: "/all/search-busy" },
+    { responseHeaders: upstream, signal: request.signal, busyRedirect: "/all/search-busy" },
   ), loadWorkbenchStats(request.signal)]);
-  return { data, stats };
+  return withHeaders({ data, stats }, { headers: releaseBoundCache(null, 60, Date.now(), upstream) });
 }
 
-export function meta({ loaderData }: Route.MetaArgs) {
+export function meta({ loaderData, location }: Route.MetaArgs) {
   const f = loaderData?.data.filters;
   const q = f?.q;
   const page = loaderData?.data.page ?? 1;
   return pageMeta({
-    title: q ? `搜索：${q}` : `全部${withSubject("动态")}`,
+    title: q ? `搜索：${q}` : location.pathname === "/" ? (CATEGORIES.find(c => c.key === f?.category)?.label ?? "分类阅读") : `全部${withSubject("动态")}`,
     description: `${SITE.name} 收录的全部${withSubject("动态")}，可按类别与标签筛选，支持中英文搜索。`,
-    path: listPath("/all", { channel: f && f.channel !== "all" ? f.channel : null, category: f?.category, tag: f?.tag, q, tab: f?.tab === "relevance" ? "relevance" : null, page: page > 1 ? page : null }),
+    path: listPath(location.pathname === "/" ? "/" : "/all", { channel: f && f.channel !== "all" ? f.channel : null, category: f?.category, tag: f?.tag, q, tab: f?.tab === "relevance" ? "relevance" : null, page: page > 1 ? page : null }),
     noindex: !!q,
   });
 }
 
-export function headers() {
-  return { "Cache-Control": "public, max-age=0, s-maxage=60, stale-while-revalidate=30" };
+export function headers({ loaderHeaders }: Route.HeadersArgs) {
+  return loaderHeaders;
 }
 
-function pageHref(params: URLSearchParams, page: number) {
+function pageHref(params: URLSearchParams, page: number, base: string) {
   const sp = new URLSearchParams(params);
   sp.delete("deep");
   sp.delete("anchorAt");
@@ -53,20 +55,21 @@ function pageHref(params: URLSearchParams, page: number) {
   if (page <= 1) sp.delete("page");
   else sp.set("page", String(page));
   const s = sp.toString();
-  return s ? `/all?${s}` : "/all";
+  return s ? `${base}?${s}` : base;
 }
 
 export default function AllPage() {
   const { data, stats } = useLoaderData<typeof loader>();
   const [params] = useSearchParams();
+  const { pathname } = useLocation();
   const navigation = useNavigation();
   const f = data.filters;
   const busy = navigation.state === "loading" && navigation.location?.pathname === "/all";
   const title = f.q ? `搜索“${f.q}”` : f.tag ? `#${f.tag}` : null;
 
-  return <WorkbenchFeed stats={stats} title={title ?? "全部动态"} items={data.items} filters={f} generatedAt={data.generatedAt} total={data.total}>
+  return <WorkbenchFeed stats={stats} title={title ?? (pathname === "/" ? "分类阅读" : "全部动态")} items={data.items} filters={f} generatedAt={data.generatedAt} total={data.total}>
     <div className={busy ? "opacity-50" : ""}><FrozenCards items={data.items} /></div>
-    <Pagination page={data.page} pageCount={data.pageCount} href={(p) => pageHref(params, p)} />
+    <Pagination page={data.page} pageCount={data.pageCount} href={(p) => pageHref(params, p, pathname)} />
     {data.page >= 50 && <p className="mt-4 text-center text-xs text-white/60">最多提供 50 页，更早内容请使用搜索。</p>}
   </WorkbenchFeed>;
 }
@@ -79,7 +82,7 @@ export function SearchBusy() {
       <p className="mt-2 text-[14px] leading-relaxed text-ink-3">现在搜索的人比较多，请稍等几秒再试。列表浏览不受影响。</p>
       <div className="mt-6 flex justify-center gap-2.5">
         <Link to="/all" className="inline-flex h-9 items-center rounded-full bg-accent px-4 text-[13.5px] font-medium text-accent-contrast hover:bg-accent-ink">浏览全部动态</Link>
-        <Link to="/" className="inline-flex h-9 items-center rounded-full border border-line-strong bg-surface px-4 text-[13.5px] text-ink-2 hover:border-ink-4">回到精选</Link>
+        <Link to="/" className="inline-flex h-9 items-center rounded-full border border-line-strong bg-surface px-4 text-[13.5px] text-ink-2 hover:border-ink-4">回到分类</Link>
       </div>
     </div>
   );

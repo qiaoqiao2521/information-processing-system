@@ -1,3 +1,4 @@
+import { arxivHubHref } from "../features/workbench/model";
 import { SITE, withSubject } from "@aihot/industry/site";
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLoaderData, useNavigate } from "react-router";
@@ -30,7 +31,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
   if (!loaderData) return [{ title: titled("内容不存在") }, { name: "robots", content: "noindex" }];
   const { item } = loaderData;
   return pageMeta({
-    title: item.title,
+    title: headlineOf(item),
     description: item.summary ?? undefined,
     path: `/items/${item.id}`,
     image: `/og/items/${item.id}.png`,
@@ -38,7 +39,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
     noindex: !item.indexable,
     jsonLd: breadcrumbLd([
       { name: SITE.name, path: "/" },
-      { name: item.selected ? "精选" : "全部动态", path: item.selected ? "/" : "/all" },
+      { name: "分类阅读", path: item.category ? `/?category=${item.category}` : "/" },
       { name: item.title, path: `/items/${item.id}` },
     ]),
   });
@@ -79,6 +80,15 @@ function hostOf(url: string): string {
   } catch {
     return "";
   }
+}
+
+/** Upstream-reviewed items (AIHOT 二次加工) lead with the original headline; the AI rewrite is secondary. */
+function isReviewed(item: SiteItemDetail): boolean {
+  return item.source.id === "upstream-reviewed";
+}
+
+function headlineOf(item: SiteItemDetail): string {
+  return isReviewed(item) && item.originalTitle ? item.originalTitle : item.title;
 }
 
 async function shareOrCopy(item: Pick<SiteItemDetail, "id" | "title">): Promise<"shared" | "copied" | null> {
@@ -122,6 +132,8 @@ export default function ItemPage() {
   const bodyHtml = lang === "zh" ? (item.body?.zh ?? item.body?.original) : (item.body?.original ?? item.body?.zh);
   const bodyLabel = !item.body ? null : lang === "zh" && item.body.zhKind === "translation" ? "正文 · AI 翻译" : lang === "original" && hasTranslation ? "正文 · 原文" : "正文";
   const isX = item.channel === "x" && !!item.x;
+  const reviewed = isReviewed(item);
+  const headline = headlineOf(item);
   const publishedIso = item.publishedAt ?? item.discoveredAt;
   const summaryOnly = item.readingMode === "summary-only";
   const showOutline = item.outline.length >= 3;
@@ -143,6 +155,7 @@ export default function ItemPage() {
       {(close) => (
         <>
           <MenuItem icon={<IconShare size={15} />} onSelect={() => { close(); void share(); }}>分享链接</MenuItem>
+          {arxivHubHref(item.links.original) && <MenuItem icon={<IconExternal size={15} />} href={arxivHubHref(item.links.original)!} onSelect={close}>ArXivHub 论文工具</MenuItem>}
           <MenuItem icon={<IconCopy size={15} />} href={`/reading-tools?url=${encodeURIComponent(item.links.original)}`} onSelect={close}>交给阅读技能</MenuItem>
           <MenuItem icon={<IconImage size={15} />} onSelect={() => { close(); openPoster(); }}>生成分享海报</MenuItem>
           <MenuItem
@@ -207,7 +220,7 @@ export default function ItemPage() {
       </div>
     </RailSection>
   );
-  const outline = showOutline && (
+  const outline = showOutline && !reviewed && (
     <RailSection title="本文目录">
       <nav aria-label="本文目录">
         <ol className="-ml-px space-y-0.5 border-l border-line">
@@ -301,10 +314,18 @@ export default function ItemPage() {
               </span>
             )}
           </div>
-          {!isX && <h1 className="text-[26px] font-bold leading-[1.38] tracking-[-0.01em] text-ink lg:text-[32px] lg:leading-[1.34] xl:text-[36px] xl:leading-[1.3]">{item.title}</h1>}
-          {!isX && item.originalTitle && <p className="mt-2.5 text-[14px] leading-relaxed text-ink-4">{item.originalTitle}</p>}
+          {!isX && <h1 className="text-[26px] font-bold leading-[1.38] tracking-[-0.01em] text-ink lg:text-[32px] lg:leading-[1.34] xl:text-[36px] xl:leading-[1.3]">{headline}</h1>}
+          {!isX && reviewed && item.originalTitle && item.title !== item.originalTitle && <p className="mt-2.5 text-[14px] leading-relaxed text-ink-4">AI 复核标题：{item.title}</p>}
+          {!isX && !reviewed && item.originalTitle && <p className="mt-2.5 text-[14px] leading-relaxed text-ink-4">{item.originalTitle}</p>}
+          {!isX && reviewed && (
+            <div className="mt-5">
+              <a href={item.links.original} target="_blank" rel="noopener noreferrer" className="inline-flex h-9 items-center gap-1.5 rounded-full border border-accent px-4 text-[13px] font-semibold text-accent transition-colors hover:bg-accent hover:text-white">
+                {originalLabel} · {hostOf(item.links.original)} <IconExternal size={14} />
+              </a>
+            </div>
+          )}
 
-          {item.summary && (
+          {!reviewed && item.summary && (
             <section className={isX ? "mt-4" : "mt-7 xl:mt-8"}>
               <div className="mb-2 text-[12px] font-semibold text-accent">{summaryOnly ? "摘要" : "AI 导读"}</div>
               <p className="text-[18px] leading-[1.7] text-ink xl:text-[20px] xl:leading-[1.7]">{item.summary}</p>
@@ -326,7 +347,7 @@ export default function ItemPage() {
 
           {summaryOnly && <p className="mt-7 rounded-control bg-bg-sunk px-4 py-3 text-[13.5px] leading-relaxed text-ink-3">应来源方要求，这里只提供摘要与原文入口。完整内容请阅读原文。</p>}
 
-          {item.body && bodyHtml && (
+          {!reviewed && item.body && bodyHtml && (
             <section className="mt-9 border-t border-line pt-4 xl:mt-10">
               <div className="mb-6 flex items-center justify-between gap-3">
                 <span className="text-[12px] text-ink-4">{bodyLabel}</span>
@@ -348,6 +369,28 @@ export default function ItemPage() {
               )}
               <div className="prose" dangerouslySetInnerHTML={{ __html: bodyHtml }} />
             </section>
+          )}
+
+          {reviewed && (item.summary || (item.body && bodyHtml)) && (
+            <details className="mt-9 rounded-control border border-line xl:mt-10">
+              <summary className="cursor-pointer px-4 py-3 text-[13px] font-semibold text-ink-2">
+                AI 加工与复核
+                <span className="ml-2 font-normal text-ink-4">AI 导读、加工分析与待核实，默认收起，展开查看</span>
+              </summary>
+              <div className="border-t border-line px-4 py-4">
+                {item.summary && (
+                  <section>
+                    <div className="mb-2 text-[12px] font-semibold text-accent">AI 导读</div>
+                    <p className="text-[16px] leading-[1.7] text-ink">{item.summary}</p>
+                  </section>
+                )}
+                {item.body && bodyHtml && (
+                  <section className={item.summary ? "mt-6" : undefined}>
+                    <div className="prose" dangerouslySetInnerHTML={{ __html: bodyHtml }} />
+                  </section>
+                )}
+              </div>
+            </details>
           )}
 
           {isX && item.x!.media.length > 0 && <MediaGallery media={item.x!.media} postUrl={item.links.original} />}

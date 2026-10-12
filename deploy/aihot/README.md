@@ -183,3 +183,11 @@ python3 tools/aihot/local_opencode.py --upstream-next 3 --max-calls 6
 薄发布助手`frontier_publish.mjs`通过现有API容器执行已有publishArticle/republishSource，仅允许五个固定source且必须enabled/first_party/editorial/publishPending；不写override，不调用模型。external只增加既有_aihot配置键支持，其余未知配置继续拒绝。现场原文件备份为config-keys.ts.before-frontier及sources-before-frontier-20261012.json；源码及运行容器同步该单行配置支持，没有重建或重启容器。以后构建沿用仓库/现场源码。
 
 回退：移除bridge.service.d/frontier.conf并daemon-reload，暂停五项source；保留历史文章、原缓存和回执。无需删除数据库或变更网络。详见[验收记录](../../plans/frontier-firecrawl-20261012/progress.md)。
+
+## 2026-10-12 官方 Firecrawl CLI 与分类首页
+
+436安装官方`firecrawl-cli@1.25.0`，Node22符合CLI要求。`deploy/aihot/firecrawl-cli`部署到`/usr/local/bin/firecrawl`（root700），读取已有`frontier.env`（root600），密钥不放命令参数、不复制浏览器会话。安装目标为服务器既有npm prefix `/root/.nvm/versions/node/v22.22.1`；Node路径变化时同步更新包装入口。
+
+CLI实测ArXivHub公开仓库抓取成功，验证请求先写入既有预算回执后调用。定时采集继续使用官方v2 REST薄适配，不新建第二个采集时钟：原bridge.timer唤醒、ExecStopPost执行frontier.py、每12小时到期采集，60尝试/24h、每源每轮2篇，失败/未知24h冷却。CLI与定时API共享同一私密云端密钥；常态回执由frontier.py维护。手动CLI操作须同样先登记回执，CLI自身不实现项目预算。
+
+分类首页web最终镜像`muqiao-intel-aihot:category-final-20261012`（sha256前缀76f3afc94afe）；API/worker维持既有`nobrand-e-20261012`版本。回退材料在服务器`category-cli-20261012/compose.previous.yaml`与`web-before.tgz`，恢复reader-a网页镜像与前端源码，不回退数据库。论文工具目录本身不是新论文信息流，新增入口不会进行自动模型调用。
