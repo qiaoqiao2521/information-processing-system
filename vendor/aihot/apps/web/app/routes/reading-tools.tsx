@@ -18,6 +18,7 @@ export default function ReadingTools() {
     <h1 className="text-[24px] font-bold text-ink">阅读工具</h1>
     <p className="mt-2 text-[14px] text-ink-3">选好材料与技能，复制任务交给 Agent。此页面只准备文本。</p>
     <div className="mt-6 rounded-control border border-line p-4"><a href="https://arxivhub.github.io/" target="_blank" rel="noopener noreferrer" className="text-cyan-200">ArXivHub · 论文阅读、翻译与讨论 ↗</a><p className="mt-2 text-sm text-ink-3">填入 arXiv ID 或原文链接，可直接打开该论文的工具目录。</p>{paperLink && <a href={paperLink} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block text-cyan-200">打开这篇论文的工具入口 ↗</a>}</div>
+    <div className="mt-4 rounded-control border border-line p-4"><a href="https://newsnow.busiyi.world/" target="_blank" rel="noopener noreferrer" className="text-cyan-200">NewsNow · 实时新闻与热点 ↗</a><p className="mt-2 text-sm text-ink-3">浏览多平台新闻与热点榜。</p><a href="https://github.com/newsnext/newsnow" target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-sm text-ink-3">GitHub 开源项目 ↗</a></div>
     <div className="mt-6 grid gap-4">
       <label className="grid gap-2 text-[14px]">选择技能
         <select value={skill} onChange={(event) => { setSkill(event.target.value); setStatus(''); }} className="rounded-control border border-line bg-surface p-3">

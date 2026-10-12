@@ -195,3 +195,7 @@ CLI实测ArXivHub公开仓库抓取成功，验证请求先写入既有预算回
 ### 单一列表与分类选项（同日修正）
 
 用户取消独立分类导航。根路由302保留全部查询参数跳转`/all`，列表内下拉选择七个选项（全部分类＋六类），切换重置页码、保留来源channel/查询q/标签tag。web镜像`muqiao-intel-aihot:filter-final-20261012`，sha256前缀545a85c956fa；只重建web，API/worker维持既有版本。回退材料为`filter-20261012/compose.previous.yaml`与`web-before.tgz`。新测试21项包含旧链接参数保留。公网QA由本机mcode MiniMax-M3.1-Flash-Preview配合独立browser-bg完成，结果记录在本任务进度。
+
+### NewsNow 外链（同日）
+
+阅读工具添加官网https://newsnow.busiyi.world/与用户指定GitHub项目链接。web镜像newsnow-link-20261012（3120a17e0039），类型检查、构建与21项测试通过；公网reading-tools读回两条目标链接。仅重建web，回退compose文件在服务器newsnow-link-compose.previous.yaml。
