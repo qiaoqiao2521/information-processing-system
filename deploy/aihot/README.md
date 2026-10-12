@@ -167,3 +167,7 @@ python3 tools/aihot/local_opencode.py --upstream-next 3 --max-calls 6
 在vendor/aihot构建上下文中执行 `docker build -f ../../deploy/aihot/Dockerfile.web -t muqiao-intel-aihot:make-v8-20261011 .`，只修改既有override的web镜像，再用`docker compose -p muqiao-intel -f docker-compose.yml -f compose.override.yaml up -d --no-deps --force-recreate web`。等待origin首页HTTP200之后再运行 `docker exec muqiao-intel-web-1 node scripts/smoke.ts --base http://127.0.0.1:3000`，避免把启动前连接失败误判为页面故障。
 
 此次回退文件在`/opt/intelligence-hub/aihot/web-make-v8-20261011/`：恢复compose.previous.yaml和app-web-before.tgz里的前端/锁文件，web指回`muqiao-intel-aihot:pre-make-v8`后只重建web服务。数据库、API/worker和定时任务保持原状。
+
+## 2026-10-12 来源增补
+
+七项原生RSS：Cloudflare AI、NVIDIA Developer、Microsoft AI、PyTorch、Google Developers、Lilian Weng、Sebastian Raschka。生成器 `tools/aihot/subscriptions.py`保留它们；首次每源三篇，原始待处理索引公开，全文权限关闭。NVIDIA使用总feed，分类feed已滞后。复用现有worker，无新增时钟、模型额度或Firecrawl调用。现场种子只合并本批七项，保留其他现场配置，镜像未重建。验收见[来源扩展](../../plans/source-expansion-20261012/progress.md)。

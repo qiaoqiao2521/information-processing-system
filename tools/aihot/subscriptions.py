@@ -16,6 +16,18 @@ EXTERNAL = {
 }
 
 
+# Verified official/personal publisher feeds, 2026-10-12. No browser or paid crawler.
+DISCOVERED_RSS = [
+    ('rss-cloudflare-ai', 'Cloudflare · AI', 'https://blog.cloudflare.com/tag/ai/rss/', 'T1', ['官方', 'AI基础设施']),
+    ('rss-nvidia-generative-ai', 'NVIDIA Developer Blog', 'https://developer.nvidia.com/blog/feed/', 'T1', ['官方', '开发']),
+    ('rss-microsoft-ai', 'Microsoft AI Blog', 'https://www.microsoft.com/en-us/ai/blog/feed/', 'T1', ['官方', 'AI']),
+    ('rss-pytorch-blog', 'PyTorch Blog', 'https://pytorch.org/blog/feed.xml', 'T1', ['官方', '开源']),
+    ('rss-google-developers', 'Google Developers Blog', 'https://blog.google/technology/developers/rss/', 'T1', ['官方', '开发']),
+    ('rss-lilian-weng', 'Lilian Weng · Lil’Log', 'https://lilianweng.github.io/index.xml', 'T1_5', ['个人订阅', '研究']),
+    ('rss-sebastian-raschka', 'Sebastian Raschka', 'https://sebastianraschka.com/rss_feed.xml', 'T1_5', ['个人订阅', '研究']),
+]
+
+
 def build_sources(demo):
     sources = [dict(s) for s in demo if not s['id'].startswith(('ak-', 'qiaomu-', 'hub-'))
                and s['id'] not in {'rss-ruanyifeng-weekly', 'web-builderpulse-reports'}]
@@ -42,6 +54,14 @@ def build_sources(demo):
         if s['id'] in {'rss-openai-news', 'rss-google-deepmind', 'rss-google-research', *(item['id'] for item in official)}:
             s['config'] = {**s['config'], 'sortByPublishedAt': True,
                 '_aihot': {**s['config'].get('_aihot', {}), 'initialBackfillLimit': 8, 'publishPending': True}}
+    for source_id, name, url, tier, tags in DISCOVERED_RSS:
+        if not any(s['id'] == source_id or s.get('config', {}).get('feedUrl') == url for s in sources):
+            sources.append({'id': source_id, 'name': name, 'kind': 'rss',
+                'config': {'feedUrl': url, 'sortByPublishedAt': True,
+                           '_aihot': {'initialBackfillLimit': 3, 'publishPending': True}},
+                'tier': tier, 'first_party': True, 'participation_mode': 'editorial',
+                'interval_minutes': 60, 'tags': tags,
+                'site_fulltext': False, 'syndicate_fulltext': False})
     seen = {s.get('config', {}).get('feedUrl') for s in sources}
 
     def add(name, url, origin):

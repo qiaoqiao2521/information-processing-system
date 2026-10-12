@@ -487,6 +487,167 @@
       "syndicate_fulltext": false
     },
     {
+      "id": "rss-cloudflare-ai",
+      "name": "Cloudflare · AI",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://blog.cloudflare.com/tag/ai/rss/",
+        "sortByPublishedAt": true,
+        "_aihot": {
+          "initialBackfillLimit": 3,
+          "publishPending": true
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "AI基础设施"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "rss-nvidia-generative-ai",
+      "name": "NVIDIA Developer Blog",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://developer.nvidia.com/blog/feed/",
+        "sortByPublishedAt": true,
+        "_aihot": {
+          "initialBackfillLimit": 3,
+          "publishPending": true
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "开发"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "rss-microsoft-ai",
+      "name": "Microsoft AI Blog",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://www.microsoft.com/en-us/ai/blog/feed/",
+        "sortByPublishedAt": true,
+        "_aihot": {
+          "initialBackfillLimit": 3,
+          "publishPending": true
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "AI"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "rss-pytorch-blog",
+      "name": "PyTorch Blog",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://pytorch.org/blog/feed.xml",
+        "sortByPublishedAt": true,
+        "_aihot": {
+          "initialBackfillLimit": 3,
+          "publishPending": true
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "开源"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "rss-google-developers",
+      "name": "Google Developers Blog",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://blog.google/technology/developers/rss/",
+        "sortByPublishedAt": true,
+        "_aihot": {
+          "initialBackfillLimit": 3,
+          "publishPending": true
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "官方",
+        "开发"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "rss-lilian-weng",
+      "name": "Lilian Weng · Lil’Log",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://lilianweng.github.io/index.xml",
+        "sortByPublishedAt": true,
+        "_aihot": {
+          "initialBackfillLimit": 3,
+          "publishPending": true
+        }
+      },
+      "tier": "T1_5",
+      "first_party": true,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "个人订阅",
+        "研究"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "rss-sebastian-raschka",
+      "name": "Sebastian Raschka",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://sebastianraschka.com/rss_feed.xml",
+        "sortByPublishedAt": true,
+        "_aihot": {
+          "initialBackfillLimit": 3,
+          "publishPending": true
+        }
+      },
+      "tier": "T1_5",
+      "first_party": true,
+      "participation_mode": "editorial",
+      "interval_minutes": 60,
+      "tags": [
+        "个人订阅",
+        "研究"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
       "id": "ak-99e2c21c8334",
       "name": "jeffgeerling.com",
       "kind": "rss",

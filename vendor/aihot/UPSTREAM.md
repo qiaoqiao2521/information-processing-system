@@ -37,3 +37,7 @@ Codex模块开启展示，`CODEX_RESET_UPSTREAM_ENABLED=true`时由现有worker�
 ## 2026-10-11 Make Version 8 前端接回
 
 使用用户 Make 地图版视觉，保留 React Router SSR 和原公开读取层。新增 workbench 展示组件、真实数据映射及组合筛选，沿用 timeline 游标、取消请求和历史恢复；文章详情、原文、收藏、报表、事件及公开接口仍走原实现。真实统计失败仅显示本页数量，不把随机指标或模拟新闻发布。地图属于装饰，不宣称地点/传输核验。按时间完成解码、减少动效支持和手机横滑修复。新增的 d3-geo/topojson-client/world-atlas 采用 Make 版本的固定依赖；上游 MIT 许可保留。只更新 web 镜像。
+
+## 2026-10-12 RSS 来源扩展
+
+行业种子追加七个免费官方/作者 RSS，复用现有 RSS、pending 发布与 worker。首次最多三篇，按原日期归档，全文展示和分发继续关闭。生成器去重并保留既有种子配置；不修改核心引擎、前端或付费预算。
