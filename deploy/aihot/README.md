@@ -191,3 +191,7 @@ python3 tools/aihot/local_opencode.py --upstream-next 3 --max-calls 6
 CLI实测ArXivHub公开仓库抓取成功，验证请求先写入既有预算回执后调用。定时采集继续使用官方v2 REST薄适配，不新建第二个采集时钟：原bridge.timer唤醒、ExecStopPost执行frontier.py、每12小时到期采集，60尝试/24h、每源每轮2篇，失败/未知24h冷却。CLI与定时API共享同一私密云端密钥；常态回执由frontier.py维护。手动CLI操作须同样先登记回执，CLI自身不实现项目预算。
 
 分类首页web最终镜像`muqiao-intel-aihot:category-final-20261012`（sha256前缀76f3afc94afe）；API/worker维持既有`nobrand-e-20261012`版本。回退材料在服务器`category-cli-20261012/compose.previous.yaml`与`web-before.tgz`，恢复reader-a网页镜像与前端源码，不回退数据库。论文工具目录本身不是新论文信息流，新增入口不会进行自动模型调用。
+
+### 单一列表与分类选项（同日修正）
+
+用户取消独立分类导航。根路由302保留全部查询参数跳转`/all`，列表内下拉选择七个选项（全部分类＋六类），切换重置页码、保留来源channel/查询q/标签tag。web镜像`muqiao-intel-aihot:filter-final-20261012`，sha256前缀545a85c956fa；只重建web，API/worker维持既有版本。回退材料为`filter-20261012/compose.previous.yaml`与`web-before.tgz`。新测试21项包含旧链接参数保留。公网QA由本机mcode MiniMax-M3.1-Flash-Preview配合独立browser-bg完成，结果记录在本任务进度。

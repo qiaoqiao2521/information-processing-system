@@ -28,7 +28,7 @@
 
 ## Current State / Priority
 
-2026-10-12新增前瞻采集：Epoch AI、Forethought、METR、ARC Prize、Sakana AI，经Firecrawl进入原external链路。前沿研究、评测与条件预测保留类型、出处及原日期；入口沿用网站搜索“前沿”。2026-10-12用户将首页精选改为六类阅读，沿用Make视觉，全部公开材料不再受精选门槛过滤；未分类材料保留在全部列表。436安装官方Firecrawl CLI，复用现有云端认证及既有定时脚本。进度见[Firecrawl前瞻采集](plans/frontier-firecrawl-20261012/progress.md)。
+2026-10-12新增前瞻采集：Epoch AI、Forethought、METR、ARC Prize、Sakana AI，经Firecrawl进入原external链路。前沿研究、评测与条件预测保留类型、出处及原日期；入口沿用网站搜索“前沿”。2026-10-12用户取消独立分类导航：只保留全部动态，分类作为列表内下拉选项。沿用Make视觉，全部公开材料不受精选门槛过滤；未分类材料保留在全部列表。验收增加本地mcode直接操作公网站点QA。436安装官方Firecrawl CLI，复用现有云端认证及既有定时脚本。进度见[Firecrawl前瞻采集](plans/frontier-firecrawl-20261012/progress.md)。
 
 核心源码快照 `vendor/aihot`。来源种子新增阮一峰RSS、BuilderPulse中文日报网页与CLI官方发布bridge；旧机会雷达／融合简报仅存量保留。旧Python工作台与knowledge_pack仍可手动使用，Notebook定时消费退役。436旧站和快照用于回退。来源补齐进度见 [集中采集收口](plans/centralized-source-completion-20261009/progress.md)，核心迁移进度回源 `plans/aihot-core-migration`，官方覆盖修复见 `plans/official-source-coverage`。
 

@@ -78,29 +78,29 @@ after(async () => {
 });
 
 test("public route subsets produce the same complete navigation data; filters still differ", async () => {
-  const answers = await Promise.all(["", "?_routes=root", "?_routes=routes%2Fhome", "?_routes=unknown"].map(async (query) => {
-    const res = await fetch(`${origin}/_.data${query}`);
+  const answers = await Promise.all(["", "?_routes=root", "?_routes=routes%2Fall", "?_routes=unknown"].map(async (query) => {
+    const res = await fetch(`${origin}/all.data${query}`);
     assert.equal(res.status, 200);
     assert.match(res.headers.get("Cache-Control")!, /^public,/);
     assert.equal(res.headers.get("X-Accel-Expires"), `@${deadline}`);
     assert.doesNotMatch(res.headers.get("Cache-Control")!, /stale/);
     const body = await res.text();
-    assert.ok(body.includes("root") && body.includes("routes/home"));
+    assert.ok(body.includes("root") && body.includes("routes/all"));
     return body;
   }));
   assert.ok(answers.every((body) => body === answers[0]));
   const category = CATEGORY_KEYS.at(-1)!;
-  const filtered = await fetch(`${origin}/_.data?category=${category}&_routes=root`);
+  const filtered = await fetch(`${origin}/all.data?category=${category}&_routes=root`);
   const body = await filtered.text();
   assert.ok(body.includes(category));
   assert.notEqual(body, answers[0]);
 });
 
 test("HTML and navigation share freshness; cookies do not personalize public results", async () => {
-  const html = await fetch(`${origin}/`);
+  const html = await fetch(`${origin}/all`);
   assert.equal(html.status, 200);
   assert.equal(html.headers.get("X-Accel-Expires"), `@${deadline}`);
-  assert.match(await html.text(), /分类阅读/);
+  assert.match(await html.text(), /全部动态/);
   const plain = await fetch(`${origin}/about.data`);
   const signedIn = await fetch(`${origin}/about.data?_routes=root`, { headers: { cookie: "admin_session=private; aihot_vid=reader" } });
   assert.match(plain.headers.get("Cache-Control")!, /^public,/);
@@ -145,7 +145,7 @@ test("an elapsed release deadline cannot be extended by a fresh page/data respon
   const saved = refreshAt;
   refreshAt = new Date(Date.now() - 1000).toISOString();
   try {
-    for (const pathname of ["/", "/_.data?_routes=routes%2Fhome"]) {
+    for (const pathname of ["/all", "/all.data?_routes=routes%2Fall"]) {
       const res = await fetch(origin + pathname);
       assert.equal(res.status, 200);
       assert.equal(res.headers.get("Cache-Control"), "no-cache");
@@ -168,7 +168,7 @@ test("browser freshness shares the public pool deadline, including slow sibling 
   try {
     deadline = Math.floor(Date.now() / 1000) + 20;
     refreshAt = new Date((deadline + 5) * 1000).toISOString();
-    for (const pathname of ["/", "/_.data?_routes=routes%2Fhome"]) {
+    for (const pathname of ["/all", "/all.data?_routes=routes%2Fall"]) {
       const res = await fetch(origin + pathname);
       const cc = res.headers.get("Cache-Control")!;
       const browser = Number(cc.match(/(?:^|,)\s*max-age=(\d+)/)![1]);
@@ -184,7 +184,7 @@ test("browser freshness shares the public pool deadline, including slow sibling 
     deadline = Math.floor(Date.now() / 1000) + 2;
     refreshAt = new Date((deadline + 5) * 1000).toISOString();
     metaDelayMs = 2300;
-    await Promise.all(["/", "/_.data?_routes=routes%2Fhome"].map(async (pathname) => {
+    await Promise.all(["/all", "/all.data?_routes=routes%2Fall"].map(async (pathname) => {
       const res = await fetch(origin + pathname);
       assert.equal(res.status, 200);
       assert.equal(res.headers.get("Cache-Control"), "no-cache");
@@ -223,11 +223,19 @@ test("a visitor cannot name its own address to the api without a trusted proxy i
 });
 
 test("category homepage exposes unselected public papers with correct filter links and canonical", async () => {
-  const res = await fetch(`${origin}/?category=paper`);
+  const res = await fetch(`${origin}/all?category=paper`);
   assert.equal(res.status, 200);
   const html = await res.text();
   assert.match(html, /未入选论文仍可阅读/);
-  assert.match(html, /分类阅读/);
-  assert.match(html, /href="\/\?category=ai-models"/);
-  assert.match(html, /rel="canonical" href="[^"]+\/\?category=paper"/);
+  assert.match(html, /全部动态/);
+  assert.match(html, /<select[^>]*aria-label="分类"/);
+  assert.match(html, /<option value="paper" selected=""/);
+  assert.match(html, /rel="canonical" href="[^"]+\/all\?category=paper"/);
+});
+
+test("old homepage links redirect to the single stream without losing filters", async () => {
+  const res = await fetch(`${origin}/?category=paper&channel=firstParty&page=2`, {redirect:"manual"});
+  assert.equal(res.status,302);
+  assert.equal(res.headers.get("Location"),"/all?category=paper&channel=firstParty&page=2");
+  await res.text();
 });

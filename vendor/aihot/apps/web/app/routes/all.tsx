@@ -67,7 +67,7 @@ export default function AllPage() {
   const busy = navigation.state === "loading" && navigation.location?.pathname === "/all";
   const title = f.q ? `搜索“${f.q}”` : f.tag ? `#${f.tag}` : null;
 
-  return <WorkbenchFeed stats={stats} title={title ?? (pathname === "/" ? "分类阅读" : "全部动态")} items={data.items} filters={f} generatedAt={data.generatedAt} total={data.total}>
+  return <WorkbenchFeed stats={stats} title={title ?? "全部动态"} items={data.items} filters={f} generatedAt={data.generatedAt} total={data.total}>
     <div className={busy ? "opacity-50" : ""}><FrozenCards items={data.items} /></div>
     <Pagination page={data.page} pageCount={data.pageCount} href={(p) => pageHref(params, p, pathname)} />
     {data.page >= 50 && <p className="mt-4 text-center text-xs text-white/60">最多提供 50 页，更早内容请使用搜索。</p>}

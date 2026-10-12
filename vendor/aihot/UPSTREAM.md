@@ -49,3 +49,7 @@ Codex模块开启展示，`CODEX_RESET_UPSTREAM_ENABLED=true`时由现有worker�
 ## 2026-10-12 分类阅读与论文工具
 
 首页复用公开pool，类别与分页保留URL状态；精选门槛不再控制首页可见性。缓存继承上游绝对截止时间。六类沿用既有taxonomy，不改分类键或评分引擎。ArXivHub链接按官方`/p/$id`路由生成，仅接受arXiv ID/官方URL。保留436既有原标题优先和加工结果折叠展示；FeedItemSummary增加可选originalTitle，兼容旧API。上游MIT许可保留。
+
+### 同日交互修正
+
+用户指出分类与全部入口重复。删除独立分类导航，根路由保留参数跳转/all，分类改为流内下拉选项。保留既有筛选、分页和缓存边界。公网QA由本地mcode实际浏览器操作，报告分别标记通过、失败、未验收。
