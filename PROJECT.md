@@ -13,7 +13,7 @@
 ## Constraints
 
 - 品牌沿用木乔 · 信息工作台，保留MIT与上游来源，不使用AIHOT商业品牌。
-- 用户批准现有MiniMax常态自动加工，连续24小时最多300次请求，8次/分钟、60次/小时；优先新材料，不批量重算迁移存量。Jina仅用于已有X原帖正文，连续24小时最多50次尝试，1次/分钟、10次/小时；普通网页Jina回退关闭，其他付费采集保持0。
+- 用户批准现有MiniMax常态自动加工，连续24小时最多300次请求，8次/分钟、60次/小时；优先新材料，不批量重算迁移存量。Jina仅用于已有X原帖正文，连续24小时最多50次尝试，1次/分钟、10次/小时；普通网页Jina回退关闭，其他付费采集保持0。2026-10-12用户授权Firecrawl用于公开前瞻来源；初始每12小时检查、每源每轮最多2篇，连续24小时最多60次抓取尝试，Credit消耗独立记录，不扩大模型预算。
 - X/Google搜索继续暂停，验证触发风险规则由Ops管理，不能绕过。
 - 六个明确配置的官方来源及本批阮一峰个人订阅先公开原始标题/摘要/出处并标记待AI处理，模型完成后才发布评分/精选。CLI发布与BuilderPulse未启用原始待处理发布。订阅历史资料暂停自动加工，不抢占新内容预算。
 - 用户更正目标为本地OpenCode内的MiniMax Token Plan：`minimax-cn-coding-plan/MiniMax-M3.1-Flash-Preview`。复用本机已有CLI认证，SSH传递有界模型请求与回答，账号不迁移；推荐`tools/aihot/local_opencode.py`；2026-10-03用户确认AI独立复核通过后自动发布。本地独立会话，opencode独立连续24小时300次保守上限、单次默认40次；未验证无限额度。此前误用自家mcode的真实分析保留，不伪装为OpenCode结果。
@@ -27,6 +27,8 @@
 - AIHOT 已部署8路RSS、最新日报、热点10个事件详情及近期精选评分/变更游标的私人缓存与30分钟脚本timer，复用上游摘要、综述和评分，不进模型队列或公网站点数据库。新核实上游公开使用规则：公网镜像/批量再分发须书面授权；当前无上游书面授权记录；用户在2026-10-01明确选择引用保留、AI二次加工和审批后发布网站，2026-10-03确认由AI独立复核通过后自动发布，存疑稿留给人工。二次加工不作为授权依据。436定时采集只生成私人缓存，本机timer执行有界加工/复核并发布通过稿；审批入口见[加工审批](plans/upstream-editorial-review/task_plan.md)。
 
 ## Current State / Priority
+
+2026-10-12新增前瞻采集：Epoch AI、Forethought、METR、ARC Prize、Sakana AI，经Firecrawl进入原external链路。前沿研究、评测与条件预测保留类型、出处及原日期；入口沿用网站搜索“前沿”，前端保持冻结。进度见[Firecrawl前瞻采集](plans/frontier-firecrawl-20261012/progress.md)。
 
 核心源码快照 `vendor/aihot`。来源种子新增阮一峰RSS、BuilderPulse中文日报网页与CLI官方发布bridge；旧机会雷达／融合简报仅存量保留。旧Python工作台与knowledge_pack仍可手动使用，Notebook定时消费退役。436旧站和快照用于回退。来源补齐进度见 [集中采集收口](plans/centralized-source-completion-20261009/progress.md)，核心迁移进度回源 `plans/aihot-core-migration`，官方覆盖修复见 `plans/official-source-coverage`。
 

@@ -2589,6 +2589,132 @@
       "syndicate_fulltext": false
     },
     {
+      "id": "frontier-epoch",
+      "name": "前沿 · Epoch AI（研究与预测）",
+      "kind": "external",
+      "config": {
+        "_aihot": {
+          "publishPending": true
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "前沿",
+        "研究与预测",
+        "Firecrawl"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "frontier-forethought",
+      "name": "前沿 · Forethought（条件预测）",
+      "kind": "external",
+      "config": {
+        "_aihot": {
+          "publishPending": true
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "前沿",
+        "条件预测与情景推演",
+        "Firecrawl"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "frontier-metr",
+      "name": "前沿 · METR（能力评估）",
+      "kind": "external",
+      "config": {
+        "_aihot": {
+          "publishPending": true
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "前沿",
+        "能力评估",
+        "Firecrawl"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "frontier-arc-prize",
+      "name": "前沿 · ARC Prize（推理评测）",
+      "kind": "web_list",
+      "config": {
+        "url": "https://arcprize.org/blog",
+        "itemSelector": "main li:has(a[href*=\"/blog/\"])",
+        "linkSelector": "a[href*=\"/blog/\"]",
+        "titleSelector": "a[href*=\"/blog/\"]",
+        "publishedAtRegex": "(\\d{2}\\.\\d{2}\\.\\d{2})",
+        "publishedAtUtcOffset": "+00:00",
+        "sortByPublishedAt": true,
+        "allowUrlPrefixes": [
+          "https://arcprize.org/blog/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 3,
+          "publishPending": true
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "前沿",
+        "推理评测",
+        "原生网页"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "frontier-sakana",
+      "name": "前沿 · Sakana AI（实验研究）",
+      "kind": "web_list",
+      "config": {
+        "url": "https://sakana.ai/blog/",
+        "itemSelector": "article header",
+        "linkSelector": "h1 a",
+        "titleSelector": "h1",
+        "publishedAtSelector": "time",
+        "sortByPublishedAt": true,
+        "allowUrlPrefixes": [
+          "https://sakana.ai/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 3,
+          "publishPending": true
+        }
+      },
+      "tier": "T1",
+      "first_party": true,
+      "participation_mode": "editorial",
+      "interval_minutes": 720,
+      "tags": [
+        "前沿",
+        "实验研究",
+        "原生网页"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
       "id": "hub-hacker-news",
       "name": "Hacker News",
       "kind": "external",

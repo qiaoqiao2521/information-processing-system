@@ -1,0 +1,83 @@
+{
+  "intervalHours": 12,
+  "dailyAttemptCap": 60,
+  "itemsPerSource": 2,
+  "sources": [
+    {
+      "id": "frontier-epoch",
+      "name": "前沿 · Epoch AI（研究与预测）",
+      "index": "https://epoch.ai/publications",
+      "pattern": "^https://epoch\\.ai/publications/[^/?#]+/?$",
+      "signal": "研究与预测"
+    },
+    {
+      "id": "frontier-forethought",
+      "name": "前沿 · Forethought（条件预测）",
+      "index": "https://www.forethought.org/research",
+      "pattern": "^https://www\\.forethought\\.org/research/[^/?#]+/?$",
+      "signal": "条件预测与情景推演",
+      "itemSelector": "[data-component=\"ListCard\"] > a[href]"
+    },
+    {
+      "id": "frontier-metr",
+      "name": "前沿 · METR（能力评估）",
+      "index": "https://metr.org/blog/",
+      "pattern": "^https://metr\\.org/blog/[^/?#]+/?$",
+      "signal": "能力评估"
+    },
+    {
+      "id": "frontier-arc-prize",
+      "name": "前沿 · ARC Prize（推理评测）",
+      "index": "https://arcprize.org/blog",
+      "pattern": "^https://arcprize\\.org/blog/[^/?#]+/?$",
+      "signal": "推理评测",
+      "nativeConfig": {
+        "url": "https://arcprize.org/blog",
+        "itemSelector": "main li:has(a[href*=\"/blog/\"])",
+        "linkSelector": "a[href*=\"/blog/\"]",
+        "titleSelector": "a[href*=\"/blog/\"]",
+        "publishedAtRegex": "(\\d{2}\\.\\d{2}\\.\\d{2})",
+        "publishedAtUtcOffset": "+00:00",
+        "sortByPublishedAt": true,
+        "allowUrlPrefixes": [
+          "https://arcprize.org/blog/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 3,
+          "publishPending": true
+        }
+      }
+    },
+    {
+      "id": "frontier-sakana",
+      "name": "前沿 · Sakana AI（实验研究）",
+      "index": "https://sakana.ai/blog/",
+      "pattern": "^https://sakana\\.ai/[a-z0-9][a-z0-9-]+/?$",
+      "signal": "实验研究",
+      "denyPaths": [
+        "/blog/",
+        "/careers/",
+        "/company/",
+        "/team/",
+        "/contact/",
+        "/privacy-policy/",
+        "/terms-of-service/"
+      ],
+      "nativeConfig": {
+        "url": "https://sakana.ai/blog/",
+        "itemSelector": "article header",
+        "linkSelector": "h1 a",
+        "titleSelector": "h1",
+        "publishedAtSelector": "time",
+        "sortByPublishedAt": true,
+        "allowUrlPrefixes": [
+          "https://sakana.ai/"
+        ],
+        "_aihot": {
+          "initialBackfillLimit": 3,
+          "publishPending": true
+        }
+      }
+    }
+  ]
+}

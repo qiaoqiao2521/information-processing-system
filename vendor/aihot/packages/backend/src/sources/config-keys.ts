@@ -20,7 +20,7 @@ const KEYS: Record<SourceRow["kind"], string[]> = {
   // X accounts are mostly read in shards, which apply only these.
   x_search: ["_aihot", "ingestNoiseFilter", "itemUrlPrefixRewrite", "query", "searchType"],
   mp_account: ["wxid", "ghid", "nickname"],
-  external: [],
+  external: ["_aihot"], // Explicit raw pending indexes for opted-in external publishers.
 };
 
 // Objects with fixed keys (headers and bodyJson are request data, free-form).

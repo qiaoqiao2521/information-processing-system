@@ -171,3 +171,15 @@ python3 tools/aihot/local_opencode.py --upstream-next 3 --max-calls 6
 ## 2026-10-12 来源增补
 
 七项原生RSS：Cloudflare AI、NVIDIA Developer、Microsoft AI、PyTorch、Google Developers、Lilian Weng、Sebastian Raschka。生成器 `tools/aihot/subscriptions.py`保留它们；首次每源三篇，原始待处理索引公开，全文权限关闭。NVIDIA使用总feed，分类feed已滞后。复用现有worker，无新增时钟、模型额度或Firecrawl调用。现场种子只合并本批七项，保留其他现场配置，镜像未重建。验收见[来源扩展](../../plans/source-expansion-20261012/progress.md)。
+
+## Firecrawl 前瞻采集
+
+2026-10-12用户授权Firecrawl。`tools/aihot/frontier.py`调用官方v2 scrape，固定Epoch、Forethought、METR公开来源；Sakana与ARC Prize用既有原生web_list。新增来源名称带“前沿”，[网站搜索入口](https://intel.muqiao.xyz/all?q=%E5%89%8D%E6%B2%BF)可直接读取。类型/出处/发表日期保留，原始索引标记待AI处理。
+
+436私密key在`/opt/intelligence-hub/aihot/frontier.env`（600）；Python环境`frontier-venv`、适配文件在`aihot/tools`，私有回执/页面缓存/水位在`aihot/frontier`。不迁移浏览器账号，正文缓存不公开。尝试在请求前持久登记，连续24小时60次上限，失败/unknown也计数；unknown同URL冷却24小时，成功摄取前缓存pending，摄取故障复跑不重新付费抓取。Credit若接口未提供则保持unknown，不能把请求数当作Credit上限。
+
+复用原bridge.timer，每12小时才实际检查一次。drop-in `deploy/aihot/frontier-bridge.conf`加入ExecStopPost，原bridge失败也能完成前瞻采集，原失败仍保留；不新增timer或Agent。脚本先检查source启停再请求。来源初次导入为历史baseline，后续只取新链接；默认不逐轮导入存量。
+
+薄发布助手`frontier_publish.mjs`通过现有API容器执行已有publishArticle/republishSource，仅允许五个固定source且必须enabled/first_party/editorial/publishPending；不写override，不调用模型。external只增加既有_aihot配置键支持，其余未知配置继续拒绝。现场原文件备份为config-keys.ts.before-frontier及sources-before-frontier-20261012.json；源码及运行容器同步该单行配置支持，没有重建或重启容器。以后构建沿用仓库/现场源码。
+
+回退：移除bridge.service.d/frontier.conf并daemon-reload，暂停五项source；保留历史文章、原缓存和回执。无需删除数据库或变更网络。详见[验收记录](../../plans/frontier-firecrawl-20261012/progress.md)。

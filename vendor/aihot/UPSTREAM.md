@@ -41,3 +41,7 @@ Codex模块开启展示，`CODEX_RESET_UPSTREAM_ENABLED=true`时由现有worker�
 ## 2026-10-12 RSS 来源扩展
 
 行业种子追加七个免费官方/作者 RSS，复用现有 RSS、pending 发布与 worker。首次最多三篇，按原日期归档，全文展示和分发继续关闭。生成器去重并保留既有种子配置；不修改核心引擎、前端或付费预算。
+
+## 2026-10-12 Firecrawl 前瞻公开来源
+
+行业配置新增五项external官方研究来源，复用原摄取及publishArticle。external仅允许已有_aihot元数据以声明pending展示，仍禁止任意未知配置。Python薄适配走官方Firecrawl v2公开scrape，不使用账号浏览器、LLM提取或X搜索；回执与预算在服务器私有持久状态中保存。前端及核心评分不改。

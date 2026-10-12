@@ -29,7 +29,7 @@ DISCOVERED_RSS = [
 
 
 def build_sources(demo):
-    sources = [dict(s) for s in demo if not s['id'].startswith(('ak-', 'qiaomu-', 'hub-'))
+    sources = [dict(s) for s in demo if not s['id'].startswith(('ak-', 'qiaomu-', 'hub-', 'frontier-'))
                and s['id'] not in {'rss-ruanyifeng-weekly', 'web-builderpulse-reports'}]
     official = [
         {'id': 'rss-google-gemini', 'name': 'Google Gemini 官方博客', 'kind': 'rss',
@@ -97,6 +97,13 @@ def build_sources(demo):
         if not any(s['id'] == item['id'] for s in sources):
             sources.append({**item, 'tier': 'T2', 'participation_mode': 'editorial',
                             'interval_minutes': 120, 'site_fulltext': False, 'syndicate_fulltext': False})
+    for source in json.loads((ROOT / 'tools/aihot/frontier_sources.json').read_text())['sources']:
+        if not any(s['id'] == source['id'] for s in sources):
+            sources.append({'id': source['id'], 'name': source['name'], 'kind': 'web_list' if source.get('nativeConfig') else 'external',
+                'config': source.get('nativeConfig') or {'_aihot': {'publishPending': True}}, 'tier': 'T1', 'first_party': True,
+                'participation_mode': 'editorial', 'interval_minutes': 720,
+                'tags': ['前沿', source['signal'], '原生网页' if source.get('nativeConfig') else 'Firecrawl'],
+                'site_fulltext': False, 'syndicate_fulltext': False})
     for key, name in EXTERNAL.items():
         sources.append({'id': 'hub-' + key, 'name': name, 'kind': 'external', 'config': {},
             'tier': 'T2', 'participation_mode': 'editorial', 'interval_minutes': 120,
