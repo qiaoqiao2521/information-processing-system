@@ -1,5 +1,7 @@
 # 当前进度
 
+2026-10-12常态加工已由[信息加工workflow](../news-workflow-20261012/progress.md)接管；以下为旧版本验收历史。
+
 ## 当前优先状态：OpenCode入口更正
 
 用户指出目标是OpenCode里的MiniMax；前次工具理解错误已更正。当前版本`aihot-cf8f8d0-c21af6422385`已部署，运行镜像415文件hash与本地全部相符；源码回源当前分支Git记录。

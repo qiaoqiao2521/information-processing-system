@@ -32,11 +32,11 @@ function extraFromEnv(value: string | undefined): Record<string, unknown> | unde
 export const MODELS: Record<string, ModelSpec> = {
   "local-opencode": {
     key: "local-opencode", service: "opencode", model: "minimax-cn-coding-plan/MiniMax-M3.1-Flash-Preview",
-    baseUrlEnv: "OPENCODE_UNUSED_BASE_URL", apiKeyEnv: "OPENCODE_UNUSED_API_KEY", jsonMode: true,
+    baseUrlEnv: "OPENCODE_UNUSED_BASE_URL", apiKeyEnv: "OPENCODE_UNUSED_API_KEY", jsonMode: true, vision: false,
   },
   "local-mcode": {
     key: "local-mcode", service: "mcode", model: "minimax/MiniMax-M3.1-Flash-Preview",
-    baseUrlEnv: "MCODE_UNUSED_BASE_URL", apiKeyEnv: "MCODE_UNUSED_API_KEY", jsonMode: true,
+    baseUrlEnv: "MCODE_UNUSED_BASE_URL", apiKeyEnv: "MCODE_UNUSED_API_KEY", jsonMode: true, vision: false,
   },
   // Read from the environment at call time.
   default: {

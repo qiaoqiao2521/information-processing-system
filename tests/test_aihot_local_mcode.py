@@ -1,9 +1,12 @@
+import io
+import tempfile
+import sys
 import importlib.util
 import json
 from pathlib import Path
 import subprocess
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 spec = importlib.util.spec_from_file_location("local_mcode", Path(__file__).parents[1] / "tools/aihot/local_mcode.py")
 module = importlib.util.module_from_spec(spec)
@@ -11,6 +14,34 @@ spec.loader.exec_module(module)
 
 
 class LocalMcodeTests(unittest.TestCase):
+    def test_workflow_records_pause_and_failure_instead_of_reporting_empty_success(self):
+        for remote_code, remote_status, expected in [(0, "budget-paused", "budget-paused"), (1, "failed", "failed")]:
+            with tempfile.TemporaryDirectory() as folder:
+                child = MagicMock()
+                child.stdout = io.StringIO(json.dumps({"workflow": "test", "status": remote_status}) + "\n")
+                child.poll.return_value = remote_code
+                child.wait.return_value = remote_code
+                with patch.object(sys, "argv", ["runner", "--workflow-next", "2"]), patch.object(module.shutil, "which", return_value="/opencode"), patch.object(module.subprocess, "Popen", return_value=child) as launch, patch.object(module.Path, "home", return_value=Path(folder)):
+                    self.assertEqual(module.main(engine="opencode"), remote_code)
+                self.assertIn("process-workflow.ts", launch.call_args.args[0][-1])
+                record = json.loads((Path(folder) / ".local/state/intelligence-hub-workflow/last-run.json").read_text())
+                self.assertEqual(record["status"], expected)
+                self.assertEqual(record["modelCalls"], 0)
+                self.assertEqual(record["exitCode"], remote_code)
+                self.assertTrue(record["finishedAt"])
+
+    def test_json_requests_require_a_final_object_and_multiple_steps_are_rejected(self):
+        body = {"model": module.OPENCODE_MODEL, "messages": [{"role": "system", "content": "Return a score"}, {"role": "user", "content": "material"}], "response_format": {"type": "json_object"}}
+        events = [{"type": "text", "part": {"text": '{"attentionScore":80}'}}, {"type": "step_finish", "part": {"reason": "stop", "tokens": {}}}]
+        with patch.object(module.subprocess, "run", return_value=subprocess.CompletedProcess([], 0, "\n".join(json.dumps(e) for e in events), "")) as run:
+            module.answer_opencode(body, "/opencode")
+        cfg = json.loads(run.call_args.kwargs["env"]["OPENCODE_CONFIG_CONTENT"])
+        self.assertIn("只返回一个", cfg["agent"]["news"]["prompt"])
+        self.assertEqual(cfg["agent"]["news"]["steps"], 2)
+        with patch.object(module.subprocess, "run", return_value=subprocess.CompletedProcess([], 0, "\n".join(json.dumps(e) for e in events + [events[-1]]), "")):
+            with self.assertRaises(RuntimeError):
+                module.answer_opencode(body, "/opencode")
+
     def test_opencode_event_stream_preserves_answer_and_denies_tools(self):
         events = [{"type": "text", "part": {"text": '{"attentionScore":88}'}},
                   {"type": "step_finish", "part": {"reason": "stop", "tokens": {"total": 15, "input": 12, "output": 3}}}]
@@ -22,6 +53,7 @@ class LocalMcodeTests(unittest.TestCase):
         cfg = json.loads(run.call_args.kwargs["env"]["OPENCODE_CONFIG_CONTENT"])
         self.assertEqual(cfg["agent"]["news"]["prompt"], "score system")
         self.assertEqual(cfg["agent"]["news"]["temperature"], 0.1)
+        self.assertEqual(cfg["agent"]["news"]["steps"], 2)
         self.assertEqual(cfg["permission"], {"*": "deny"})
         self.assertEqual(cfg["enabled_providers"], ["minimax-cn-coding-plan"])
         self.assertEqual(cfg["small_model"], module.OPENCODE_MODEL)

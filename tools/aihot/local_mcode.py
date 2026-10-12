@@ -14,6 +14,7 @@ import shutil
 import subprocess
 import tempfile
 import threading
+from datetime import datetime, timezone
 
 PREFIX = "AIHOT_MCODE "
 MODEL = "minimax/MiniMax-M3.1-Flash-Preview"
@@ -68,11 +69,15 @@ def answer_opencode(body, executable):
     prompt = "\n\n".join(m["content"] for m in messages if m["role"] == "user")
     if not prompt or len(system) + len(prompt) > 240_000:
         raise ValueError("Empty or oversized prompt")
+    if body.get("response_format", {}).get("type") == "json_object":
+        system += "\n只返回一个符合要求字段的 JSON 对象。不要输出执行状态、步骤说明或 Markdown。"
+    # A one-step ceiling makes OpenCode inject a forced work-status reminder before
+    # the first answer. Permit a second step, but still accept only ONE normal answer.
     cfg = {"permission": {"*": "deny"}, "share": "disabled", "autoupdate": False,
            "model": OPENCODE_MODEL, "small_model": OPENCODE_MODEL,
            "server": {"hostname": "127.0.0.1"},
            "enabled_providers": ["minimax-cn-coding-plan"],
-           "agent": {"news": {"mode": "primary", "steps": 1,
+           "agent": {"news": {"mode": "primary", "steps": 2,
                "prompt": system or "Return only the requested answer. Do not use tools.",
                "permission": {"*": "deny"}, "temperature": body.get("temperature", 0.2)}}}
     with tempfile.TemporaryDirectory(prefix="aihot-opencode-") as workspace:
@@ -114,6 +119,7 @@ def main(engine="mcode"):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("ids", nargs="*")
     parser.add_argument("--next", type=int, metavar="N")
+    parser.add_argument("--workflow-next", type=int, metavar="N", help="Process own subscriptions and upstream reviews in one bounded workflow")
     parser.add_argument("--upstream-next", type=int, metavar="N", help="Process and independently review 1–10 new upstream items")
     parser.add_argument("--max-calls", type=int, default=40, help="Per-run stop, independent of DB 300/24h cap")
     parser.add_argument("--host", default="racknerd-436b0c0")
@@ -122,13 +128,19 @@ def main(engine="mcode"):
     parser.add_argument("--engine", choices=("mcode", "opencode"), default=engine)
     parser.add_argument("--review", action="store_true", help="Process explicit upstream review IDs into drafts, without publishing")
     args = parser.parse_args()
+    if args.workflow_next is not None and (args.engine != "opencode" or args.review or args.next is not None or args.ids or args.upstream_next is not None):
+        parser.error("Use --workflow-next with OpenCode, without other selections")
     if args.upstream_next is not None and (args.engine != "opencode" or args.review or args.next is not None or args.ids):
         parser.error("Use --upstream-next with OpenCode, without other selections")
     if args.review and (args.engine != "opencode" or args.next is not None):
         parser.error("Review processing requires OpenCode and explicit IDs")
     if not re.fullmatch(r"[A-Za-z0-9_.-]+", args.host) or not 1 <= args.max_calls <= 300:
         parser.error("Invalid host or call limit")
-    if args.upstream_next is not None:
+    if args.workflow_next is not None:
+        if not 1 <= args.workflow_next <= 10:
+            parser.error("Use --workflow-next 1–10")
+        selection = ["--next", str(args.workflow_next)]
+    elif args.upstream_next is not None:
         if not 1 <= args.upstream_next <= 10:
             parser.error("Use --upstream-next 1–10")
         selection = ["--next", str(args.upstream_next)]
@@ -143,13 +155,30 @@ def main(engine="mcode"):
     executable = shutil.which(args.opencode if args.engine == "opencode" else args.mcode)
     if not executable:
         parser.error("Local model CLI executable not found")
-    script = "process-upstream-batch.ts" if args.upstream_next is not None else "process-upstream-reviews.ts" if args.review else "process-local-mcode.ts"
+    script = "process-workflow.ts" if args.workflow_next is not None else "process-upstream-batch.ts" if args.upstream_next is not None else "process-upstream-reviews.ts" if args.review else "process-local-mcode.ts"
     remote = "cd /opt/intelligence-hub/aihot/app && docker compose -p muqiao-intel -f docker-compose.yml -f compose.override.yaml exec -T -e MCODE_STDIO_ENABLED=true -e MODEL_CALLS_ENABLED=true -e LOCAL_CLI_PROVIDER=" + args.engine + " api node scripts/" + script + " " + shlex.join(selection)
     child = subprocess.Popen(["ssh", "-T", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10",
                               "-o", "ServerAliveInterval=15", "-o", "ServerAliveCountMax=3", args.host, remote],
                              stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, bufsize=1)
     lock = threading.Lock()
     calls = 0
+    code = None
+    events = []
+    started = datetime.now(timezone.utc).isoformat()
+
+    def save_workflow(status):
+        if args.workflow_next is None:
+            return
+        folder = Path.home() / '.local/state/intelligence-hub-workflow'
+        folder.mkdir(parents=True, exist_ok=True, mode=0o700)
+        record = {'workflow': 'information-processing', 'startedAt': started,
+                  'finishedAt': datetime.now(timezone.utc).isoformat() if status != 'running' else None,
+                  'status': status, 'model': OPENCODE_MODEL, 'modelCalls': min(calls, args.max_calls),
+                  'exitCode': code, 'events': events[-80:]}
+        with tempfile.NamedTemporaryFile(mode='w', dir=folder, delete=False) as file:
+            json.dump(record, file, ensure_ascii=False)
+            name = file.name
+        os.replace(name, folder / 'last-run.json')
 
     def reply(request):
         try:
@@ -165,6 +194,7 @@ def main(engine="mcode"):
                 child.stdin.flush()
 
     try:
+        save_workflow('running')
         with ThreadPoolExecutor(max_workers=2) as pool:
             futures = []
             while True:
@@ -176,6 +206,7 @@ def main(engine="mcode"):
                 if line.startswith(PREFIX):
                     request = json.loads(line[len(PREFIX):])
                     calls += 1
+                    save_workflow("running")
                     if calls > args.max_calls:
                         with lock:
                             child.stdin.write(json.dumps({"id": request["id"], "error": "Local per-run call limit reached"}) + "\n")
@@ -183,6 +214,14 @@ def main(engine="mcode"):
                     else:
                         futures.append(pool.submit(reply, request))
                 else:
+                    if args.workflow_next is not None:
+                        try:
+                            event = json.loads(line)
+                            if isinstance(event, dict):
+                                events.append(event)
+                                save_workflow("running")
+                        except json.JSONDecodeError:
+                            pass  # Journal keeps ordinary non-result log lines.
                     print(line.rstrip(), flush=True)
             for future in futures:
                 future.result()
@@ -196,6 +235,10 @@ def main(engine="mcode"):
                 child.wait(timeout=10)
             except subprocess.TimeoutExpired:
                 child.kill()
+        paused = any(event.get('status') == 'budget-paused' for event in events)
+        busy = any(event.get('status') == 'busy' for event in events)
+        idle = any(event.get('status') == 'idle' for event in events)
+        save_workflow('failed' if code != 0 else 'budget-paused' if paused else 'busy' if busy else 'idle' if idle else 'completed')
 
 
 if __name__ == "__main__":

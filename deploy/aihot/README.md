@@ -143,7 +143,7 @@ API从`UPSTREAM_REVIEW_CACHE=/upstream-reader/snapshot.json`读取有界私人�
 
 0039迁移仅新增表，旧镜像可忽略它。此次旧镜像tag为muqiao-intel-aihot:pre-review，源码/override备份在review-staging/app-before-review.tgz、compose.previous.yaml；回退须恢复旧镜像及override，并恢复reader的RSS-only单元以免调用旧镜像没有的reconcile脚本。不要删除数据库/卷。根目录.env不进入源码备份，服务器仍保留原密钥，仅release标记更新。
 
-### 静默自动加工（本地）
+### 静默自动加工（本地历史，现由 workflow 接管）
 
 2026-10-03用户确认：AI复核通过后自动上站，存疑稿留待审。此前只有一篇后台draft，没有常态模型处理，因此/all看不到二次加工。
 
@@ -199,3 +199,17 @@ CLI实测ArXivHub公开仓库抓取成功，验证请求先写入既有预算回
 ### NewsNow 外链（同日）
 
 阅读工具添加官网https://newsnow.busiyi.world/与用户指定GitHub项目链接。web镜像newsnow-link-20261012（3120a17e0039），类型检查、构建与21项测试通过；公网reading-tools读回两条目标链接。仅重建web，回退compose文件在服务器newsnow-link-compose.previous.yaml。
+
+## 信息加工 workflow（2026-10-12）
+
+本任务业务入口统一叫workflow，与遗留cron区分。`deploy/aihot/intelligence-hub-workflow.{service,timer}`替换本机原local-processing任务；底层继续复用systemd，无编码工具、外部通知或新调度平台。启动约每轮结束30分钟后执行下一轮，首次启用30分钟触发。每轮最多2篇自订阅＋2篇上游，最多30个CLI请求；共用opencode的8/min、60/h、300/连续24h预算，额度不等同于供应商余额。
+
+入口：`python3 tools/aihot/workflow.py`。原生选择器覆盖启用的editorial订阅，最近7天、非backfill、非X采集；按来源轮次及官方来源优先，保护人工覆盖和当前版本失败/未知回执。已有评分、分类、摘要、事件归组与publication引擎继续使用。预算暂停续跑已保存阶段，失败/unknown交给人工诊断；未覆盖历史不批量重算。上游保留来源hash/版本检查与审批，通过稿自动公开，存疑留待审。
+
+事件复核候选比较原标题、中文加工标题和摘要，近14天最多12条。相似度只召回候选，不直接删除或合并。同一次发生且无新增事实必须hold；新版本、勘误、正式发布或实测可作为进展。真实Adobe双稿复核receipt808返回duplicate=true/hold，按现有decideReview撤回review-u9f1ozdbs5nobwugj3yss3z0e，保留review-hvxwaxeyj6i82xv44ef4ce6fz；原始材料和回执未删除。
+
+OpenCode news上限steps=2，以避开steps=1的结束提醒污染，桥接仍只接受单个正常stop回答，工具全deny、分享关闭、模型固定MiniMax3.1。两种本地CLI provider明确vision=false，图片不送入文本桥接。首轮失败及图片输入unknown回执保留，修复后已验证纯文本新输入，未自动重发未知图片请求。
+
+运行结果：本机`~/.local/state/intelligence-hub-workflow/last-run.json`，文件600；含时间、运行状态、调用次数、选中文章和各阶段结果。区分running、completed、idle、budget-paused、busy、failed。查看`systemctl --user status intelligence-hub-workflow.timer`或`journalctl --user -u intelligence-hub-workflow.service -n 30`；Agent环境若无bus，命令前加`env XDG_RUNTIME_DIR=/run/user/1000 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus`。本机离线时436继续采集，加工等本机恢复。
+
+436只更新API到`muqiao-intel-aihot:workflow-text-20261012`，SHA前缀c2a74dfa63ff；web/worker维持原版本。保留服务器已运行的原文优先、basis和执行日志拦截等改动并回源本地。回退目录`/opt/intelligence-hub/aihot/workflow-20261012/`含compose.previous.yaml/source-before.tgz/server-before-llm.ts。回退先禁用新timer并等当前service结束，恢复旧API镜像、对应源码及llm备份，需要时恢复旧local-processing unit；数据库与历史回执保留。

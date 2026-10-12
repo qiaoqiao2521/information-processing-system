@@ -13,7 +13,7 @@ after(async()=>{await rm(dir,{recursive:true,force:true});await closeDb();});
 test('two local calls publish only a passing draft and retain failed reviews without automatic retry',async()=>{
  const suffix=tag();const approved='quality-good-'+suffix;const held='quality-hold-'+suffix;
  const items=Object.fromEntries([approved,held].map((id,i)=>[id,{id,title:i?'未证实消息':'有条件的材料解读',summary:'原始材料明确说明某项功能的适用范围和限制，不提供真实测评。判断应局限于所附引用，不把推测写成事实。',
-  links:{aihot:'https://aihot.news/items/'+id,original:'https://example.com/'+id},attribution:{name:'AIHOT',url:'https://aihot.news/items/'+id},
+  links:{aihot:'https://aihot.news/items/'+id,original:'https://x.com/test/status/'+id},attribution:{name:'AIHOT',url:'https://aihot.news/items/'+id},
   category:'industry',score:80,selected:true,publishedAt:new Date(Date.now()-i*1000).toISOString(),source:{name:'test'}}]));
  const cache=join(dir,'snapshot.json');await writeFile(cache,JSON.stringify({checkedAt:new Date().toISOString(),complete:true,items,removed:[]}));
  await sql`INSERT INTO budgets(service,per_minute,per_hour,per_day) VALUES('opencode',1000,1000,1000) ON CONFLICT(service) DO UPDATE SET per_minute=1000,per_hour=1000,per_day=1000`;
@@ -42,7 +42,7 @@ test('two local calls publish only a passing draft and retain failed reviews wit
  assert.equal((await sql`SELECT * FROM receipts WHERE subject IN ${sql([approved,held])} AND status='completed'`).length,4);
  const repeat=await execute();assert.equal(repeat.calls,0);assert.equal(repeat.code,0,repeat.stderr);
  const drift='quality-drift-'+suffix;
- items[drift]={...items[approved]!,id:drift,links:{aihot:'https://aihot.news/items/'+drift,original:'https://example.com/'+drift}};
+ items[drift]={...items[approved]!,id:drift,links:{aihot:'https://aihot.news/items/'+drift,original:'https://x.com/test/status/'+drift}};
  await writeFile(cache,JSON.stringify({checkedAt:new Date().toISOString(),complete:true,items,removed:[]}));
  const changed=await execute(true);assert.equal(changed.calls,2);assert.equal(changed.code,1);
  assert.equal((await sql`SELECT status FROM upstream_reviews WHERE id=${drift}`)[0]!.status,'draft');

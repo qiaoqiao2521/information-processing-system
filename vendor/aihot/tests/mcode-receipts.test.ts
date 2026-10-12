@@ -4,9 +4,14 @@ import { spawn } from "node:child_process";
 import { createInterface } from "node:readline";
 import { after, test } from "node:test";
 import { sql, closeDb } from "@aihot/backend/db";
+import { MODELS } from "@aihot/backend/providers/llm";
 import { MCODE_PREFIX } from "../packages/backend/src/providers/mcode-stdio.ts";
 
 after(closeDb);
+test("text CLI providers never receive an image understanding request",()=>{
+  assert.equal(MODELS["local-opencode"].vision,false);
+  assert.equal(MODELS["local-mcode"].vision,false);
+});
 test("local model uses its own budget and durable receipt, and reuses the saved answer", async () => {
   for (const [modelKey, service] of [["local-mcode", "mcode"], ["local-opencode", "opencode"]] as const) {
   const subject = `mcode-test-${tag()}`;

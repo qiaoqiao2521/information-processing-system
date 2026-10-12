@@ -28,13 +28,15 @@
 
 ## Current State / Priority
 
+2026-10-12信息加工任务统一称为workflow，与遗留cron区分。`intelligence-hub-workflow.timer`替换原local-processing timer，串行处理自己的近期订阅与上游候选；本地OpenCode固定MiniMax3.1，沿用共享预算与无通知规则，运行结果写本机私密last-run.json。进度见[信息加工workflow](plans/news-workflow-20261012/progress.md)。
+
 2026-10-12新增前瞻采集：Epoch AI、Forethought、METR、ARC Prize、Sakana AI，经Firecrawl进入原external链路。前沿研究、评测与条件预测保留类型、出处及原日期；入口沿用网站搜索“前沿”。2026-10-12用户取消独立分类导航：只保留全部动态，分类作为列表内下拉选项。沿用Make视觉，全部公开材料不受精选门槛过滤；未分类材料保留在全部列表。验收增加本地mcode直接操作公网站点QA。436安装官方Firecrawl CLI，复用现有云端认证及既有定时脚本。进度见[Firecrawl前瞻采集](plans/frontier-firecrawl-20261012/progress.md)。
 
 核心源码快照 `vendor/aihot`。来源种子新增阮一峰RSS、BuilderPulse中文日报网页与CLI官方发布bridge；旧机会雷达／融合简报仅存量保留。旧Python工作台与knowledge_pack仍可手动使用，Notebook定时消费退役。436旧站和快照用于回退。来源补齐进度见 [集中采集收口](plans/centralized-source-completion-20261009/progress.md)，核心迁移进度回源 `plans/aihot-core-migration`，官方覆盖修复见 `plans/official-source-coverage`。
 
 ## Non-goals
 
-本次不重写上游评分/聚簇引擎，不开全量付费采集，不自动恢复X搜索，不将编码Agent放进定时任务，不复制账号登录态。本地OpenCode无工具地回答信息加工Prompt；本机用户级timer每30分钟加工近期上游材料并独立复核，通过后自动上站，存疑稿留待审。
+本次不重写上游评分/聚簇引擎，不开全量付费采集，不自动恢复X搜索，不将编码Agent放进定时任务，不复制账号登录态。本地OpenCode无工具地回答信息加工Prompt；本机用户级workflow每30分钟加工近期自订阅与上游材料，上游稿独立复核，通过后自动上站，存疑稿留待审。
 
 不在各服务器恢复RSS、GitHub趋势、AI Builders或旧日报采集cron，不恢复Notebook定时消费。公众号写作与网站采集分别验收；下游资料保留，不扩大模型预算或新增采集时钟。
 

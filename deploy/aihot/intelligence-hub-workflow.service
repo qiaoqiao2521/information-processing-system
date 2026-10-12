@@ -1,12 +1,12 @@
 [Unit]
-Description=Process upstream news through local OpenCode and publish reviewed drafts
+Description=Information processing workflow: subscriptions, event grouping and upstream review
 After=network-online.target
 
 [Service]
 Type=oneshot
 WorkingDirectory=%h/projects/information-processing-system
 Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
-ExecStart=/usr/bin/flock -n %t/intelligence-hub-local-processing.lock /usr/bin/python3 tools/aihot/local_opencode.py --upstream-next 3 --max-calls 6
+ExecStart=/usr/bin/flock -n %t/intelligence-hub-workflow.lock /usr/bin/python3 tools/aihot/workflow.py
 TimeoutStartSec=25min
 KillMode=control-group
 UMask=0077
