@@ -28,6 +28,8 @@
 
 ## Current State / Priority
 
+2026-10-13用户明确借鉴微信读书等成熟产品的用户结构，聚焦个人中心、阅读留存、账号会话与个人数据归属。已完成APK与现有工作台的结构对照；代码实现另行验收，沿用Make视觉。此前书籍笔记采集方向为Agent误解，已撤销。见[用户结构分析](plans/mature-product-user-structure-20261013/findings.md)。
+
 2026-10-12信息加工任务统一称为workflow，与遗留cron区分。`intelligence-hub-workflow.timer`替换原local-processing timer，串行处理自己的近期订阅与上游候选；本地OpenCode固定MiniMax3.1，沿用共享预算与无通知规则，运行结果写本机私密last-run.json。进度见[信息加工workflow](plans/news-workflow-20261012/progress.md)。
 
 2026-10-12新增前瞻采集：Epoch AI、Forethought、METR、ARC Prize、Sakana AI，经Firecrawl进入原external链路。前沿研究、评测与条件预测保留类型、出处及原日期；入口沿用网站搜索“前沿”。2026-10-12用户取消独立分类导航：只保留全部动态，分类作为列表内下拉选项。沿用Make视觉，全部公开材料不受精选门槛过滤；未分类材料保留在全部列表。验收增加本地mcode直接操作公网站点QA。436安装官方Firecrawl CLI，复用现有云端认证及既有定时脚本。进度见[Firecrawl前瞻采集](plans/frontier-firecrawl-20261012/progress.md)。
