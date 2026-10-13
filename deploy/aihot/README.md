@@ -4,6 +4,16 @@
 
 ## 436 运行布局
 
+### 2026-10-13 本机个人阅读
+
+`/me` 提供本机收藏入口、最近阅读与校验后位置恢复、关注来源、加工任务与手工结果记录、文件导入导出。个人记录只在浏览器保存，原账号、后台、采集、模型预算和时钟保持既有配置。网页访问不调用模型。
+
+本次仅更新API与web，镜像为 `muqiao-intel-aihot:reader-20261013`，摘要 `2f22c73846aff1fbfc76c20c13d6cdb439e90d7830186b5c3fdfa18c452c8866`，API健康接口release为 `reader-20261013-a17870a03cf3`。回退配置、源码及原镜像指纹保存在 `/opt/intelligence-hub/aihot/rollback/reader-20261013T125108Z`；源包与逐文件manifest在 `/opt/intelligence-hub/aihot/incoming-reader-20261013/`。
+
+使用 `tools/aihot/reader_qa.mjs` 对独立浏览器运行本机和公网QA。设置已安装的Playwright模块目录与独立Chrome可执行文件；可用 `QA_ITEM_ID` 指定已有公开文章。脚本只操作自己的临时浏览器记录，不向生产库写入测试内容。导出文件、报告和截图不入库。
+
+网站根路径预期302到 `/all`。更新后的 `scripts/smoke.ts` 只接受此同源跳转并继续检查目标；本次在运行容器额外执行 `scripts/smoke-reader.ts`（同一更新版），33项出口通过。原镜像自带旧验证脚本仍把根路径302误报失败；这与应用运行版本分开记录。
+
 - 源码与私密 `.env`：`/opt/intelligence-hub/aihot/app`（配置600 root；不复制认证数据库）。
 - Compose：`docker-compose.yml` + `compose.override.yaml`，项目名 `muqiao-intel`。
 - 新站 origin：`127.0.0.1:8088`；API/数据库仅内部 Docker 网络。

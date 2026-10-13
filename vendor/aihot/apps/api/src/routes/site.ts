@@ -115,7 +115,9 @@ export function registerSite(app: FastifyInstance) {
     const page = Math.min(Math.max(Number(q.page) || 1, 1), 50);
     const search = q.q?.trim() ? q.q.trim().slice(0, 200) : null;
     const tab = q.tab === "relevance" ? "relevance" : "time";
-    const data = await loadPool({ ...filters, q: search, tab, page });
+    const source = q.source?.trim() || null;
+    if (source && !/^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,159}$/.test(source)) throw new BadRequest("invalid source");
+    const data = await loadPool({ ...filters, source, q: search, tab, page });
     const { generatedAt: _, ...content } = data;
     return sendJsonWithEtag(req, reply, data, { etagPrefix: "pool", cacheControl: "public, max-age=60, s-maxage=60", etagOf: content });
   }));

@@ -103,6 +103,7 @@ async function poolCount(key: string | null, query: () => Promise<Array<{ n: num
 }
 
 export interface PoolQuery extends TimelineFilters {
+  source?: string | null;
   q?: string | null;
   tab?: "time" | "relevance";
   page?: number;
@@ -116,11 +117,11 @@ export async function loadPool(query: PoolQuery): Promise<PoolResponse> {
   const q = query.q?.trim() || null;
   const tab = q && query.tab === "relevance" ? "relevance" : "time";
   const terms = q ? searchTerms(q) : [];
-  const filters = sql`${channelCondition(query.channel)} ${categoryCondition(query.category)} ${tagCondition(query.tag)} ${topicCondition(query.topicTags)}`;
+  const filters = sql`${channelCondition(query.channel)} ${categoryCondition(query.category)} ${tagCondition(query.tag)} ${topicCondition(query.topicTags)} ${query.source ? sql`AND p.source_id = ${query.source}` : sql``}`;
   const offset = (page - 1) * POOL_PAGE_SIZE;
   const cap = POOL_MAX_PAGES * POOL_PAGE_SIZE;
   // A fixed clock (tests, replays) never shares cached totals.
-  const filterKey = query.now ? null : JSON.stringify([query.channel, query.category, query.tag, query.topicTags ?? null]);
+  const filterKey = query.now ? null : JSON.stringify([query.channel, query.category, query.tag, query.topicTags ?? null, query.source ?? null]);
 
   // Searches go through pool_search (eligible items only): trigram indexes for longer terms, a small
   // table to scan for one- and two-character ones.
@@ -144,7 +145,7 @@ export async function loadPool(query: PoolQuery): Promise<PoolResponse> {
       // can make PostgreSQL scan every toasted body instead. Keep other searches inline so short
       // terms, additional terms and selective publication filters retain their existing plans.
       const splitFields = terms.length === 1 && /[\p{L}\p{N}]{3}/u.test(terms[0]!)
-        && (!query.channel || query.channel === "all") && !query.category && !query.tag && !query.topicTags?.length;
+        && (!query.channel || query.channel === "all") && !query.category && !query.tag && !query.topicTags?.length && !query.source;
       const partScore = terms.reduce(
         (acc, t) => sql`${acc} + (CASE WHEN ${like(sql`ps.direct`, t)} THEN 3 ELSE 0 END) + (CASE WHEN ${like(sql`ps.body`, t)} THEN 1 ELSE 0 END)`,
         sql`0`,
@@ -196,7 +197,7 @@ export async function loadPool(query: PoolQuery): Promise<PoolResponse> {
       (SELECT max(p.updated_at) FROM publications p WHERE p.eligible) AS updated_at`);
 
   return {
-    filters: { channel: query.channel, category: query.category, tag: query.tag, topic: query.topic ?? null, q, tab },
+    filters: { channel: query.channel, category: query.category, tag: query.tag, topic: query.topic ?? null, q, tab, ...(query.source ? { source: query.source } : {}) },
     items: rows.map(toFeedItemSummary),
     page,
     pageCount: Math.min(POOL_MAX_PAGES, Math.max(1, Math.ceil(total / POOL_PAGE_SIZE))),

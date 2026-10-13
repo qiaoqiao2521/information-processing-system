@@ -18,6 +18,7 @@ import { GroupSources } from "../features/feed/ReadingGroup";
 import { StoryFollowups } from "../features/item/StoryFollowups";
 import { MediaGallery } from "../features/item/MediaGallery";
 import { QuotedPost } from "../features/item/QuotedPost";
+import { ReadingMemory, SourceFollowButton } from "../features/item/ReadingMemory";
 import { IconArrowLeft, IconCopy, IconDownload, IconExternal, IconImage, IconMenu, IconShare } from "../components/icons";
 
 const PosterSheet = lazy(() => import("../features/item/PosterSheet"));
@@ -84,7 +85,7 @@ function hostOf(url: string): string {
 
 /** Upstream-reviewed items (AIHOT 二次加工) lead with the original headline; the AI rewrite is secondary. */
 function isReviewed(item: SiteItemDetail): boolean {
-  return item.source.id === "upstream-reviewed";
+  return item.provenance === "aihot-reviewed" || item.source.id === "upstream-reviewed";
 }
 
 function headlineOf(item: SiteItemDetail): string {
@@ -113,6 +114,7 @@ export default function ItemPage() {
   const [posterRequested, setPosterRequested] = useState(false);
   const [posterOpen, setPosterOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const articleRef = useRef<HTMLElement>(null);
   useEffect(() => markRead(item.id), [item.id]);
   useEffect(() => {
     if (!toast) return;
@@ -211,6 +213,7 @@ export default function ItemPage() {
       <div className="mt-1 text-[12.5px] leading-relaxed text-ink-3">
         {isX ? `@${item.x!.handle} · X` : item.author ?? hostOf(item.links.original)}
       </div>
+      <div className="mt-3"><SourceFollowButton id={item.source.id} name={item.source.name} /></div>
       <div className="mt-3 text-[12px] text-ink-4">发布时间</div>
       <time dateTime={publishedIso} className="mono mt-0.5 block text-[12.5px] text-ink-2">
         {fullDateTime(publishedIso)}
@@ -295,7 +298,8 @@ export default function ItemPage() {
         }
       >
         <div className="hidden lg:block 2xl:hidden">{backButton}</div>
-        <article className="pb-6 pt-6 lg:pt-2 2xl:pt-1">
+        <article ref={articleRef} data-reading-article className="pb-6 pt-6 lg:pt-2 2xl:pt-1">
+          <ReadingMemory article={articleRef} item={{ id: item.id, title: headline, sourceName: item.source.name, publishedAt: item.publishedAt, path: `/items/${item.id}${lang === 'original' ? '/original' : ''}` }} content={JSON.stringify([item.revision, lang, headline, item.summary, bodyHtml])} />
           <div className={`flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[13px] text-ink-3 2xl:hidden ${isX ? "" : "mb-3"}`}>
             <span className="font-semibold text-ink-2">{isX ? item.x!.authorName : item.source.name}</span>
             {isX && <span>· @{item.x!.handle} · X</span>}
@@ -315,6 +319,7 @@ export default function ItemPage() {
             )}
           </div>
           {!isX && <h1 className="text-[26px] font-bold leading-[1.38] tracking-[-0.01em] text-ink lg:text-[32px] lg:leading-[1.34] xl:text-[36px] xl:leading-[1.3]">{headline}</h1>}
+          <div className="mt-3 2xl:hidden"><SourceFollowButton id={item.source.id} name={item.source.name} /></div>
           {!isX && reviewed && item.originalTitle && item.title !== item.originalTitle && <p className="mt-2.5 text-[14px] leading-relaxed text-ink-4">AI 复核标题：{item.title}</p>}
           {!isX && !reviewed && item.originalTitle && <p className="mt-2.5 text-[14px] leading-relaxed text-ink-4">{item.originalTitle}</p>}
           {!isX && reviewed && (
@@ -372,7 +377,7 @@ export default function ItemPage() {
           )}
 
           {reviewed && (item.summary || (item.body && bodyHtml)) && (
-            <details className="mt-9 rounded-control border border-line xl:mt-10">
+            <details data-reading-body className="mt-9 rounded-control border border-line xl:mt-10">
               <summary className="cursor-pointer px-4 py-3 text-[13px] font-semibold text-ink-2">
                 AI 加工与复核
                 <span className="ml-2 font-normal text-ink-4">AI 导读、加工分析与待核实，默认收起，展开查看</span>

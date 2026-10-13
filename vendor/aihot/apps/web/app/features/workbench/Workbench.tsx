@@ -10,7 +10,7 @@ import { Backdrop } from './FrozenCards';
 import { NavigationProgress, BackToTop } from '../../components/shell/Chrome';
 
 
-const links = [['/all', '全部动态', 'Stream'], ['/starred', '收藏', 'Saved'], ['/hot', '热点', 'Hot'], ['/daily', '日报', 'Daily'], ['/topics', '主题', 'Topics'], ['/reading-tools', '阅读工具', 'Tools'], ['/codex-reset', 'GPT重置', 'Reset'], ['/agent', 'Agent接口', 'API / RSS / MCP'], ['/more', '更多', 'More']] as const;
+const links = [['/all', '全部动态', 'Stream'], ['/me', '我的', 'Reading'], ['/hot', '热点', 'Hot'], ['/daily', '日报', 'Daily'], ['/topics', '主题', 'Topics'], ['/reading-tools', '阅读工具', 'Tools'], ['/codex-reset', 'GPT重置', 'Reset'], ['/agent', 'Agent接口', 'API / RSS / MCP'], ['/more', '更多', 'More']] as const;
 
 export function WorkbenchShell({ children }: { children: ReactNode }) {
   const navigation = useNavigation();
@@ -29,7 +29,7 @@ export function WorkbenchShell({ children }: { children: ReactNode }) {
 }
 
 export function WorkbenchFeed({ title, items, filters, generatedAt, stats, total, children }: {
-  title: string; items: FeedItemSummary[]; filters: TimelineFilters & { q?: string | null; tab?: string }; generatedAt: string;
+  title: string; items: FeedItemSummary[]; filters: TimelineFilters & { q?: string | null; tab?: string; source?: string | null }; generatedAt: string;
   stats?: SiteStats | null; total?: number; children: ReactNode;
 }) {
   const { pathname } = useLocation();
@@ -47,8 +47,9 @@ export function WorkbenchFeed({ title, items, filters, generatedAt, stats, total
     <div className="relative mb-5 flex overflow-hidden border-y border-white/10 py-2"><span className="z-10 mr-5 shrink-0 bg-amber-300 px-2 font-mono text-[10px] font-bold text-black">FEED</span><div className="flex min-w-0 gap-8 ticker-track shrink-0 whitespace-nowrap text-[13px] text-white/65">{[...items.slice(0, 8), ...items.slice(0, 8)].map((i, index) => <Link key={`${i.id}:${index}`} to={`/items/${i.id}`}>{displayTitle(i)}</Link>)}</div></div>
     <div className="mb-3 flex flex-col gap-3"><label className="edge flex w-fit items-center gap-3 rounded-full px-4 py-2 text-[13px] text-white/70">分类<select aria-label="分类" value={filters.category ?? ''} onChange={event => navigate(filterHref(base, params, {category:event.target.value || null}))} className="bg-[#101821] text-white outline-none rounded px-2 py-1">{[{key:'', label:'全部分类'}, ...CATEGORIES].map(c => <option key={c.key} value={c.key}>{c.label}</option>)}</select></label>
       <div className="flex flex-wrap items-center gap-3"><nav aria-label="来源筛选" className="flex gap-3 text-[12px]">{CHANNEL_KEYS.map(channel => <Link key={channel} aria-current={filters.channel === channel ? 'page' : undefined} to={filterHref(base, params, {channel: channel === 'all' ? null : channel})} className={filters.channel === channel ? 'text-cyan-200' : 'text-white/55'}>{CHANNEL_LABELS[channel]}</Link>)}</nav><Link to={filterHref('/all', params, {tag: filters.tag === '二次加工' ? null : '二次加工'})} className={`text-[12px] ${filters.tag === '二次加工' ? 'text-amber-200' : 'text-white/55'}`}>AI加工</Link>
-      <Form key={`${filters.q ?? ''}:${filters.channel}:${filters.category}:${filters.tag}`} method="get" action="/all" role="search" className="ml-auto flex w-full gap-2 sm:w-auto">{(['channel','category','tag','tab'] as const).map(k => filters[k] && filters[k] !== 'all' && !(k === 'tab' && filters[k] === 'time') ? <input key={k} type="hidden" name={k} value={filters[k]!} /> : null)}<input aria-label="搜索标题、摘要与正文" name="q" defaultValue={filters.q ?? ''} maxLength={200} placeholder="搜索标题、摘要…" className="edge min-w-0 flex-1 rounded-full px-4 py-2 text-xs sm:w-52" /><button type="submit" className="rounded-full border border-white/20 px-4 text-xs text-cyan-200">搜索</button></Form></div>
+      <Form key={`${filters.q ?? ''}:${filters.channel}:${filters.category}:${filters.tag}:${filters.source ?? ''}`} method="get" action="/all" role="search" className="ml-auto flex w-full gap-2 sm:w-auto">{(['channel','category','tag','tab','source'] as const).map(k => filters[k] && filters[k] !== 'all' && !(k === 'tab' && filters[k] === 'time') ? <input key={k} type="hidden" name={k} value={filters[k]!} /> : null)}<input aria-label="搜索标题、摘要与正文" name="q" defaultValue={filters.q ?? ''} maxLength={200} placeholder="搜索标题、摘要…" className="edge min-w-0 flex-1 rounded-full px-4 py-2 text-xs sm:w-52" /><button type="submit" className="rounded-full border border-white/20 px-4 text-xs text-cyan-200">搜索</button></Form></div>
     </div>
+    {filters.source && <p className="mb-3 text-[12px] text-ink-3">正在查看关注来源的动态。<Link to={filterHref(base, params, {source:null})} className="ml-2 text-accent">查看全部来源</Link></p>}
     <div className="mb-5 flex flex-wrap gap-x-4 gap-y-2 text-[11px] text-white/55"><span>{latest ? `本页最新发表：${stamp(latest)}` : '暂无发表记录'} · 北京时间</span><span>采集更新与文章发表时间分开记录</span>{filters.tag && <span>标签：{filters.tag} <Link to={filterHref(base, params, {tag:null})} className="text-cyan-200">清除</Link></span>}{filters.q && <nav aria-label="搜索排序" className="flex gap-3">{[['time','最新'],['relevance','全文相关']].map(([v, label]) => <Link key={v} to={filterHref('/all', params, {tab:v === 'time' ? null : v})} className={filters.tab === v ? 'text-cyan-200' : ''}>{label}</Link>)}</nav>}</div>
     {children}
   </div>;

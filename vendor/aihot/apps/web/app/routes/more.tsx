@@ -5,7 +5,6 @@ import { Link, useRouteLoaderData } from "react-router";
 import type { loader as rootLoader } from "../root";
 import { useChangelogDot } from "../components/shell/Sidebar";
 import { pageMeta } from "../lib/seo";
-import { ThemeSwitch } from "../components/shell/ThemeSwitch";
 import { IconBookmark, IconChart, IconChevronRight, IconDoc, IconFlame, IconGrid, IconHeart, IconHistory, IconMessage, IconMoon, IconPlug } from "../components/icons";
 
 /** Shared caches may keep this page for five minutes. */
@@ -24,17 +23,26 @@ const GROUPS: Array<{ title: string; rows: Row[] }> = [
     title: "内容",
     rows: [
       { to: "/topics", label: "主题索引", icon: <IconGrid size={18} /> },
-      { to: "/reading-tools", label: "阅读工具", icon: <IconDoc size={18} /> },
+      { to: "/hot", label: "热点榜", icon: <IconFlame size={18} /> },
       ...(FEATURES.leaderboard ? [{ to: "/leaderboard", label: "模型榜", icon: <IconChart size={18} /> }] : []),
       ...(FEATURES.codexResetMonitor ? [{ to: "/codex-reset", label: "Tibo重置监控", icon: <IconHistory size={18} /> }] : []),
-      { to: "/agent", label: "Agent 接入", icon: <IconPlug size={18} /> },
     ],
   },
   {
-    title: "偏好",
+    title: "我的",
     rows: [
-      { to: "/hot", label: "热点榜", icon: <IconFlame size={18} /> },
-      { to: "/starred", label: "收藏", icon: <IconBookmark size={18} /> },
+      { to: "/me", label: "我的阅读", icon: <IconBookmark size={18} /> },
+      { to: "/starred", label: "我的收藏", icon: <IconBookmark size={18} /> },
+      { to: "/me?view=following", label: "关注来源", icon: <IconHeart size={18} /> },
+      { to: "/me?view=tasks", label: "加工记录", icon: <IconDoc size={18} /> },
+      { to: "/me?view=settings", label: "数据与设置", icon: <IconMoon size={18} /> },
+    ],
+  },
+  {
+    title: "工具",
+    rows: [
+      { to: "/reading-tools", label: "阅读工具", icon: <IconDoc size={18} /> },
+      { to: "/agent", label: "Agent 接入", icon: <IconPlug size={18} /> },
     ],
   },
   {
@@ -74,15 +82,6 @@ export default function MorePage() {
                 </Link>
               </li>
             ))}
-            {g.title === "偏好" && (
-              <li className="flex h-[58px] items-center gap-3 px-4 text-[15px] font-medium text-ink">
-                <span className="text-ink-3">
-                  <IconMoon size={18} />
-                </span>
-                <span className="flex-1">外观</span>
-                <ThemeSwitch className="w-[124px]" />
-              </li>
-            )}
           </Group>
         ))}
       </div>

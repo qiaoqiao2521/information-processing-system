@@ -89,7 +89,7 @@
 .make-workbench input, .make-workbench select { color-scheme: dark; }
 @media (max-width: 640px) {
  .make-workbench article { grid-template-columns: 40px minmax(0, 1fr) auto; gap: 12px; }
- .make-workbench article p { max-height: 6em; opacity: 1; margin-top: 8px; }
+ .make-workbench article:not([data-reading-article]) p { max-height: 6em; opacity: 1; margin-top: 8px; }
 }
 @media (prefers-reduced-motion: reduce) {
  .make-workbench *, .make-workbench::after { animation: none !important; transition: none !important; }

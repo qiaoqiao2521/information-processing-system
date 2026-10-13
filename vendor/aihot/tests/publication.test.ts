@@ -69,6 +69,22 @@ async function get(url: string, headers: Record<string, string> = {}) {
   return { status: res.statusCode, body: res.body, etag: res.headers.etag as string | undefined };
 }
 
+test("followed-source pool filters counts and results through the public API", async () => {
+  const id = await article();
+  await publishArticle(id, released());
+  const path = `/api/site/pool?source=${encodeURIComponent(SOURCE)}`;
+  const result = await get(path);
+  assert.equal(result.status, 200);
+  const body = JSON.parse(result.body);
+  assert.equal(body.filters.source, SOURCE);
+  assert.ok(body.items.some((item: { id: string }) => item.id === id));
+  assert.ok(body.items.every((item: { source: { name: string } }) => item.source.name === "Test publication"));
+  assert.equal(JSON.parse((await get(`${path}&q=Test&tab=relevance`)).body).filters.source, SOURCE);
+  const empty = JSON.parse((await get(`/api/site/pool?source=not-a-source-${T}`)).body);
+  assert.equal(empty.total, 0); assert.deepEqual(empty.items, []);
+  assert.equal((await get("/api/site/pool?source=%27" )).status, 400);
+});
+
 test("site reading sends one language while exports retain both, including after withdrawal", async () => {
   const id = await article();
   await sql`UPDATE articles SET language = 'en', body_html = '<h2>Original heading</h2><p>Original full body</p>' WHERE id = ${id}`;

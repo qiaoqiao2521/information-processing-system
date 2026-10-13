@@ -7,7 +7,7 @@ import { FEATURES } from "@aihot/industry/features";
 const at = process.argv.indexOf("--base");
 const base = (at > 0 ? process.argv[at + 1] : process.env.SITE_URL) ?? "http://localhost:3000";
 
-const PAGES = ["/", "/all", "/hot", "/daily", "/daily/archive", "/topics", "/starred", "/agent", "/about", "/changelog", "/feedback", "/terms", "/privacy", "/more", "/admin/login"];
+const PAGES = ["/", "/all", "/hot", "/daily", "/daily/archive", "/topics", "/starred", "/me", "/me?view=tasks", "/agent", "/about", "/changelog", "/feedback", "/terms", "/privacy", "/more", "/admin/login"];
 const MACHINE: Array<[path: string, type: RegExp]> = [
   ["/api/health", /json/],
   ["/api/v1/items", /json/],
@@ -33,7 +33,14 @@ if (FEATURES.codexResetMonitor) PAGES.push("/codex-reset");
 let failed = 0;
 async function check(path: string, expect: (res: Response, body: string) => string | null) {
   try {
-    const res = await fetch(base + path, { redirect: "manual", signal: AbortSignal.timeout(30_000) });
+    let res = await fetch(base + path, { redirect: "manual", signal: AbortSignal.timeout(30_000) });
+    // The workbench has one stream; only its canonical root redirect is expected.
+    if (path === "/" && res.status === 302) {
+      const target = new URL(res.headers.get("location") ?? "", base);
+      if (target.origin === new URL(base).origin && target.pathname === "/all" && !target.search && !target.hash) {
+        res = await fetch(target, { redirect: "manual", signal: AbortSignal.timeout(30_000) });
+      }
+    }
     const body = res.headers.get("content-type")?.startsWith("image/") ? "" : await res.text();
     if (res.status === 503 && LEADERBOARD.includes(path)) {
       console.log(`– ${path}  no leaderboard round published yet`);

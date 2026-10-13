@@ -20,7 +20,10 @@
   --color-brand-cyan-54: #12ccd8;
   --color-brand-cyan-82: #08abc2;
   --color-brand-cyan-100: #078ea9;
+}
 
+/* Resolve semantic aliases where a utility is used, including the frozen dark Make shell. */
+@theme inline {
   /* Semantic colours. */
   --color-bg: var(--bg);
   --color-bg-sunk: var(--bg-sunk);
@@ -62,7 +65,9 @@
   --color-rank-2: var(--rank-2);
   --color-rank-3: var(--rank-3);
   --color-rank-rest: var(--rank-rest);
+}
 
+@theme {
   /* Radius scale: mark 5 (inline code, kbd, tiny tags and swatches), control 8 (inputs, small
      blocks), tile 10 (list rows, hover areas), card 12, panel 14 (wells, pictures), sheet 16 (dialogs,
      sheets, hero shells); pills are rounded-full. Arbitrary radii are not used. */

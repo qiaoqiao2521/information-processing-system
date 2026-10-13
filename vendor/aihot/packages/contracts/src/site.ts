@@ -4,6 +4,9 @@ import type { CategoryKey, ChannelKey } from "./taxonomy.ts";
 
 export type SourceKind = "rss" | "web_list" | "json_list" | "x_search" | "mp_account" | "external";
 
+/** Retained from the deployed contract; older public projections can omit this field. */
+export type ItemProvenance = "direct" | "aihot-reviewed";
+
 export interface SourceRef {
   id: string;
   name: string;
@@ -47,6 +50,7 @@ export interface ItemSummary {
   revision: number;
   title: string;
   originalTitle: string | null;
+  provenance?: ItemProvenance;
   summary: string | null;
   reason: string | null;
   source: SourceRef;
@@ -123,7 +127,7 @@ export interface TimelineResponse {
 }
 
 export interface PoolResponse {
-  filters: TimelineFilters & { q: string | null; tab: "time" | "relevance" };
+  filters: TimelineFilters & { q: string | null; tab: "time" | "relevance"; source?: string | null };
   items: FeedItemSummary[];
   page: number;
   pageCount: number;

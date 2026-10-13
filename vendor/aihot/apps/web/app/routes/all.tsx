@@ -19,13 +19,15 @@ export async function loader({ request }: { request: Request }) {
   const channel = isChannelKey(channelParam) ? channelParam : "all";
   const category = categoryParam && isCategoryKey(categoryParam) ? categoryParam : null;
   const tag = url.searchParams.get("tag")?.trim() || null;
+  const sourceValue = url.searchParams.get("source")?.trim();
+  const source = sourceValue && /^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,159}$/.test(sourceValue) ? sourceValue : null;
   const q = url.searchParams.get("q")?.trim().slice(0, 200) || null;
   const tab = url.searchParams.get("tab") === "relevance" ? "relevance" : null;
   // Legacy deep-paging parameters (deep, anchorAt) still open a normal page.
   const page = Math.min(Math.max(Number.parseInt(url.searchParams.get("page") ?? "1", 10) || 1, 1), 50);
   const upstream = new Headers();
   const [data, stats] = await Promise.all([loadOr404<PoolResponse>(
-    `/api/site/pool${queryString({ channel: channel === "all" ? null : channel, category, tag, q, tab, page: page > 1 ? page : null })}`,
+    `/api/site/pool${queryString({ channel: channel === "all" ? null : channel, category, tag, source, q, tab, page: page > 1 ? page : null })}`,
     { responseHeaders: upstream, signal: request.signal, busyRedirect: "/all/search-busy" },
   ), loadWorkbenchStats(request.signal)]);
   return withHeaders({ data, stats }, { headers: releaseBoundCache(null, 60, Date.now(), upstream) });
@@ -38,7 +40,7 @@ export function meta({ loaderData, location }: Route.MetaArgs) {
   return pageMeta({
     title: q ? `搜索：${q}` : location.pathname === "/" ? (CATEGORIES.find(c => c.key === f?.category)?.label ?? "分类阅读") : `全部${withSubject("动态")}`,
     description: `${SITE.name} 收录的全部${withSubject("动态")}，可按类别与标签筛选，支持中英文搜索。`,
-    path: listPath(location.pathname === "/" ? "/" : "/all", { channel: f && f.channel !== "all" ? f.channel : null, category: f?.category, tag: f?.tag, q, tab: f?.tab === "relevance" ? "relevance" : null, page: page > 1 ? page : null }),
+    path: listPath(location.pathname === "/" ? "/" : "/all", { channel: f && f.channel !== "all" ? f.channel : null, category: f?.category, tag: f?.tag, source: f?.source, q, tab: f?.tab === "relevance" ? "relevance" : null, page: page > 1 ? page : null }),
     noindex: !!q,
   });
 }
@@ -65,7 +67,7 @@ export default function AllPage() {
   const navigation = useNavigation();
   const f = data.filters;
   const busy = navigation.state === "loading" && navigation.location?.pathname === "/all";
-  const title = f.q ? `搜索“${f.q}”` : f.tag ? `#${f.tag}` : null;
+  const title = f.q ? `搜索“${f.q}”` : f.source ? "来源动态" : f.tag ? `#${f.tag}` : null;
 
   return <WorkbenchFeed stats={stats} title={title ?? "全部动态"} items={data.items} filters={f} generatedAt={data.generatedAt} total={data.total}>
     <div className={busy ? "opacity-50" : ""}><FrozenCards items={data.items} /></div>

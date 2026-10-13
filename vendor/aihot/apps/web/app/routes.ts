@@ -25,6 +25,7 @@ export default [
   route("changelog", "routes/changelog.tsx"),
   route("feedback", "routes/feedback.tsx"),
   route("more", "routes/more.tsx"),
+  route("me", "routes/me.tsx"),
   route("starred", "routes/starred.tsx"),
   route("agent", "routes/agent.tsx"),
   route("reading-tools", "routes/reading-tools.tsx"),

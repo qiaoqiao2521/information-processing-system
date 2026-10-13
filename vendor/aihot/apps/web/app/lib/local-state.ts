@@ -1,5 +1,5 @@
-// Reader state kept only in this browser; nothing about a reader leaves it. Storage failures degrade
-// silently. Keep the keys and formats once readers have data under them.
+// Personal records stay in this browser. Public content is fetched through the site API as usual.
+// Keep existing keys and formats; personal actions report storage failures to their callers.
 import { useSyncExternalStore } from "react";
 import { beijingDate } from "@aihot/contracts/time";
 
@@ -9,6 +9,9 @@ export const KEYS = {
   theme: "aihot-theme",
   changelogSeen: "aihot-changelog-seen-version",
   feedbackDraft: "aihot-feedback-draft-v1",
+  history: "aihot-reading-history-v1",
+  tasks: "aihot-reading-tasks-v1",
+  following: "aihot-followed-sources-v1",
 } as const;
 
 export const STARRED_LIMIT = 500;
@@ -88,6 +91,9 @@ const subscribeStarred = subscribeKey(KEYS.starred);
 const subscribeRead = subscribeKey(KEYS.read);
 const subscribeTheme = subscribeKey(KEYS.theme);
 const subscribeChangelog = subscribeKey(KEYS.changelogSeen);
+const subscribeHistory = subscribeKey(KEYS.history);
+const subscribeTasks = subscribeKey(KEYS.tasks);
+const subscribeFollowing = subscribeKey(KEYS.following);
 
 // Snapshot cache so useSyncExternalStore gets stable references between changes.
 const cache = new Map<string, unknown>();
@@ -202,6 +208,131 @@ export function markRead(id: string) {
   invalidate(KEYS.read);
 }
 
+// --- personal reading workspace (same browser, no reader account) ---
+export const HISTORY_LIMIT = 200;
+export const TASK_LIMIT = 30;
+export const FOLLOWING_LIMIT = 200;
+export const MATERIAL_LIMIT = 18_000;
+
+export interface LocalReadingItem {
+  id: string;
+  title: string;
+  sourceName: string;
+  visitedAt: string;
+  publishedAt: string | null;
+  path: string;
+  position: number;
+  bodyHash: string | null;
+  expanded: boolean;
+}
+
+export interface LocalReadingTask {
+  id: string;
+  skillId: string;
+  skillName: string;
+  input: string;
+  copiedAt: string;
+  result: string | null;
+  resultSavedAt: string | null;
+}
+
+export interface LocalFollowedSource { id: string; name: string; followedAt: string }
+
+function readingItem(v: unknown): LocalReadingItem | null {
+  if (!v || typeof v !== "object") return null;
+  const o = v as Record<string, unknown>;
+  if (typeof o.id !== "string" || !ID_PATTERN.test(o.id) || typeof o.title !== "string" || !isDisplayableDate(o.visitedAt)) return null;
+  const path = o.path === `/items/${o.id}/original` ? o.path : `/items/${o.id}`;
+  return { id: o.id, title: o.title.slice(0, 600), sourceName: typeof o.sourceName === "string" ? o.sourceName.slice(0, 200) : "",
+    visitedAt: o.visitedAt, publishedAt: isDisplayableDate(o.publishedAt) ? o.publishedAt : null, path,
+    position: typeof o.position === "number" && Number.isFinite(o.position) ? Math.max(0, Math.min(1, o.position)) : 0,
+    bodyHash: typeof o.bodyHash === "string" && /^[a-f0-9]{64}$/.test(o.bodyHash) ? o.bodyHash : null, expanded: o.expanded === true };
+}
+
+function readingTask(v: unknown): LocalReadingTask | null {
+  if (!v || typeof v !== "object") return null;
+  const o = v as Record<string, unknown>;
+  if (typeof o.id !== "string" || !ID_PATTERN.test(o.id) || typeof o.skillId !== "string" || !ID_PATTERN.test(o.skillId)
+    || typeof o.skillName !== "string" || typeof o.input !== "string" || !o.input.trim() || !isDisplayableDate(o.copiedAt)) return null;
+  const result = typeof o.result === "string" && o.result.trim() ? o.result.slice(0, MATERIAL_LIMIT) : null;
+  return { id: o.id, skillId: o.skillId, skillName: o.skillName.slice(0, 200), input: o.input.slice(0, MATERIAL_LIMIT), copiedAt: o.copiedAt,
+    result, resultSavedAt: result && isDisplayableDate(o.resultSavedAt) ? o.resultSavedAt : null };
+}
+
+function followedSource(v: unknown): LocalFollowedSource | null {
+  if (!v || typeof v !== "object") return null;
+  const o = v as Record<string, unknown>;
+  if (typeof o.id !== "string" || !/^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,159}$/.test(o.id) || typeof o.name !== "string" || !isDisplayableDate(o.followedAt)) return null;
+  return { id: o.id, name: o.name.slice(0, 200), followedAt: o.followedAt };
+}
+
+function personalList<T extends { id: string }>(key: string, limit: number, normalize: (v: unknown) => T | null): T[] {
+  return cached(key, () => {
+    try {
+      const raw: unknown = JSON.parse(readRaw(key) ?? "[]");
+      if (!Array.isArray(raw)) return [];
+      const items: T[] = [], seen = new Set<string>();
+      for (const value of raw) {
+        const item = normalize(value);
+        if (!item || seen.has(item.id)) continue;
+        seen.add(item.id); items.push(item);
+        if (items.length >= limit) break;
+      }
+      return items;
+    } catch { return []; }
+  });
+}
+
+function savePersonal(key: string, items: unknown[]): boolean {
+  if (!writeRaw(key, JSON.stringify(items))) return false;
+  invalidate(key);
+  return true;
+}
+
+export function getReadingHistory() { return personalList(KEYS.history, HISTORY_LIMIT, readingItem); }
+export function getReadingTasks() { return personalList(KEYS.tasks, TASK_LIMIT, readingTask); }
+export function getFollowedSources() { return personalList(KEYS.following, FOLLOWING_LIMIT, followedSource); }
+
+/** Visiting updates metadata and time, but keeps the last deliberately saved reading position. */
+export function rememberReading(item: Pick<LocalReadingItem, "id" | "title" | "sourceName" | "publishedAt" | "path">): boolean {
+  const history = getReadingHistory(), previous = history.find((v) => v.id === item.id);
+  const value = readingItem({ ...item, visitedAt: new Date().toISOString(), path: previous?.path ?? item.path,
+    position: previous?.position ?? 0, bodyHash: previous?.bodyHash ?? null, expanded: previous?.expanded ?? false });
+  return !!value && savePersonal(KEYS.history, [value, ...history.filter((v) => v.id !== item.id)].slice(0, HISTORY_LIMIT));
+}
+
+export function saveReadingPosition(id: string, value: Pick<LocalReadingItem, "path" | "position" | "bodyHash" | "expanded">): boolean {
+  const history = getReadingHistory(), item = history.find((v) => v.id === id);
+  if (!item) return false;
+  const updated = readingItem({ ...item, ...value });
+  return !!updated && savePersonal(KEYS.history, history.map((v) => v.id === id ? updated : v));
+}
+
+export function removeReading(id: string): boolean { return savePersonal(KEYS.history, getReadingHistory().filter((v) => v.id !== id)); }
+
+/** Called only after clipboard success; it does not represent a model run. */
+export function recordCopiedTask(skillId: string, skillName: string, input: string): string | null {
+  const id = globalThis.crypto?.randomUUID?.();
+  if (!id) return null;
+  const task = readingTask({ id, skillId, skillName, input, copiedAt: new Date().toISOString(), result: null, resultSavedAt: null });
+  return task && savePersonal(KEYS.tasks, [task, ...getReadingTasks()].slice(0, TASK_LIMIT)) ? id : null;
+}
+
+export function saveTaskResult(id: string, result: string): boolean {
+  if (result.length > MATERIAL_LIMIT || !getReadingTasks().some((v) => v.id === id)) return false;
+  return savePersonal(KEYS.tasks, getReadingTasks().map((v) => v.id === id
+    ? { ...v, result: result.trim() ? result : null, resultSavedAt: result.trim() ? new Date().toISOString() : null } : v));
+}
+
+export function removeReadingTask(id: string): boolean { return savePersonal(KEYS.tasks, getReadingTasks().filter((v) => v.id !== id)); }
+
+export function toggleFollowedSource(id: string, name: string): boolean {
+  const list = getFollowedSources(), exists = list.some((v) => v.id === id);
+  const source = followedSource({ id, name, followedAt: new Date().toISOString() });
+  if (!source || (!exists && list.length >= FOLLOWING_LIMIT)) return false;
+  return savePersonal(KEYS.following, exists ? list.filter((v) => v.id !== id) : [source, ...list]);
+}
+
 // --- theme ---
 export type ThemePreference = "light" | "dark" | null;
 
@@ -247,11 +378,14 @@ export interface ExportBundle {
   starred: LocalStarredItem[];
   read: string[];
   theme: "light" | "dark" | "auto" | null;
+  history?: LocalReadingItem[];
+  tasks?: LocalReadingTask[];
+  following?: LocalFollowedSource[];
 }
 
 export function exportBundle(): ExportBundle {
   const pref = getThemePreference();
-  return { version: 1, starred: getStarred(), read: getReadIds(), theme: pref ?? "auto" };
+  return { version: 1, starred: getStarred(), read: getReadIds(), theme: pref ?? "auto", history: getReadingHistory(), tasks: getReadingTasks(), following: getFollowedSources() };
 }
 
 export interface ImportReport {
@@ -262,6 +396,9 @@ export interface ImportReport {
   themeApplied: boolean;
   /** The stars were saved but the read marks could not be (storage full or unavailable). */
   readFailed: boolean;
+  personalAdded: number;
+  personalSkipped: number;
+  personalFailed: boolean;
 }
 
 /** Merge: existing stars are not overwritten, read ids are unioned, theme only if unset. */
@@ -279,10 +416,11 @@ export function importBundle(text: string): ImportReport {
     starred: Array.isArray(d.starred) ? d.starred : [],
     read: Array.isArray(d.read) ? d.read : [],
     theme: d.theme ?? null,
+    history: d.history, tasks: d.tasks, following: d.following,
   });
 }
 
-export function mergeLocalData(incoming: { starred: unknown[]; read: unknown[]; theme: unknown }): ImportReport {
+export function mergeLocalData(incoming: { starred: unknown[]; read: unknown[]; theme: unknown; history?: unknown; tasks?: unknown; following?: unknown }): ImportReport {
   const current = getStarred();
   const have = new Set(current.map((s) => s.id));
   const additions: LocalStarredItem[] = [];
@@ -318,14 +456,45 @@ export function mergeLocalData(incoming: { starred: unknown[]; read: unknown[]; 
   if (!getThemePreference() && (incoming.theme === "light" || incoming.theme === "dark")) {
     themeApplied = writeRaw(KEYS.theme, incoming.theme);
   }
+  // Older version-1 files omit these optional arrays. Never overwrite existing personal records.
+  let personalAdded = 0, personalSkipped = 0, personalFailed = false;
+  const merge = <T extends { id: string }>(raw: unknown, key: string, current: T[], limit: number, normalize: (v: unknown) => T | null) => {
+    if (raw === undefined) return;
+    if (!Array.isArray(raw)) { personalSkipped++; return; }
+    const next = [...current], ids = new Set(next.map((v) => v.id));
+    let added = 0;
+    for (const value of raw) {
+      const item = normalize(value);
+      if (!item) { personalSkipped++; continue; }
+      if (ids.has(item.id)) continue;
+      if (next.length >= limit) { personalSkipped++; continue; }
+      next.push(item); ids.add(item.id); added++;
+    }
+    next.sort((a, b) => {
+      const time = (v: T) => { const o = v as unknown as Record<string, string>; return Date.parse(o.visitedAt ?? o.copiedAt ?? o.followedAt!); };
+      return time(b) - time(a);
+    });
+    if (savePersonal(key, next)) personalAdded += added;
+    else personalFailed = true;
+  };
+  merge(incoming.history, KEYS.history, getReadingHistory(), HISTORY_LIMIT, readingItem);
+  merge(incoming.tasks, KEYS.tasks, getReadingTasks(), TASK_LIMIT, readingTask);
+  merge(incoming.following, KEYS.following, getFollowedSources(), FOLLOWING_LIMIT, followedSource);
   cache.clear();
   emit();
-  return { starredAdded: accepted.length, starredSkipped, readAdded: readFailed ? 0 : Math.min(readAdditions.length, readRoom), readSkipped, themeApplied, readFailed };
+  return { starredAdded: accepted.length, starredSkipped, readAdded: readFailed ? 0 : Math.min(readAdditions.length, readRoom), readSkipped, themeApplied, readFailed, personalAdded, personalSkipped, personalFailed };
 }
 
 // --- React hooks ---
 const EMPTY_STARRED: LocalStarredItem[] = [];
 const EMPTY_SET = new Set<string>();
+const EMPTY_HISTORY: LocalReadingItem[] = [];
+const EMPTY_TASKS: LocalReadingTask[] = [];
+const EMPTY_FOLLOWING: LocalFollowedSource[] = [];
+
+export function useReadingHistory() { return useSyncExternalStore(subscribeHistory, getReadingHistory, () => EMPTY_HISTORY); }
+export function useReadingTasks() { return useSyncExternalStore(subscribeTasks, getReadingTasks, () => EMPTY_TASKS); }
+export function useFollowedSources() { return useSyncExternalStore(subscribeFollowing, getFollowedSources, () => EMPTY_FOLLOWING); }
 
 export function useStarred(): LocalStarredItem[] {
   return useSyncExternalStore(subscribeStarred, getStarred, () => EMPTY_STARRED);
