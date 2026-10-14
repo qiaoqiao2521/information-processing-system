@@ -4,7 +4,7 @@ FROM ${BUILD_BASE}
 USER root
 WORKDIR /app
 COPY . .
-RUN npm ci --no-audit --no-fund \
+RUN npm ci --include=dev --no-audit --no-fund \
  && npm run typecheck \
  && npm run build -w @aihot/web \
  && node --test apps/web/tests/*.test.ts \

@@ -28,6 +28,8 @@
 
 ## Current State / Priority
 
+2026-10-14用户选择LifeGame速读结果同步到私有草稿。436增加管理员入口 `/admin/lifegame`，只接收LifeGame服务的令牌授权写入；同请求幂等，不进入公开publication。API/web已部署 `lifegame-20261014-985f491701ac`，真实MiniMax结果的单行入库和管理员网页读回通过。未新增读者账号。见[个人阅读进度](plans/mature-product-user-structure-20261013/progress.md)。
+
 2026-10-13用户明确暂不增加账号系统，先实现其他个人功能。436已部署“我的阅读” `/me`：本机收藏入口、最近阅读与正文SHA-256绑定的位置恢复、关注来源及公共来源筛选、复制任务记录、手工结果保存和文件导入导出。沿用Make视觉，修正深色颜色绑定和手机正文段落限高。旧收藏及已读标记保留；个人记录仅当前浏览器保存，手工结果保持未复核，自动跨端同步未启用。此前书籍笔记采集方向为Agent误解，已撤销。见[实现与验收](plans/mature-product-user-structure-20261013/progress.md)。
 
 2026-10-12信息加工任务统一称为workflow，与遗留cron区分。`intelligence-hub-workflow.timer`替换原local-processing timer，串行处理自己的近期订阅与上游候选；本地OpenCode固定MiniMax3.1，沿用共享预算与无通知规则，运行结果写本机私密last-run.json。进度见[信息加工workflow](plans/news-workflow-20261012/progress.md)。

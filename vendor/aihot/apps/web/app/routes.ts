@@ -44,6 +44,7 @@ export default [
     route("admin", "routes/admin/index.tsx"),
     route("admin/content", "routes/admin/content.tsx"),
     route("admin/reviews", "routes/admin/reviews.tsx"),
+    route("admin/lifegame", "routes/admin/lifegame.tsx"),
     route("admin/reviews/:id", "routes/admin/review.tsx"),
     route("admin/content/:id", "routes/admin/content-item.tsx"),
     route("admin/sources", "routes/admin/sources.tsx"),

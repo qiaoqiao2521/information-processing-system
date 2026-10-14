@@ -4,6 +4,14 @@
 
 ## 436 运行布局
 
+### 2026-10-14 LifeGame 私有速读草稿
+
+管理员入口 `/admin/lifegame`。固定集成API接收LifeGame服务的独立Bearer授权；`LIFEGAME_SITE_SYNC_TOKEN`仅写两端受保护环境文件。正文不传站点，只存模型结果与出处；默认草稿不进入publication。新增迁移0040已应用。
+
+API/web镜像 `muqiao-intel-aihot:lifegame-20261014`，release `lifegame-20261014-985f491701ac`；worker沿用原镜像。源码补丁与逐文件指纹位于 `/opt/intelligence-hub/aihot/incoming-lifegame-20261014`；旧配置/源码/镜像指纹及数据库dump保留在 `/opt/intelligence-hub/aihot/rollback/lifegame-20261014`。回退应用镜像保留新私有表，不删除草稿。
+
+构建沿用既有Dockerfile.web与当前reader镜像，显式安装dev依赖完成类型检查和网页构建，再prune。51项测试、生产33项smoke及14项真实草稿读回通过；临时管理员会话移除，公开草稿详情均404。真实请求只调用一次MiniMax，重放同步仍只有一行。
+
 ### 2026-10-13 本机个人阅读
 
 `/me` 提供本机收藏入口、最近阅读与校验后位置恢复、关注来源、加工任务与手工结果记录、文件导入导出。个人记录只在浏览器保存，原账号、后台、采集、模型预算和时钟保持既有配置。网页访问不调用模型。

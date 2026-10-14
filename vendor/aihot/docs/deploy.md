@@ -93,6 +93,8 @@ DATABASE_URL=postgres://你的用户名@127.0.0.1:5432/myhot
 API_BASE_URL=http://127.0.0.1:3001
 ```
 
+若启用 LifeGame 私有速读草稿同步，还要在网站 `.env` 和 LifeGame 服务的受保护环境文件中设置相同的 `LIFEGAME_SITE_SYNC_TOKEN`。使用至少 32 字节随机值；仅由服务端读取，不要写入 App、仓库或日志。更新后迁移会建立草稿表，LifeGame 服务端只向固定的 `https://intel.muqiao.xyz/api/integrations/lifegame/distillations` 发送整理结果与来源指纹，不发送网页全文。草稿仅在管理员登录后的 `/admin/lifegame` 可见。
+
 然后：
 
 ```bash

@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { actorOf } from "@aihot/backend/admin/auth";
 import { createReview, decideReview, listReviews, reviewDetail, saveReview } from "@aihot/backend/admin/upstream-reviews";
+import { listLifeGameDrafts } from "@aihot/backend/admin/lifegame-drafts";
 
 import { importSelectBenchRun, listSelectBenchRuns, selectBenchRun } from "@aihot/backend/admin/selectbench";
 import { modelsOverview, switchModel } from "@aihot/backend/admin/models";
@@ -34,6 +35,7 @@ function decodeImage(dataUrl: unknown): Buffer {
 }
 
 export function registerAdmin(app: FastifyInstance) {
+  app.get("/api/admin/lifegame-drafts", adminHandler(async () => listLifeGameDrafts()));
   app.get("/api/admin/upstream-reviews", adminHandler(async () => listReviews()));
   app.post("/api/admin/upstream-reviews", adminHandler(async (req, _reply, admin) => createReview(String(body(req).id ?? ""), actorOf(admin))));
   app.get("/api/admin/upstream-reviews/:id", adminHandler(async (req, reply) => orNotFound(req, reply, await reviewDetail(param(req,"id")))));
