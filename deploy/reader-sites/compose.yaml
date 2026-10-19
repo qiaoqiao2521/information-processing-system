@@ -1,0 +1,15 @@
+services:
+  arxivhub:
+    image: nginx@sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:4445:80"
+    volumes:
+      - /opt/reader-sites/arxivhub/current:/usr/share/nginx/html:ro
+      - ./arxivhub.nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+    security_opt:
+      - no-new-privileges:true

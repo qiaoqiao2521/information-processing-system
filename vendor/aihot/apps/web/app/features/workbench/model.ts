@@ -31,5 +31,5 @@ export function arxivHubHref(value: string): string | null {
     } catch { return null; }
   }
   return /^(?:\d{4}\.\d{4,5}|[a-z-]+(?:\.[A-Z]{2})?\/\d{7})(?:v\d+)?$/.test(id)
-    ? `https://arxivhub.github.io/p/${encodeURIComponent(id)}` : null;
+    ? `https://papers.muqiao.xyz/p/${encodeURIComponent(id)}` : null;
 }

@@ -218,6 +218,10 @@ CLI实测ArXivHub公开仓库抓取成功，验证请求先写入既有预算回
 
 阅读工具添加官网https://newsnow.busiyi.world/与用户指定GitHub项目链接。web镜像newsnow-link-20261012（3120a17e0039），类型检查、构建与21项测试通过；公网reading-tools读回两条目标链接。仅重建web，回退compose文件在服务器newsnow-link-compose.previous.yaml。
 
+### 2026-10-19 阅读站点自托管
+
+上述外链现改为436的[NewsNow](https://news.muqiao.xyz/)及[ArXivHub · 论桥](https://papers.muqiao.xyz/)，官网和GitHub作为次级引用保留。信息站只更新web到`muqiao-intel-aihot:reader-sites-20261019`；API、worker、数据库及采集时钟保持现场版本。独立服务、固定上游、持久缓存、域名和回退见[阅读站点说明](../reader-sites/README.md)，验证范围见[进度](../../plans/reader-sites-selfhost-20261019/progress.md)。
+
 ## 信息加工 workflow（2026-10-12）
 
 本任务业务入口统一叫workflow，与遗留cron区分。`deploy/aihot/intelligence-hub-workflow.{service,timer}`替换本机原local-processing任务；底层继续复用systemd，无编码工具、外部通知或新调度平台。启动约每轮结束30分钟后执行下一轮，首次启用30分钟触发。每轮最多2篇自订阅＋2篇上游，最多30个CLI请求；共用opencode的8/min、60/h、300/连续24h预算，额度不等同于供应商余额。

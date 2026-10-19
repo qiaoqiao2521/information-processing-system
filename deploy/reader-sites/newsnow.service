@@ -1,0 +1,26 @@
+[Unit]
+Description=NewsNow self-hosted reader
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+DynamicUser=true
+StateDirectory=newsnow
+StateDirectoryMode=0750
+WorkingDirectory=/var/lib/newsnow
+ExecStart=/opt/reader-sites/runtime/node-v22.22.1 /opt/reader-sites/newsnow/current/dist/output/server/index.mjs
+Environment=HOST=127.0.0.1
+Environment=PORT=4444
+Environment=NODE_ENV=production
+Environment=INIT_TABLE=true
+Environment=ENABLE_CACHE=true
+Restart=on-failure
+RestartSec=5
+PrivateTmp=true
+ProtectHome=true
+NoNewPrivileges=true
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target

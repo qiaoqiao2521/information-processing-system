@@ -30,10 +30,10 @@ test('card adapter retains genuine publication dates, pending status and event i
   assert.equal(toWorkbenchItem({...raw,publishedAt:null}).date,'2026-10-11');
 });
 
-test('paper tool links use the upstream paper route and reject unrelated input', () => {
-  assert.equal(arxivHubHref('https://arxiv.org/abs/2610.01234v2'), 'https://arxivhub.github.io/p/2610.01234v2');
-  assert.equal(arxivHubHref('https://arxiv.org/pdf/2610.01234.pdf'), 'https://arxivhub.github.io/p/2610.01234');
-  assert.equal(arxivHubHref(' 2610.01234 '), 'https://arxivhub.github.io/p/2610.01234');
+test('paper tool links use the local paper route and reject unrelated input', () => {
+  assert.equal(arxivHubHref('https://arxiv.org/abs/2610.01234v2'), 'https://papers.muqiao.xyz/p/2610.01234v2');
+  assert.equal(arxivHubHref('https://arxiv.org/pdf/2610.01234.pdf'), 'https://papers.muqiao.xyz/p/2610.01234');
+  assert.equal(arxivHubHref(' 2610.01234 '), 'https://papers.muqiao.xyz/p/2610.01234');
   assert.equal(arxivHubHref('https://arxiv.org.evil.test/abs/2610.01234'), null);
   assert.equal(arxivHubHref('https://user:pass@arxiv.org/abs/2610.01234'), null);
   assert.equal(arxivHubHref('https://arxiv.org/search/2610.01234'), null);
