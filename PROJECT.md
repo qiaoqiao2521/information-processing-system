@@ -28,6 +28,8 @@
 
 ## Current State / Priority
 
+2026-10-20用户接受Horizon的三类来源：HN讨论、GitHub Releases、OSS Insight趋势。复用既有两小时bridge与本地OpenCode workflow；HN讨论保留评论出处，新增六仓库稳定发布订阅。OSS Insight实测明确返回数据不可用，适配器保留旧快照并记录unavailable，不制造空榜单。LifeGame沿用公开pool并补手机来源目录。运行验收和回退见[来源接入](plans/horizon-sources-20261020/progress.md)。
+
 2026-10-19用户要求直接自托管开源阅读站点。436已部署[NewsNow](https://news.muqiao.xyz/)与[ArXivHub · 论桥](https://papers.muqiao.xyz/)，[阅读工具](https://intel.muqiao.xyz/reading-tools)改为本地入口，并保留官网和GitHub引用。单篇论文沿用`/p/{id}`身份。两个应用独立运行，不接入publication或公众号定时器。版本、许可、运行目录和回退见[阅读站点部署](deploy/reader-sites/README.md)，实际能力及外部来源限制见[本次验收](plans/reader-sites-selfhost-20261019/progress.md)。
 
 2026-10-14用户选择LifeGame速读结果同步到私有草稿。436增加管理员入口 `/admin/lifegame`，只接收LifeGame服务的令牌授权写入；同请求幂等，不进入公开publication。API/web已部署 `lifegame-20261014-985f491701ac`，真实MiniMax结果的单行入库和管理员网页读回通过。未新增读者账号。见[个人阅读进度](plans/mature-product-user-structure-20261013/progress.md)。

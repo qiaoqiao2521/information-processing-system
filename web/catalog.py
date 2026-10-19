@@ -17,11 +17,12 @@ OUTPUT_FILES = (
     'juya_daily_sources_latest.json', 'qiaomu_rss_sources_latest.json', 'ak_rss_sources_latest.json',
     'x_google_sources_latest.json',
     'cli_releases_sources_latest.json',
+    'github_releases_sources_latest.json', 'oss_insight_sources_latest.json',
     'collection_status.json',
 )
 DATA_FILES = ('media_assets.json', 'enriched_trending.json', 'enriched_digest.json')
 SOURCES = (
-    ('hacker-news', 'Hacker News', '社区讨论', 'hacker_news_sources_latest.json'),
+    ('hacker-news', 'Hacker News · 讨论', '社区讨论', 'hacker_news_sources_latest.json'),
     ('juya', '橘鸦 AI 日报', '行业动态', 'juya_daily_sources_latest.json'),
     ('papers', 'HF 每日论文', '研究论文', 'hf_daily_papers_sources_latest.json'),
     ('rss', '乔木 RSS', '订阅文章', 'qiaomu_rss_sources_latest.json'),
@@ -30,6 +31,8 @@ SOURCES = (
     ('trending', 'GitHub 趋势', '开源项目', 'github_trending_latest.json'),
     ('digest', 'AI Builders', '一线动态', 'ai_builders_digest_sources_latest.json'),
     ('cli-releases', 'Claude Code / Codex 更新', '官方发布', 'cli_releases_sources_latest.json'),
+    ('github-releases', 'GitHub Releases · AI开发', '官方发布', 'github_releases_sources_latest.json'),
+    ('oss-insight', 'OSS Insight · 趋势观测', '关注度信号', 'oss_insight_sources_latest.json'),
     ('radar', '机会雷达', '机会观察', 'builderpulse_opportunity_radar_sources_latest.json'),
     ('topics', '融合简报', '主题汇总', 'consolidated_daily_brief.json'),
     ('assets', '媒体素材', '创作素材', 'media_assets.json'),
@@ -196,6 +199,10 @@ def catalog(output_dir: Path, data_dir: Path):
                          ('正文读取时间', r.get('body_fetched_at')), ('发现方式', 'Google 浏览器搜索'),
                          ('发帖时间依据', 'X 帖子 ID 时间戳')] if source_id == 'x' else []),
                     links=[('HN 讨论', r.get('comments_url')), ('HF 论文页', r.get('hf_url'))])
+                if text(r.get('title')) and source_id in {'hacker-news', 'github-releases', 'oss-insight'} and isinstance(r.get('raw'), dict):
+                    # Preserve the exact normalized evidence body its SHA-256 refers to.
+                    items[-1]['body'] = r.get('body') or ''
+                    items[-1]['raw'] = r['raw']
                 if source_id == 'x' and items and items[-1]['sourceId'] == 'x':
                     items[-1]['kind'] = 'Jina 正文' if r.get('content_status') == 'full-text' else '搜索摘要'
     return {'sources': sources, 'items': items, 'datasetDigest': dataset_digest(output_dir, data_dir)}

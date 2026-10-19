@@ -3,10 +3,12 @@
 from __future__ import annotations
 import argparse
 import fcntl
+import hashlib
 import json
 import os
 from pathlib import Path
 import sys
+import subprocess
 import time
 import urllib.request
 import urllib.error
@@ -16,14 +18,20 @@ sys.path.insert(0, str(ROOT))
 from web.catalog import catalog, scrub
 from web.refresh import refresh_sources
 
-CUSTOM = ('hacker-news', 'juya', 'papers', 'trending', 'digest', 'cli-releases')
+CUSTOM = ('hacker-news', 'juya', 'papers', 'trending', 'digest', 'cli-releases',
+          'github-releases', 'oss-insight')
 
 
 def batches(library, sources=CUSTOM):
     for source in sources:
+        for record in library['items']:
+            if record['sourceId'] == source and record.get('raw', {}).get('bodySha256'):
+                actual = hashlib.sha256(record.get('body', '').encode()).hexdigest()
+                if actual != record['raw']['bodySha256']:
+                    raise ValueError('Collector evidence body SHA-256 mismatch')
         items = [{'title': r['title'], 'url': r['url'], 'publishedAt': r['publishedAt'],
                   'author': r.get('author'), 'summary': r.get('summary'), 'bodyText': r.get('body'),
-                  'raw': {'legacyId': r['id'], 'collectedAt': r['collectedAt']}}
+                  'raw': {**r.get('raw', {}), 'legacyId': r['id'], 'collectedAt': r['collectedAt']}}
                  for r in library['items'] if r['sourceId'] == source and r['url']]
         for i in range(0, len(items), 50):
             yield {'sourceId': 'hub-' + source, 'items': scrub(items[i:i + 50])}
@@ -63,6 +71,13 @@ def main():
             except urllib.error.HTTPError as error:
                 # Abort instead of hammering an unavailable/paused service; next timer is idempotent.
                 raise RuntimeError(f'Ingest stopped: HTTP {error.code}') from None
+        if 'github-releases' in ready:
+            # Stream the installed host helper so recreating the existing API image
+            # does not lose a docker-cp-only script and silently break the next run.
+            helper = (args.root / 'app/scripts/radar-sources.mjs').read_text()
+            subprocess.run(['docker', 'exec', '-i', 'muqiao-intel-api-1', 'node',
+                            '--input-type=module', '-', '--publish', 'hub-github-releases'],
+                           input=helper, text=True, check=True)
         print(json.dumps({'created': created, 'collectors': [{'source': r['source'], 'status': r['status']} for r in results], 'x': 'paused'}))
         if any(r['status'] != 'updated' for r in results):
             raise SystemExit(1)

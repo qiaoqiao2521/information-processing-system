@@ -19,7 +19,9 @@ from web.catalog import safe_url
 
 ROOT = Path(__file__).resolve().parents[1]
 COLLECTORS = {
-    'hacker-news': ('fetch_hacker_news.py', 'hacker_news_sources_latest.json'),
+    'hacker-news': ('fetch_frontier_radar.py', 'hacker_news_sources_latest.json'),
+    'github-releases': ('fetch_frontier_radar.py', 'github_releases_sources_latest.json'),
+    'oss-insight': ('fetch_frontier_radar.py', 'oss_insight_sources_latest.json'),
     'juya': ('fetch_juya_daily.py', 'juya_daily_sources_latest.json'),
     'papers': ('fetch_hf_daily_papers.py', 'hf_daily_papers_sources_latest.json'),
     'rss': ('fetch_qiaomu_rss.py', 'qiaomu_rss_sources_latest.json'),
@@ -32,7 +34,15 @@ COLLECTORS = {
 DEFAULT_SOURCES = tuple(source for source in COLLECTORS if source != 'x')
 
 
+class SourceUnavailable(ValueError):
+    """The publisher explicitly reports unavailable upstream data."""
+
+
 def validate(source, document):
+    coverage = document.get('coverage') or {}
+    if coverage.get('status') == 'unavailable':
+        quality = coverage.get('dataQuality') or {}
+        raise SourceUnavailable(str(quality.get('reason') or 'Upstream data unavailable'))
     key = 'repos' if source == 'trending' else 'selectedSources' if source == 'digest' else 'items'
     items = document.get(key, [])
     if not isinstance(items, list) or not items:
@@ -99,7 +109,8 @@ def collect(source, output_dir, backup_dir):
             bundle.write_text(run(scripts / script), encoding='utf-8')
             run(scripts / 'build_digest_outputs.py', '--bundle-path', bundle)
         else:
-            args = ('--limit', '3', '--items-per-feed', '2') if source == 'rss' else ()
+            args = ('--source', source) if script == 'fetch_frontier_radar.py' else (
+                ('--limit', '3', '--items-per-feed', '2') if source == 'rss' else ())
             run(ROOT / 'tools/knowledge_pipeline/acquisition' / script, *args)
         return promote(source, staged, output_dir, backup_dir)
 
@@ -112,6 +123,8 @@ def refresh_sources(output_dir, sources, backup):
             source = pending[future]
             try:
                 result = future.result()
+            except SourceUnavailable as error:
+                result = {'source': source, 'status': 'unavailable', 'error': str(error)}
             except Exception as error:
                 result = {'source': source, 'status': 'failed', 'error': str(error)}
             results.append(result)

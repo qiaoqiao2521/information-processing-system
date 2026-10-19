@@ -79,7 +79,10 @@ def answer_opencode(body, executable):
            "enabled_providers": ["minimax-cn-coding-plan"],
            "agent": {"news": {"mode": "primary", "steps": 2,
                "prompt": system or "Return only the requested answer. Do not use tools.",
-               "permission": {"*": "deny"}, "temperature": body.get("temperature", 0.2)}}}
+               # This built-in provider uses the Anthropic-compatible protocol.
+               # M3.1 defaults to max effort and can exhaust 32k tokens before answering.
+               "effort": "low", "permission": {"*": "deny"},
+               "temperature": body.get("temperature", 0.2)}}}
     with tempfile.TemporaryDirectory(prefix="aihot-opencode-") as workspace:
         run = subprocess.run(
             [executable, "--pure", "run", "--dir", workspace, "--agent", "news",
@@ -102,7 +105,9 @@ def answer_opencode(body, executable):
             texts.append(part.get("text", ""))
         if event.get("type") == "step_finish":
             if finish is not None or part.get("reason") != "stop":
-                raise RuntimeError("OpenCode did not finish in one normal answer step")
+                reason = part.get("reason")
+                safe_reason = reason if reason in {"stop", "length", "tool-calls", "error", "unknown", "other"} else "unknown"
+                raise RuntimeError(f"OpenCode did not finish in one normal answer step (reason={safe_reason}, multiple={finish is not None})")
             finish = part
     output = "".join(texts)
     if finish is None or not output.strip() or len(output) > 100_000:

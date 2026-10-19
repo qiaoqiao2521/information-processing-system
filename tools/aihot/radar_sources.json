@@ -1,0 +1,10 @@
+{
+  "hacker_news": {"scan_limit": 40, "max_items": 8, "comments_per_story": 3},
+  "github_releases": {
+    "repositories": [
+      "huggingface/transformers", "vllm-project/vllm", "sgl-project/sglang",
+      "ollama/ollama", "langchain-ai/langgraph", "modelcontextprotocol/python-sdk"
+    ]
+  },
+  "oss_insight": {"period": "past_24_hours", "language": "All", "max_items": 8}
+}

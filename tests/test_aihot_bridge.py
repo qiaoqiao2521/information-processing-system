@@ -46,6 +46,22 @@ class AihotBridgeTests(unittest.TestCase):
         self.assertIsNone(payloads[0]['items'][0]['publishedAt'])
         self.assertEqual(payloads[0]['items'][0]['raw']['collectedAt'], '2026-09-30T00:00:00Z')
 
+    def test_release_indexing_uses_host_helper_after_api_image_recreation(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / 'app/scripts').mkdir(parents=True)
+            (root / 'app/.env').write_text('INGEST_TOKEN=isolated-test-value\n')
+            (root / 'app/scripts/radar-sources.mjs').write_text('// installed publication helper')
+            with patch('sys.argv', ['bridge.py', '--root', str(root), '--refresh', '--sources', 'github-releases']), \
+                    patch('tools.aihot.bridge.refresh_sources', return_value=[{'source': 'github-releases', 'status': 'updated'}]), \
+                    patch('tools.aihot.bridge.catalog', return_value={'items': []}), \
+                    patch('tools.aihot.bridge.subprocess.run') as execute:
+                main()
+            command = execute.call_args.args[0]
+            self.assertIn('--input-type=module', command)
+            self.assertIn('-i', command)
+            self.assertEqual(execute.call_args.kwargs['input'], '// installed publication helper')
+
     def test_subscription_seed_is_idempotent_and_x_stays_paused(self):
         first = build_sources([])
         second = build_sources(first['sources'])

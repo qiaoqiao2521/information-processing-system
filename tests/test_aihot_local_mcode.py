@@ -38,6 +38,7 @@ class LocalMcodeTests(unittest.TestCase):
         cfg = json.loads(run.call_args.kwargs["env"]["OPENCODE_CONFIG_CONTENT"])
         self.assertIn("只返回一个", cfg["agent"]["news"]["prompt"])
         self.assertEqual(cfg["agent"]["news"]["steps"], 2)
+        self.assertEqual(cfg["agent"]["news"]["effort"], "low")
         with patch.object(module.subprocess, "run", return_value=subprocess.CompletedProcess([], 0, "\n".join(json.dumps(e) for e in events + [events[-1]]), "")):
             with self.assertRaises(RuntimeError):
                 module.answer_opencode(body, "/opencode")
@@ -68,6 +69,18 @@ class LocalMcodeTests(unittest.TestCase):
                     module.answer_opencode(body, "/opencode")
         with self.assertRaisesRegex(ValueError, "Unexpected OpenCode"):
             module.answer_opencode({**body, "model": "minimax/MiniMax-M3"}, "/opencode")
+
+    def test_opencode_length_stop_is_rejected_with_safe_diagnostics(self):
+        body = {"model": module.OPENCODE_MODEL, "messages": [{"role": "user", "content": "test"}]}
+        event = {"type": "step_finish", "part": {"reason": "length"}}
+        with patch.object(module.subprocess, "run", return_value=subprocess.CompletedProcess([], 0, json.dumps(event), "")):
+            with self.assertRaisesRegex(RuntimeError, 'reason=length'):
+                module.answer_opencode(body, "/opencode")
+        event['part']['reason'] = 'sensitive-provider-diagnostic'
+        with patch.object(module.subprocess, "run", return_value=subprocess.CompletedProcess([], 0, json.dumps(event), "")):
+            with self.assertRaisesRegex(RuntimeError, 'reason=unknown') as failure:
+                module.answer_opencode(body, "/opencode")
+        self.assertNotIn('sensitive-provider', str(failure.exception))
 
     def test_preserves_answer_and_usage_without_tools_or_credentials(self):
         result = {"status": "succeeded", "output": '{"attentionScore":88}', "runId": "r",

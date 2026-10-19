@@ -2,6 +2,20 @@
 
 上游来源和版本见 [UPSTREAM.md](../../vendor/aihot/UPSTREAM.md)。[项目计划](../../plans/aihot-core-migration/task_plan.md)记录当前验收；核心源码在 `vendor/aihot`，行业配置在 `industry`。
 
+## 2026-10-20 HN讨论与发布雷达
+
+`tools/knowledge_pipeline/acquisition/fetch_frontier_radar.py`通过公开官方API读取HN前40项中的最多8条AI/开发讨论，每条最多3条顶层评论；GitHub读取`tools/aihot/radar_sources.json`六仓库的最新稳定版，Claude/Codex原采集保持。保留原日期、发布版本URL、评论作者/时间/链接及摘录SHA-256。正文hash按摄取接口的trim表示计算，不能将上游原始HTML、归一化摘录和文章后续修订混为同一原件。
+
+现有`intelligence-hub-aihot-bridge.timer`每两小时15分执行，三类适配共用原external摄取和本地OpenCode预算，无新增timer、账号、浏览器或通知。GitHub来源显式开启原始待处理索引；`scripts/radar-sources.mjs --publish hub-github-releases`只调用既有publication，不伪造模型结果。bridge从宿主安装文件经stdin送入API容器，不依赖docker-cp文件在容器重建后仍存在。HN等待原有workflow加工后公开。
+
+同轮实际修正本机新闻agent的MiniMax3.1思考配置：该provider走Anthropic兼容协议，显式`effort=low`。官方默认max曾耗尽31999 reasoning token却无正文，严格stop校验将回执留作unknown，未自动重发。新配置下两条完整加工通过；评分Prompt、模型和300/24h预算保持。该设置位于本仓local_mcode.py临时agent配置，不修改全局登录/模型设置，也不承诺CLI完全等价于max_tokens参数。
+
+OSS Insight接口当前返回`data_quality.status=unavailable`。本源保留旧快照、不摄取旧数据冒充新结果；同轮HN/GitHub仍正常摄取，bridge最终返回非零以保留不完整状态。原因记录在journal，每两小时随原任务再检查，不额外重试或发送通知。首次未取得榜单，不能将已添加目录解释为真实趋势采集验收通过。
+
+436维护版本为`/opt/intelligence-hub/maintenance/releases/20261020-horizon-sources`，前版`20261013-source-evidence`。仅增量替换维护脚本、合并两项来源种子并安装窄范围seed/publish助手，没有重建或重启API/web/worker。回退目录`/opt/intelligence-hub/aihot/horizon-sources-20261020/`保存原种子、patch、指纹及本轮两条正文hash的trim规范化前元数据。恢复`maintenance/current`至前版并暂停两个新增source可停用采集；保留历史文章、回执及旧源码。已修正的hash无需回退为错误值。
+
+LifeGame电脑和手机同读`/api/site/pool?source=<sourceId>&channel=all&page=1`。手机静态矩阵新增`hub-github-releases`和`hub-oss-insight`，新APK交付与实际验收分别回源LifeGame计划。本次采集明细见[进度](../../plans/horizon-sources-20261020/progress.md)。
+
 ## 436 运行布局
 
 ### 2026-10-14 LifeGame 私有速读草稿

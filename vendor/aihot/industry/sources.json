@@ -2716,7 +2716,7 @@
     },
     {
       "id": "hub-hacker-news",
-      "name": "Hacker News",
+      "name": "Hacker News · 讨论",
       "kind": "external",
       "config": {},
       "tier": "T2",
@@ -2724,7 +2724,7 @@
       "interval_minutes": 120,
       "enabled": true,
       "tags": [
-        "旧站适配",
+        "社区讨论",
         "hacker-news"
       ],
       "site_fulltext": false,
@@ -2858,6 +2858,44 @@
       "site_fulltext": false,
       "syndicate_fulltext": false,
       "first_party": true
+    },
+    {
+      "id": "hub-github-releases",
+      "name": "GitHub Releases · AI开发",
+      "kind": "external",
+      "config": {
+        "_aihot": {
+          "publishPending": true
+        }
+      },
+      "tier": "T1",
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "enabled": true,
+      "tags": [
+        "官方",
+        "GitHub",
+        "版本发布"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false,
+      "first_party": true
+    },
+    {
+      "id": "hub-oss-insight",
+      "name": "OSS Insight · 趋势观测",
+      "kind": "external",
+      "config": {},
+      "tier": "T2",
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "enabled": true,
+      "tags": [
+        "趋势观测",
+        "oss-insight"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
     },
     {
       "id": "hub-rss",

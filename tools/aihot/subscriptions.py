@@ -8,11 +8,13 @@ import xml.etree.ElementTree as ET
 ROOT = Path(__file__).resolve().parents[2]
 TARGET = ROOT / 'vendor/aihot/industry/sources.json'
 EXTERNAL = {
-    'hacker-news': 'Hacker News', 'juya': '橘鸦 AI 日报',
+    'hacker-news': 'Hacker News · 讨论', 'juya': '橘鸦 AI 日报',
     'papers': 'HF 每日论文', 'trending': 'GitHub 趋势',
     'digest': 'AI Builders', 'radar': '机会雷达',
     'topics': '融合简报', 'x': 'X 关注动态（采集暂停）',
     'cli-releases': 'Claude Code / Codex 更新',
+    'github-releases': 'GitHub Releases · AI开发',
+    'oss-insight': 'OSS Insight · 趋势观测',
 }
 
 
@@ -111,6 +113,11 @@ def build_sources(demo):
             'site_fulltext': False, 'syndicate_fulltext': False})
         if key == 'cli-releases':
             sources[-1].update(tier='T1', first_party=True, tags=['官方', 'CLI更新'])
+        if key == 'github-releases':
+            sources[-1].update(tier='T1', first_party=True, tags=['官方', 'GitHub', '版本发布'],
+                              config={'_aihot': {'publishPending': True}})
+        elif key in {'hacker-news', 'oss-insight'}:
+            sources[-1]['tags'] = ['社区讨论' if key == 'hacker-news' else '趋势观测', key]
     # Read-only history endpoints for aggregate RSS snapshots, never collected twice.
     for key, name in [('rss', '乔木 RSS（迁移存量）'), ('ak-rss', 'AK RSS（迁移存量）')]:
         sources.append({'id': 'hub-' + key, 'name': name, 'kind': 'external', 'config': {},
