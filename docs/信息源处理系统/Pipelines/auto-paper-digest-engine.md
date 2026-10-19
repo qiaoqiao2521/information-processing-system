@@ -12,7 +12,7 @@ last_verified: 2026-04-19
 
 | 字段 | 值 |
 | --- | --- |
-| repo | `muqiao215/auto-paper-digest` |
+| repo | `qiaoqiao2521/auto-paper-digest` |
 | visibility | private |
 | type | independent repo / pipeline engine |
 | role | APD 风格的论文到 NotebookLM / artifact / publishing 流水线参考实现 |
