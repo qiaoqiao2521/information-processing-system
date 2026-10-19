@@ -1,5 +1,5 @@
 # Current
-2026-10-19，两个开源应用在436部署完成，独立域名和信息站入口实际可用。根正在整合本地历史成果与远端新增CI，完成Git交付。
+2026-10-19，两个开源应用在436部署完成，独立域名和信息站入口实际可用。实施提交85091a0，正常合并8515c7a保留本地历史成果和远端新增CI，并已推送qiaoqiao2521/information-processing-system的main。
 
 # Done
 - 经既有Tailscale SSH alias racknerd-436b0c0操作436，未改变Tailscale配置。与应用原「信息源」对话协作：根负责源码与服务，对方只通过官方cf和既有Tunnel追加DNS/ingress。
@@ -11,9 +11,10 @@
 - 子Agent独立公网浏览器：NewsNow实际选择知乎20条、GitHub12条，B站热门视频20条；论桥目录116项、完整MIT与commit元数据一致、论文详情和390px无横向溢出；两个应用JS pageerror均0。原官方名称、作者和许可保留。
 - 本地全仓typecheck、网页build、现有29项网页测试通过；436真实Docker构建同样执行上述检查。Python现有102项测试通过。当前源码smoke在实际web容器检查页面、API、RSS、MCP全部通过。未执行需要空库的完整后端数据库测试，本次未改API/DB业务。
 - 原始浏览器报告留在本机repo-scan/ArXivHub/artifacts/{news-public-smoke,papers-public-smoke}.json；运行日志、账户回执、缓存、截图和.env不入Git。
+- Git显式暂存本次13个文件，普通merge保留远端两项CI/账户链接更新，未force push。包括历史成果在内的795个新增/修改Git路径经限定凭据格式检查无命中；这只证明所列格式未命中，不作为全面秘密扫描结论。历史118处空白问题保留，本次改动diff --check和相关文档相对链接检查通过。
 
 # Remaining
-完成Git正常合并、推送与远端SHA读回；服务与用户入口无待部署项。
+无待部署功能。上游来源偶发失败、TLDR及userscript能力保持下述已知边界，不自动扩展为修复第三方服务的新任务。
 
 # Issues
 NewsNow部分来源有上游失败（百度500）；缓存updatedTime不保证回源时间。论桥TLDR暂不可读、官方userscript不适用于自建域。上述为已观察的上游能力边界，未冒称全部通过。信息站旧镜像内置smoke误判首页302的差异已由当前源码检查和Location独立核对排除，详见findings。
