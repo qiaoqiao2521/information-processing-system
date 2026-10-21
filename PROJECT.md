@@ -16,7 +16,7 @@
 - 用户批准现有MiniMax常态自动加工，连续24小时最多300次请求，8次/分钟、60次/小时；优先新材料，不批量重算迁移存量。Jina仅用于已有X原帖正文，连续24小时最多50次尝试，1次/分钟、10次/小时；普通网页Jina回退关闭，其他付费采集保持0。2026-10-12用户授权Firecrawl用于公开前瞻来源；初始每12小时检查、每源每轮最多2篇，连续24小时最多60次抓取尝试，Credit消耗独立记录，不扩大模型预算。
 - X/Google搜索继续暂停，验证触发风险规则由Ops管理，不能绕过。
 - 六个明确配置的官方来源及本批阮一峰个人订阅先公开原始标题/摘要/出处并标记待AI处理，模型完成后才发布评分/精选。CLI发布与BuilderPulse未启用原始待处理发布。订阅历史资料暂停自动加工，不抢占新内容预算。
-- 用户更正目标为本地OpenCode内的MiniMax Token Plan：`minimax-cn-coding-plan/MiniMax-M3.1-Flash-Preview`。复用本机已有CLI认证，SSH传递有界模型请求与回答，账号不迁移；推荐`tools/aihot/local_opencode.py`；2026-10-03用户确认AI独立复核通过后自动发布。本地独立会话，opencode独立连续24小时300次保守上限、单次默认40次；未验证无限额度。此前误用自家mcode的真实分析保留，不伪装为OpenCode结果。
+- 用户更正目标为本地OpenCode内的MiniMax Token Plan：`minimax-cn-coding-plan/MiniMax-M3.1-Flash`。复用本机已有CLI认证，SSH传递有界模型请求与回答，账号不迁移；推荐`tools/aihot/local_opencode.py`；2026-10-03用户确认AI独立复核通过后自动发布。本地独立会话，opencode独立连续24小时300次保守上限、单次默认40次；未验证无限额度。此前误用自家mcode的真实分析保留，不伪装为OpenCode结果。
 - 436原API模型消费者暂停，采集继续；本地处理会话单独启用模型，避免两端重复加工。
 - 436端口只loopback，管理员鉴权与摄取token仅后端；本地会话/.env/运行日志不入库。
 - 评分Prompt/门槛先保留上游，尚无个人标注集，不声称已校准。

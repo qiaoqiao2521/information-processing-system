@@ -4,7 +4,7 @@ services:
   setup:
     image: muqiao-intel-aihot:local
   api:
-    image: muqiao-intel-aihot:local
+    image: muqiao-intel-aihot:preview-migration-20261022
     environment:
       UPSTREAM_REVIEW_CACHE: /upstream-reader/snapshot.json
     volumes:

@@ -104,7 +104,7 @@ RSS默认按发表时间降序再截断，显式`sortByPublishedAt=false`可保�
 
 ## 本地 OpenCode MiniMax加工，结果回传436
 
-**当前入口更正为OpenCode**：`minimax-cn-coding-plan/MiniMax-M3.1-Flash-Preview`，本地已有MiniMax Token Plan认证。此前MiniMax自家CLI的登录与余额不是此Provider的证据。436的agent436 OpenCode没有凭据，保留本地调用与SSH回传，不复制密钥。
+**当前入口更正为OpenCode**：`minimax-cn-coding-plan/MiniMax-M3.1-Flash`，本地已有MiniMax Token Plan认证。此前带`-Preview`的模型标识在OpenCode1.18.34返回server error，当前模型已通过真实文本探针；MiniMax自家CLI的登录与余额不是此Provider的证据。436的agent436 OpenCode没有凭据，保留本地调用与SSH回传，不复制密钥。
 
 ```bash
 cd /home/muqiao/projects/information-processing-system
@@ -169,7 +169,7 @@ AIHOT公开使用规则1.1：https://aihot.news/terms。个人阅读与合理私
 python3 tools/aihot/local_opencode.py --review <上游ID> --max-calls 1
 ```
 
-只支持1–10个显式ID，固定本地OpenCode的minimax-cn-coding-plan/MiniMax-M3.1-Flash-Preview；新闻加工和审批加工共用原opencode预算8/分钟、60/小时、300/24小时，既有预算不重置。真实回答先保存待审而非自动发布，人工编辑保留最近模型回执。
+只支持1–10个显式ID，固定本地OpenCode的minimax-cn-coding-plan/MiniMax-M3.1-Flash；新闻加工和审批加工共用原opencode预算8/分钟、60/小时、300/24小时，既有预算不重置。真实回答先保存待审而非自动发布，人工编辑保留最近模型回执。
 
 API从`UPSTREAM_REVIEW_CACHE=/upstream-reader/snapshot.json`读取有界私人投影：宿主`/opt/intelligence-hub/aihot/private-reader-api`以UID1000拥有，目录700、JSON600，只读挂载给API，未挂载原始私人缓存。reader通过`--admin-export-dir`更新投影，现有30分钟timer的ExecStartPost运行reconcile-upstream-reviews.ts，无模型/通知。近期材料最多200条，明确撤选记录保留最近1000个，覆盖单轮最多500变更；不把材料离开近期窗口当作撤选。维护失败需检查reader日志和投影新鲜度，超过1小时禁止新的审批，不拿旧来源审批；没有承诺完整历史覆盖。
 

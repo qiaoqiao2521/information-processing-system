@@ -2,6 +2,13 @@
 
 2026-10-12常态加工已由[信息加工workflow](../news-workflow-20261012/progress.md)接管；以下为旧版本验收历史。
 
+## 2026-10-22 OpenCode模型标识迁移
+
+- 本机OpenCode1.18.34 `models`列出`minimax-cn-coding-plan/MiniMax-M3.1-Flash`；旧`MiniMax-M3.1-Flash-Preview`真实探针返回server error，新标识最小文本探针返回`OK`。
+- 本机桥接与服务端`local-opencode`回执定义同步更新，436 API镜像改为`muqiao-intel-aihot:preview-migration-20261022`并已实际运行；容器导出模型值为新标识。旧覆盖、源码、API镜像ID和构建日志在`/opt/intelligence-hub/aihot/rollback/preview-migration-20261022/`。
+- 新镜像连续两轮真实workflow均完成：第一轮2篇原生内容完成并公开、1篇上游复核通过；第二轮2篇原生内容完成、1篇上游复核通过。均为14次CLI调用、退出码0，全部新回执completed且模型为新标识。
+- 公网`/api/health`、`/api/site/pool`和根路径/`/all`均200；本轮3个公开详情均200，未精选内容按规则进入全部动态。8次/分钟预算触发时系统等待60秒后续跑，未绕过预算。
+
 ## 当前优先状态：OpenCode入口更正
 
 用户指出目标是OpenCode里的MiniMax；前次工具理解错误已更正。当前版本`aihot-cf8f8d0-c21af6422385`已部署，运行镜像415文件hash与本地全部相符；源码回源当前分支Git记录。

@@ -18,7 +18,7 @@ from datetime import datetime, timezone
 
 PREFIX = "AIHOT_MCODE "
 MODEL = "minimax/MiniMax-M3.1-Flash-Preview"
-OPENCODE_MODEL = "minimax-cn-coding-plan/MiniMax-M3.1-Flash-Preview"
+OPENCODE_MODEL = "minimax-cn-coding-plan/MiniMax-M3.1-Flash"
 
 
 def answer_request(body, executable):
