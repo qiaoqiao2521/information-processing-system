@@ -9,6 +9,7 @@
 - Official coverage: explicit pending indexes for six first-party sources through publication; newest-first RSS limits; optional pause of automatic historical processing, including queued jobs; idempotent official-source reconciliation. Pending indexes have no model score or selection.
 - Centralized source completion: industry seed adds Ruanyifeng Atom, native BuilderPulse report links with filename dates, and the CLI release bridge. Legacy radar/topics seeds are paused; no upstream engine or model budget change.
 - 2026-10-20 public radar: HN discussion context via official API, GitHub stable-release watchlist, and OSS Insight quality-aware adapter reuse the existing external bridge and local processing workflow. Two new external source seeds and a narrow reconciliation/publication script; source dates, evidence hashes and upstream unavailability remain explicit. No core scoring, schema, model budget, or frontend change.
+- 2026-11-07 Google News RSS: six personal search subscriptions reuse native RSS collection, processing, publication and worker scheduling. Exact queries/locales and feed dates/links are retained; sources are T2, not first-party, with fulltext disabled. Pending raw indexes remain limited to existing eligible sources; no new limits, core, budget or frontend changes.
 
 ## 本地 mcode 按需加工
 

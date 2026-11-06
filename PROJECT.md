@@ -16,8 +16,8 @@
 - 用户批准现有MiniMax常态自动加工，连续24小时最多300次请求，8次/分钟、60次/小时；优先新材料，不批量重算迁移存量。Jina仅用于已有X原帖正文，连续24小时最多50次尝试，1次/分钟、10次/小时；普通网页Jina回退关闭，其他付费采集保持0。2026-10-12用户授权Firecrawl用于公开前瞻来源；初始每12小时检查、每源每轮最多2篇，连续24小时最多60次抓取尝试，Credit消耗独立记录，不扩大模型预算。
 - X/Google搜索继续暂停，验证触发风险规则由Ops管理，不能绕过。
 - 六个明确配置的官方来源及本批阮一峰个人订阅先公开原始标题/摘要/出处并标记待AI处理，模型完成后才发布评分/精选。CLI发布与BuilderPulse未启用原始待处理发布。订阅历史资料暂停自动加工，不抢占新内容预算。
-- 用户更正目标为本地OpenCode内的MiniMax Token Plan：`minimax-cn-coding-plan/MiniMax-M3.1-Flash`。复用本机已有CLI认证，SSH传递有界模型请求与回答，账号不迁移；推荐`tools/aihot/local_opencode.py`；2026-10-03用户确认AI独立复核通过后自动发布。本地独立会话，opencode独立连续24小时300次保守上限、单次默认40次；未验证无限额度。此前误用自家mcode的真实分析保留，不伪装为OpenCode结果。
-- 436原API模型消费者暂停，采集继续；本地处理会话单独启用模型，避免两端重复加工。
+- 2026-10-22以前的桌面配置使用OpenCode内MiniMax Token Plan：`minimax-cn-coding-plan/MiniMax-M3.1-Flash`，通过SSH传递有界请求与回答；兼容入口`tools/aihot/local_opencode.py`保留。2026-10-03用户确认AI独立复核通过后自动发布。opencode独立连续24小时300次保守上限、单次默认40次；未验证无限额度。此前误用自家mcode的真实分析保留，不伪装为OpenCode结果。当前执行端以以下2026-11-07更正为准。
+- 2026-11-07用户更正：常态加工在436执行，复用`agent436`既有OpenCode MiniMax Token Plan认证；桌面不再承担定时加工。436常驻API/worker模型消费者保持暂停，服务器workflow按次启用同一stdio处理链，避免双消费者与旧API模型误用。模型仍固定`minimax-cn-coding-plan/MiniMax-M3.1-Flash`，沿用已有预算。
 - 436端口只loopback，管理员鉴权与摄取token仅后端；本地会话/.env/运行日志不入库。
 - 评分Prompt/门槛先保留上游，尚无个人标注集，不声称已校准。
 - 使用和隐私说明由用户后续补充，公开页标明待补充。
@@ -27,6 +27,8 @@
 - AIHOT 已部署8路RSS、最新日报、热点10个事件详情及近期精选评分/变更游标的私人缓存与30分钟脚本timer，复用上游摘要、综述和评分，不进模型队列或公网站点数据库。新核实上游公开使用规则：公网镜像/批量再分发须书面授权；当前无上游书面授权记录；用户在2026-10-01明确选择引用保留、AI二次加工和审批后发布网站，2026-10-03确认由AI独立复核通过后自动发布，存疑稿留给人工。二次加工不作为授权依据。436定时采集只生成私人缓存，本机timer执行有界加工/复核并发布通过稿；审批入口见[加工审批](plans/upstream-editorial-review/task_plan.md)。
 
 ## Current State / Priority
+
+2026-11-07新增六路Google News RSS个人订阅：瑞芯微/Linux、具身与仿真、无人机/导航、视觉生成、编程Agent、中文具身/开源动态。复用原生RSS worker，每两小时采集，不新增采集timer或付费抓取。首轮172条真实入库，保留Google跳转链接与原始发表日期，全文公开关闭。用户要求workflow迁到436，执行入口与真实加工验收见[Google radar计划](plans/google-radar-20261107/progress.md)。
 
 2026-10-20用户接受Horizon的三类来源：HN讨论、GitHub Releases、OSS Insight趋势。复用既有两小时bridge与本地OpenCode workflow；HN讨论保留评论出处，新增六仓库稳定发布订阅。OSS Insight实测明确返回数据不可用，适配器保留旧快照并记录unavailable，不制造空榜单。LifeGame沿用公开pool并补手机来源目录。运行验收和回退见[来源接入](plans/horizon-sources-20261020/progress.md)。
 
@@ -44,9 +46,9 @@
 
 ## Non-goals
 
-本次不重写上游评分/聚簇引擎，不开全量付费采集，不自动恢复X搜索，不将编码Agent放进定时任务，不复制账号登录态。本地OpenCode无工具地回答信息加工Prompt；本机用户级workflow每30分钟加工近期自订阅与上游材料，上游稿独立复核，通过后自动上站，存疑稿留待审。
+本次不重写上游评分/聚簇引擎，不开全量付费采集，不自动恢复X搜索，不将编码Agent放进采集任务，不复制账号登录态。436的OpenCode无工具地回答信息加工Prompt；服务器workflow每30分钟加工近期自订阅与上游材料，上游稿独立复核，通过后自动上站，存疑稿留待审。
 
-不在各服务器恢复RSS、GitHub趋势、AI Builders或旧日报采集cron，不恢复Notebook定时消费。公众号写作与网站采集分别验收；下游资料保留，不扩大模型预算或新增采集时钟。
+不在其他服务器恢复RSS、GitHub趋势、AI Builders或旧日报采集cron，不恢复Notebook定时消费。436统一承接采集与信息加工workflow；公众号写作与网站采集分别验收。下游资料保留，不扩大模型预算或新增采集时钟。
 
 ## Knowledge Map
 

@@ -30,6 +30,23 @@ DISCOVERED_RSS = [
 ]
 
 
+# Personal Google News searches from the selected radar subscriptions, 2026-11-07.
+GOOGLE_NEWS_RSS = [
+    ('rss-google-news-rockchip-linux', 'Google 新闻 · 瑞芯微、单板机与 Linux',
+     'https://news.google.com/rss/search?q=(Rockchip+OR+RK3588+OR+RK3568+OR+Armbian+OR+OpenWrt)+when:7d&hl=en-US&gl=US&ceid=US:en', '硬件'),
+    ('rss-google-news-embodied-robotics', 'Google 新闻 · 具身智能、机械臂与仿真',
+     'https://news.google.com/rss/search?q=(MuJoCo+OR+"Isaac+Lab"+OR+LeRobot+OR+"humanoid+robot"+OR+"visuomotor")+when:7d&hl=en-US&gl=US&ceid=US:en', '具身智能'),
+    ('rss-google-news-drone-navigation', 'Google 新闻 · 无人机、激光雷达与自主导航',
+     'https://news.google.com/rss/search?q=(quadrotor+OR+"autonomous+drone"+OR+LiDAR+OR+ROS2)+when:7d&hl=en-US&gl=US&ceid=US:en', '自主导航'),
+    ('rss-google-news-visual-generation', 'Google 新闻 · Blender、三维重建与视觉生成',
+     'https://news.google.com/rss/search?q=(Blender+OR+ComfyUI+OR+"Gaussian+Splatting"+OR+"motion+capture")+when:7d&hl=en-US&gl=US&ceid=US:en', '视觉生成'),
+    ('rss-google-news-coding-agents', 'Google 新闻 · 编程代理、MCP 与 Agent 工程',
+     'https://news.google.com/rss/search?q=("coding+agent"+OR+"Claude+Code"+OR+"Model+Context+Protocol"+OR+OpenAI+Codex)+when:7d&hl=en-US&gl=US&ceid=US:en', 'Agent工程'),
+    ('rss-google-news-china-embodied-open-models', 'Google 新闻 · 国内具身智能、瑞芯微与开源模型',
+     'https://news.google.com/rss/search?q=(具身智能+OR+机械臂+OR+瑞芯微+OR+RK3588+OR+宇树+OR+开源模型)+when:7d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans', '中文动态'),
+]
+
+
 def build_sources(demo):
     sources = [dict(s) for s in demo if not s['id'].startswith(('ak-', 'qiaomu-', 'hub-', 'frontier-'))
                and s['id'] not in {'rss-ruanyifeng-weekly', 'web-builderpulse-reports'}]
@@ -63,6 +80,13 @@ def build_sources(demo):
                            '_aihot': {'initialBackfillLimit': 3, 'publishPending': True}},
                 'tier': tier, 'first_party': True, 'participation_mode': 'editorial',
                 'interval_minutes': 60, 'tags': tags,
+                'site_fulltext': False, 'syndicate_fulltext': False})
+    for source_id, name, url, topic in GOOGLE_NEWS_RSS:
+        if not any(s['id'] == source_id or s.get('config', {}).get('feedUrl') == url for s in sources):
+            sources.append({'id': source_id, 'name': name, 'kind': 'rss',
+                'config': {'feedUrl': url, 'sortByPublishedAt': True},
+                'tier': 'T2', 'first_party': False, 'participation_mode': 'editorial',
+                'interval_minutes': 120, 'tags': ['个人订阅', 'Google News', topic],
                 'site_fulltext': False, 'syndicate_fulltext': False})
     seen = {s.get('config', {}).get('feedUrl') for s in sources}
 

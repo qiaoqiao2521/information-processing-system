@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Run the bounded information-processing workflow with the existing local CLI bridge."""
+"""Run the workflow through the existing OpenCode bridge.
+
+Transport flags, including --server-local and --opencode-user, reach the shared CLI parser unchanged.
+"""
 import sys
 from local_mcode import main
 

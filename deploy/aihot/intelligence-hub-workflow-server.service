@@ -1,0 +1,15 @@
+[Unit]
+Description=Server information processing workflow: subscriptions, event grouping and upstream review
+After=network-online.target docker.service
+
+[Service]
+Type=oneshot
+User=root
+WorkingDirectory=/opt/intelligence-hub-workflow
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ExecStart=/usr/bin/python3 tools/aihot/workflow.py --server-local --opencode /var/lib/agent436/.local/bin/opencode --opencode-user agent436
+TimeoutStartSec=25min
+KillMode=control-group
+UMask=0077
+StandardOutput=journal
+StandardError=journal

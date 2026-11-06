@@ -648,6 +648,126 @@
       "syndicate_fulltext": false
     },
     {
+      "id": "rss-google-news-rockchip-linux",
+      "name": "Google 新闻 · 瑞芯微、单板机与 Linux",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://news.google.com/rss/search?q=(Rockchip+OR+RK3588+OR+RK3568+OR+Armbian+OR+OpenWrt)+when:7d&hl=en-US&gl=US&ceid=US:en",
+        "sortByPublishedAt": true
+      },
+      "tier": "T2",
+      "first_party": false,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "个人订阅",
+        "Google News",
+        "硬件"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "rss-google-news-embodied-robotics",
+      "name": "Google 新闻 · 具身智能、机械臂与仿真",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://news.google.com/rss/search?q=(MuJoCo+OR+\"Isaac+Lab\"+OR+LeRobot+OR+\"humanoid+robot\"+OR+\"visuomotor\")+when:7d&hl=en-US&gl=US&ceid=US:en",
+        "sortByPublishedAt": true
+      },
+      "tier": "T2",
+      "first_party": false,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "个人订阅",
+        "Google News",
+        "具身智能"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "rss-google-news-drone-navigation",
+      "name": "Google 新闻 · 无人机、激光雷达与自主导航",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://news.google.com/rss/search?q=(quadrotor+OR+\"autonomous+drone\"+OR+LiDAR+OR+ROS2)+when:7d&hl=en-US&gl=US&ceid=US:en",
+        "sortByPublishedAt": true
+      },
+      "tier": "T2",
+      "first_party": false,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "个人订阅",
+        "Google News",
+        "自主导航"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "rss-google-news-visual-generation",
+      "name": "Google 新闻 · Blender、三维重建与视觉生成",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://news.google.com/rss/search?q=(Blender+OR+ComfyUI+OR+\"Gaussian+Splatting\"+OR+\"motion+capture\")+when:7d&hl=en-US&gl=US&ceid=US:en",
+        "sortByPublishedAt": true
+      },
+      "tier": "T2",
+      "first_party": false,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "个人订阅",
+        "Google News",
+        "视觉生成"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "rss-google-news-coding-agents",
+      "name": "Google 新闻 · 编程代理、MCP 与 Agent 工程",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://news.google.com/rss/search?q=(\"coding+agent\"+OR+\"Claude+Code\"+OR+\"Model+Context+Protocol\"+OR+OpenAI+Codex)+when:7d&hl=en-US&gl=US&ceid=US:en",
+        "sortByPublishedAt": true
+      },
+      "tier": "T2",
+      "first_party": false,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "个人订阅",
+        "Google News",
+        "Agent工程"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
+      "id": "rss-google-news-china-embodied-open-models",
+      "name": "Google 新闻 · 国内具身智能、瑞芯微与开源模型",
+      "kind": "rss",
+      "config": {
+        "feedUrl": "https://news.google.com/rss/search?q=(具身智能+OR+机械臂+OR+瑞芯微+OR+RK3588+OR+宇树+OR+开源模型)+when:7d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
+        "sortByPublishedAt": true
+      },
+      "tier": "T2",
+      "first_party": false,
+      "participation_mode": "editorial",
+      "interval_minutes": 120,
+      "tags": [
+        "个人订阅",
+        "Google News",
+        "中文动态"
+      ],
+      "site_fulltext": false,
+      "syndicate_fulltext": false
+    },
+    {
       "id": "ak-99e2c21c8334",
       "name": "jeffgeerling.com",
       "kind": "rss",

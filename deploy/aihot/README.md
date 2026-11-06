@@ -2,6 +2,28 @@
 
 上游来源和版本见 [UPSTREAM.md](../../vendor/aihot/UPSTREAM.md)。[项目计划](../../plans/aihot-core-migration/task_plan.md)记录当前验收；核心源码在 `vendor/aihot`，行业配置在 `industry`。
 
+## 2026-11-07 Google News RSS 与436加工
+
+六路原生RSS的稳定ID为`rss-google-news-rockchip-linux`、`rss-google-news-embodied-robotics`、`rss-google-news-drone-navigation`、`rss-google-news-visual-generation`、`rss-google-news-coding-agents`、`rss-google-news-china-embodied-open-models`。来源生成器保留它们，现场通过既有`createSource`检查URL重复并审计；只合并新增六项，138个已有种子保持原值。原生worker每120分钟读取，首轮六路均成功，共172条。无需Firecrawl、浏览器登录或新增采集timer。
+
+这些是个人聚合订阅，`first_party=false`，不冒充官方来源。保留RSS原日期与Google News跳转链接，全文公开关闭。Google跳转链接与出版者直链尚未统一身份；正文提取失败保留`unconfirmed`，不把搜索标题当成已读全文。首次导入按现有规则标记backfill，不批量伪造评分或新日期；通过现有加工与publication后才进入公开列表。
+
+用户明确把加工执行端改为436。桌面原`intelligence-hub-workflow.timer`已停止；服务器复用同名system workflow与已有30分钟频率。新服务代码安装到root拥有的`/opt/intelligence-hub-workflow`，使用`--server-local`直接调用原API容器，OpenCode子进程以`agent436`执行，复用它现有的MiniMax Token Plan认证。root PATH只含系统目录，不授予`agent436`Docker权限、不迁移桌面凭据；API/worker常驻模型开关仍为false。以下“本地加工”段落保留为旧版兼容说明，当前迁移与真实产出状态以[本次进度](../../plans/google-radar-20261107/progress.md)为准。
+
+服务文件为本目录`intelligence-hub-workflow-server.{service,timer}`，安装时命名为`/etc/systemd/system/intelligence-hub-workflow.{service,timer}`。查看服务器`systemctl status intelligence-hub-workflow.timer`和`journalctl -u intelligence-hub-workflow.service`；结果保存在`/root/.local/state/intelligence-hub-workflow/last-run.json`。显式文章验收使用服务器入口：
+
+```bash
+python3 /opt/intelligence-hub-workflow/tools/aihot/local_opencode.py \
+  --server-local --opencode /var/lib/agent436/.local/bin/opencode \
+  --opencode-user agent436 <article-id>
+```
+
+程序与unit安装备份使用root保护的`/root/google-radar-20261107/`；`/opt/intelligence-hub`本身由任务用户拥有，不作为root执行代码的受保护父目录。OpenCode临时工作目录只向该次任务用户转交属主，认证留在原位，命令参数不含密钥。
+
+实际验收：新RSS样例`viuwumdzvf3jo1kjkwk72iedo`通过9次MiniMax3.1调用完成分析、归组并公开；源站API与公网Chrome读回一致。服务器首轮system workflow随后以14次调用完成2篇普通订阅，回执`completed`、exit0；上游本轮没有新候选，未伪造空产出。原138项来源种子保持原值，网页未重建。
+
+RSS种子回退副本位于`/opt/intelligence-hub/aihot/google-radar-20261107/`。停用新增RSS可在现有来源管理中暂停这六项；历史文章保留。加工服务回退时先停止服务器workflow，再恢复本次备份的程序和unit；不要同时启用桌面和服务器两个模型workflow。
+
 ## 2026-10-20 HN讨论与发布雷达
 
 `tools/knowledge_pipeline/acquisition/fetch_frontier_radar.py`通过公开官方API读取HN前40项中的最多8条AI/开发讨论，每条最多3条顶层评论；GitHub读取`tools/aihot/radar_sources.json`六仓库的最新稳定版，Claude/Codex原采集保持。保留原日期、发布版本URL、评论作者/时间/链接及摘录SHA-256。正文hash按摄取接口的trim表示计算，不能将上游原始HTML、归一化摘录和文章后续修订混为同一原件。

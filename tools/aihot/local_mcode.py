@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""News processing: remote AIHOT logic, local model CLI answers.
+"""News processing: AIHOT backend over SSH or local Docker, host model CLI answers.
 
 No DB copy, account export, HTTP listener or API fallback.
 """
@@ -8,6 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 import json
 import os
 from pathlib import Path
+import pwd
 import re
 import shlex
 import shutil
@@ -57,7 +58,7 @@ def answer_request(body, executable):
                       "total_tokens": u.get("totalTokens"), "cache_read_tokens": u.get("cacheReadTokens")}}
 
 
-def answer_opencode(body, executable):
+def answer_opencode(body, executable, user=None):
     if body.get("model") != OPENCODE_MODEL:
         raise ValueError("Unexpected OpenCode provider/model; refusing fallback")
     messages = body.get("messages")
@@ -84,9 +85,14 @@ def answer_opencode(body, executable):
                "effort": "low", "permission": {"*": "deny"},
                "temperature": body.get("temperature", 0.2)}}}
     with tempfile.TemporaryDirectory(prefix="aihot-opencode-") as workspace:
+        command = [executable, "--pure", "run", "--dir", workspace, "--agent", "news",
+                   "--model", OPENCODE_MODEL, "--title", "AIHOT structured processing", "--format", "json"]
+        if user:
+            account = pwd.getpwnam(user)
+            os.chown(workspace, account.pw_uid, account.pw_gid)
+            command = ["runuser", "-u", user, "--", *command]
         run = subprocess.run(
-            [executable, "--pure", "run", "--dir", workspace, "--agent", "news",
-             "--model", OPENCODE_MODEL, "--title", "AIHOT structured processing", "--format", "json"],
+            command,
             input=prompt, text=True, capture_output=True, timeout=200,
             env={**os.environ, "OPENCODE_CONFIG_CONTENT": json.dumps(cfg)},
         )
@@ -128,11 +134,15 @@ def main(engine="mcode"):
     parser.add_argument("--upstream-next", type=int, metavar="N", help="Process and independently review 1–10 new upstream items")
     parser.add_argument("--max-calls", type=int, default=40, help="Per-run stop, independent of DB 300/24h cap")
     parser.add_argument("--host", default="racknerd-436b0c0")
+    parser.add_argument("--server-local", action="store_true", help="Run the backend through local Docker instead of SSH")
     parser.add_argument("--mcode", default=str(Path.home() / ".minimax-code/bin/mcode"))
     parser.add_argument("--opencode", default="opencode")
+    parser.add_argument("--opencode-user", help="Run server-local OpenCode as this host user")
     parser.add_argument("--engine", choices=("mcode", "opencode"), default=engine)
     parser.add_argument("--review", action="store_true", help="Process explicit upstream review IDs into drafts, without publishing")
     args = parser.parse_args()
+    if args.opencode_user and (not args.server_local or args.engine != "opencode"):
+        parser.error("--opencode-user requires --server-local and OpenCode")
     if args.workflow_next is not None and (args.engine != "opencode" or args.review or args.next is not None or args.ids or args.upstream_next is not None):
         parser.error("Use --workflow-next with OpenCode, without other selections")
     if args.upstream_next is not None and (args.engine != "opencode" or args.review or args.next is not None or args.ids):
@@ -161,9 +171,15 @@ def main(engine="mcode"):
     if not executable:
         parser.error("Local model CLI executable not found")
     script = "process-workflow.ts" if args.workflow_next is not None else "process-upstream-batch.ts" if args.upstream_next is not None else "process-upstream-reviews.ts" if args.review else "process-local-mcode.ts"
-    remote = "cd /opt/intelligence-hub/aihot/app && docker compose -p muqiao-intel -f docker-compose.yml -f compose.override.yaml exec -T -e MCODE_STDIO_ENABLED=true -e MODEL_CALLS_ENABLED=true -e LOCAL_CLI_PROVIDER=" + args.engine + " api node scripts/" + script + " " + shlex.join(selection)
-    child = subprocess.Popen(["ssh", "-T", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10",
-                              "-o", "ServerAliveInterval=15", "-o", "ServerAliveCountMax=3", args.host, remote],
+    if args.server_local:
+        command = ["docker", "exec", "-i", "-e", "MCODE_STDIO_ENABLED=true",
+                   "-e", "MODEL_CALLS_ENABLED=true", "-e", "LOCAL_CLI_PROVIDER=" + args.engine,
+                   "muqiao-intel-api-1", "node", "scripts/" + script, *selection]
+    else:
+        remote = "cd /opt/intelligence-hub/aihot/app && docker compose -p muqiao-intel -f docker-compose.yml -f compose.override.yaml exec -T -e MCODE_STDIO_ENABLED=true -e MODEL_CALLS_ENABLED=true -e LOCAL_CLI_PROVIDER=" + args.engine + " api node scripts/" + script + " " + shlex.join(selection)
+        command = ["ssh", "-T", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10",
+                   "-o", "ServerAliveInterval=15", "-o", "ServerAliveCountMax=3", args.host, remote]
+    child = subprocess.Popen(command,
                              stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, bufsize=1)
     lock = threading.Lock()
     calls = 0
@@ -187,8 +203,8 @@ def main(engine="mcode"):
 
     def reply(request):
         try:
-            answer = answer_opencode if args.engine == "opencode" else answer_request
-            value = {"id": request["id"], "response": answer(request["body"], executable)}
+            response = answer_opencode(request["body"], executable, user=args.opencode_user) if args.engine == "opencode" else answer_request(request["body"], executable)
+            value = {"id": request["id"], "response": response}
         except Exception as error:
             # Known safe errors only; no raw subprocess stderr/provider payload.
             message = str(error) if isinstance(error, (ValueError, RuntimeError)) else type(error).__name__
