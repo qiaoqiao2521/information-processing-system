@@ -18,9 +18,9 @@ Complete the supplied 22 Scholar and 18 Google Alerts queries for the informatio
 1. Inventory current reminders and RSS implementation — complete.
 2. Add missing Scholar and Google Alerts queries — complete.
 3. Integrate and test the six RSS feeds — complete.
-4. Deploy to 436, verify ingestion/public output, commit and push — in_progress.
+4. Deploy to 436, verify ingestion/public output, commit and push — complete.
 5. Run the processing workflow on 436 using its existing model authentication — complete.
 
 ## Next Step
 
-Complete Git delivery and clean the temporary transfer package.
+Complete. Google subscriptions, native RSS collection, server processing and public output have been verified. Code is pushed; transfer copies are removed and rollback material is retained.

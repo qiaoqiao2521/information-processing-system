@@ -2,7 +2,7 @@
 
 ## Current
 
-Google subscriptions, RSS ingestion and 436 processing acceptance are complete. Three real outputs are public. Git delivery and cleanup remain.
+Google subscriptions, RSS ingestion, 436 processing acceptance and Git delivery are complete. Three real outputs are public. Temporary transfer copies have been removed.
 
 ## Done
 
@@ -25,10 +25,13 @@ Google subscriptions, RSS ingestion and 436 processing acceptance are complete. 
 - Server-only explicit RSS sample `viuwumdzvf3jo1kjkwk72iedo` completed analysis 767 and event grouping, with nine actual OpenCode calls. It is public in the coding-agent RSS source filter, with original source time retained; both origin API and daily Chrome show the new article. Its Google RSS text remains a short summary and body is `unconfirmed`, not verified fulltext.
 - Enabled the 436 system `intelligence-hub-workflow.timer`. Its first service run completed with exit 0, status `completed`, 14 real model calls, two native articles completed/public, zero upstream candidates and zero held. Readback confirms model `minimax-cn-coding-plan/MiniMax-M3.1-Flash` and actual OpenCode process owner `agent436`; desktop timer remains stopped. Existing 8/min, 60/hour and 300/24h budget is unchanged.
 - Combined acceptance is one explicit new RSS article plus two ordinary workflow articles. First-import RSS history is not bulk rescored; fresh arrivals enter the existing native selection workflow. The explicit failed desktop receipt and older unknown receipts were retained, not replayed.
+- Code commit `ae84084` was pushed to `origin/codex/google-radar-server-workflow-20261107` in `qiaoqiao2521/information-processing-system`. The installed runner version records this commit. No merge, force push or visibility change was performed.
+- Final runtime readback confirms the 436 timer is enabled/active, the last service result is `success`, and the desktop timer is disabled/inactive. Resident API/worker model calls remain disabled; the server workflow enables processing only for its controlled CLI session.
+- Removed both temporary `server-workflow.tgz` transfer copies, locally and under `/root/google-radar-20261107/`. Both paths are absent on readback. Their original sizes were not retained, so reclaimed bytes are not quantified. Rollback seed copies, the server workflow backup location, installed scripts and local browser acceptance screenshots are retained; no source material was removed.
 
 ## Remaining
 
-- Review changes, commit/push, clean temporary transfer artifacts.
+- None for this task. RSS summaries with unconfirmed fulltext and first-import backfill retain their existing behavior; this acceptance does not claim that all 172 imported articles were model-processed.
 
 ## Knowledge
 
